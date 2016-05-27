@@ -8,5 +8,6 @@ branches:
   - master
 install:
 - go get github.com/codegangsta/cli
+- go get github.com/keltia.ripe-atlas/atlas
 script:
 - go build -v ./cmd/...
