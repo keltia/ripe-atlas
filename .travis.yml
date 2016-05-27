@@ -1,0 +1,12 @@
+language: go
+go:
+- 1.6.2
+- tip
+branches:
+  only:
+  - develop
+  - master
+install:
+- go get github.com/codegangsta/cli
+script:
+- go build -v ./cmd/...
