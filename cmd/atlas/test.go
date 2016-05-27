@@ -11,8 +11,7 @@ import (
 	"strconv"
 )
 
-// set args for examples sake
-
+// main is the starting point (and everything)
 func main() {
 	app := cli.NewApp()
 	app.Name = "atlas"
