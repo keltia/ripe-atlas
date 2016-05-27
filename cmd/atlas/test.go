@@ -15,6 +15,9 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "atlas"
+	app.Usage = "RIPE Atlas cli interface"
+	app.Author = "Ollivier Robert <roberto@keltia.net>"
+	app.Version = "0.0.1"
 	app.Commands = []cli.Command{
 		{
 			Name: "probes",
@@ -22,14 +25,14 @@ func main() {
 				"p",
 				"pb",
 			},
-			Usage:       "use it to see a description",
-			Description: "This is how we describe hello the function",
+			Usage:       "probe-related keywords",
+			Description: "All the commands for probes",
 			Subcommands: []cli.Command{
 				{
 					Name:        "list",
 					Aliases:     []string{"ls"},
 					Usage:       "lists all probes",
-					Description: "greets someone in english",
+					Description: "displays all probes",
 					Action: func(c *cli.Context) error {
 						q, err := atlas.GetProbes()
 						if err != nil {
