@@ -17,8 +17,11 @@ func main() {
 	app.Name = "atlas"
 	app.Commands = []cli.Command{
 		{
-			Name:        "probes",
-			Aliases:     []string{"p"},
+			Name: "probes",
+			Aliases: []string{
+				"p",
+				"pb",
+			},
 			Usage:       "use it to see a description",
 			Description: "This is how we describe hello the function",
 			Subcommands: []cli.Command{
