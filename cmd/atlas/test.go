@@ -68,6 +68,24 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:        "ip",
+			Usage:       "returns current ip",
+			Description: "shorthand for getting current ip",
+			Action: func(c *cli.Context) error {
+				args := c.Args()
+				id, _ := strconv.ParseInt(args[0], 10, 32)
+
+				p, err := atlas.GetProbe(int(id))
+				if err != nil {
+					fmt.Printf("err: %v", err)
+					os.Exit(1)
+				}
+				fmt.Printf("IPv4: %v - IPv6: %v", p.AddressV4, p.AddressV6)
+				return nil
+			},
+		},
+
 	}
 	app.Run(os.Args)
 
