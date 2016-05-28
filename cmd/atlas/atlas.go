@@ -4,11 +4,8 @@ This package is just a collection of test cases
 package main
 
 import (
-	"fmt"
 	"github.com/codegangsta/cli"
-	"github.com/keltia/ripe-atlas"
 	"os"
-	"strconv"
 )
 
 // main is the starting point (and everything)
@@ -33,41 +30,13 @@ func main() {
 					Aliases:     []string{"ls"},
 					Usage:       "lists all probes",
 					Description: "displays all probes",
-					Action: func(c *cli.Context) error {
-						q, err := atlas.GetProbes()
-						if err != nil {
-							fmt.Printf("err: %v", err)
-							os.Exit(1)
-						}
-						fmt.Printf("q: %#v\n", q)
-
-						return nil
-					},
+					Action:      probesList,
 				},
 				{
 					Name:        "info",
 					Usage:       "info for one probe",
 					Description: "gives info for one probe",
-					Flags: []cli.Flag{
-						cli.IntFlag{
-							Name:  "id",
-							Value: 0,
-							Usage: "id of the probe",
-						},
-					},
-					Action: func(c *cli.Context) error {
-						args := c.Args()
-						id, _ := strconv.ParseInt(args[0], 10, 32)
-
-						p, err := atlas.GetProbe(int(id))
-						if err != nil {
-							fmt.Printf("err: %v", err)
-							os.Exit(1)
-						}
-						fmt.Printf("p: %#v\n", p)
-
-						return nil
-					},
+					Action:      probeInfo,
 				},
 			},
 		},
@@ -75,18 +44,7 @@ func main() {
 			Name:        "ip",
 			Usage:       "returns current ip",
 			Description: "shorthand for getting current ip",
-			Action: func(c *cli.Context) error {
-				args := c.Args()
-				id, _ := strconv.ParseInt(args[0], 10, 32)
-
-				p, err := atlas.GetProbe(int(id))
-				if err != nil {
-					fmt.Printf("err: %v", err)
-					os.Exit(1)
-				}
-				fmt.Printf("IPv4: %v - IPv6: %v", p.AddressV4, p.AddressV6)
-				return nil
-			},
+			Action:      cmdIP,
 		},
 	}
 	app.Run(os.Args)
