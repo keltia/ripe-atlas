@@ -16,6 +16,7 @@ import (
 	"github.com/naoina/toml"
 )
 
+// Config holds our parameters
 type Config struct {
 	User string
 	Password string
@@ -27,9 +28,8 @@ func checkName(file string) string {
 	if bfile := []byte(file); bfile[0] == '/' {
 		if !strings.HasSuffix(file, ".toml") {
 			return ""
-		} else {
-			return file
 		}
+		return file
 	}
 	// Check for tag
 	if !strings.HasSuffix(file, ".toml") {
@@ -37,12 +37,11 @@ func checkName(file string) string {
 		return filepath.Join(os.Getenv("HOME"),
 			fmt.Sprintf(".%s", file),
 			"config.toml")
-	} else {
-		return file
 	}
+	return file
 }
 
-// Load a file as a TOML document and return the structure
+// LoadConfig reads a file as a TOML document and return the structure
 func LoadConfig(file string) (c *Config, err error) {
 	// Check for tag
 	sFile := checkName(file)
@@ -50,13 +49,13 @@ func LoadConfig(file string) (c *Config, err error) {
 	c = new(Config)
 	buf, err := ioutil.ReadFile(sFile)
 	if err != nil {
-		return c, errors.New(fmt.Sprintf("Can not read %s", sFile))
+		return c, fmt.Errorf("Can not read %s", sFile)
 	}
 
 	err = toml.Unmarshal(buf, &c)
 	if err != nil {
-		return c, errors.New(fmt.Sprintf("Error parsing toml %s: %v",
-			sFile, err))
+		return c, fmt.Errorf("Error parsing toml %s: %v",
+			sFile, err)
 	}
 
 	return c, nil
