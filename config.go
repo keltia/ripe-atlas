@@ -6,7 +6,6 @@
 package atlas
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
