@@ -17,10 +17,10 @@ func GetProbe(id int) (p *Probe, err error) {
 	p = &Probe{}
 	r, err := api.Res("probes", &p).Id(id).Get()
 	if err != nil {
-		err = fmt.Errorf("err: %v - r:%v\n", err)
+		err = fmt.Errorf("err: %v - r:%v\n", err, r)
 		return
 	}
-	fmt.Printf("r: %#v\np: %#v\n", r, p)
+//	fmt.Printf("r: %#v\np: %#v\n", r, p)
 	return
 }
 

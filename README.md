@@ -5,12 +5,13 @@
 [![godoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/keltia/ripe-atlas/atlas) [![license](https://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/keltia/ripe-atlas/master/LICENSE) [![build](https://img.shields.io/travis/keltia/ripe-atlas.svg?style=flat)](https://travis-ci.org/ant0ine/ripe-atlas)
 
 **ripe-atlas is a Go library to access the RIPE Atlas [REST API](https://atlas.ripe.net/docs/api/v2/manual/).
- 
+
+It features a simple CLI-based tool which use the library.
+
 ## Table of content
  
 - [Features](#features)
 - [Install](#install)
-- [Vendoring](#vendoring)
 - [Examples](#examples)
   - [Basics](#basics)
 	  - [Hello World!](#hello-world)
@@ -26,5 +27,3 @@
 	  - [Status](#status)
 	  - [Status Auth](#status-auth)
 - [External Documentation](#external-documentation)
-- [Thanks](#thanks)
-
