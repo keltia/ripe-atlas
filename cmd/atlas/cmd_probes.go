@@ -12,7 +12,17 @@ import (
 
 // probeList displays all probes
 func probesList(c *cli.Context) error {
-	q, err := atlas.GetProbes()
+	opts := make(map[string]string)
+
+	if country != "" {
+		opts["country_code"] = country
+	}
+
+	if asn != "" {
+		opts["asn"] = asn
+	}
+
+	q, err := atlas.GetProbes(opts)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
