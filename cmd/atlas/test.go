@@ -6,8 +6,8 @@ package main
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
+	"github.com/keltia/ripe-atlas"
 	"os"
-	"ripe-atlas"
 	"strconv"
 )
 
@@ -88,7 +88,6 @@ func main() {
 				return nil
 			},
 		},
-
 	}
 	app.Run(os.Args)
 
