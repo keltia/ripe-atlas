@@ -42,8 +42,6 @@ func probeInfo(c *cli.Context) error {
 
 // cmdIP is a short for displaying the IPs for one probe
 func cmdIP(c *cli.Context) error {
-	log.Printf("flags ipv4(%v) & ipv6(%v)", want4, want6)
-
 	// By default we want both
 	if !want4 && !want6 {
 		want6, want4 = true, true
