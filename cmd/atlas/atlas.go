@@ -8,6 +8,11 @@ import (
 	"os"
 )
 
+var (
+	want4 bool
+	want6 bool
+)
+
 // main is the starting point (and everything)
 func main() {
 	app := cli.NewApp()
@@ -44,7 +49,19 @@ func main() {
 			Name:        "ip",
 			Usage:       "returns current ip",
 			Description: "shorthand for getting current ip",
-			Action:      cmdIP,
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "ipv6",
+					Usage: "displays only IPv6",
+					Destination: &want6,
+				},
+				cli.BoolFlag{
+					Name:  "ipv4",
+					Usage: "displays only IPv4",
+					Destination: &want4,
+				},
+			},
+			Action: cmdIP,
 		},
 	}
 	app.Run(os.Args)

@@ -14,7 +14,7 @@ OPTS=	-ldflags="-s -w" -v
 all: atlas
 
 atlas: ${SRCS}
-	go build ${OPTS}
+	go build ${OPTS} ./cmd/...
 	go test -v
 
 install:

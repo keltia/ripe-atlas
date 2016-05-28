@@ -8,6 +8,7 @@ import (
 	"github.com/keltia/ripe-atlas"
 	"os"
 	"strconv"
+	"log"
 )
 
 // probeList displays all probes
@@ -41,6 +42,12 @@ func probeInfo(c *cli.Context) error {
 
 // cmdIP is a short for displaying the IPs for one probe
 func cmdIP(c *cli.Context) error {
+	log.Printf("flags ipv4(%v) & ipv6(%v)", want4, want6)
+
+	// By default we want both
+	if !want4 && !want6 {
+		want6, want4 = true, true
+	}
 	args := c.Args()
 	id, _ := strconv.ParseInt(args[0], 10, 32)
 
@@ -49,6 +56,17 @@ func cmdIP(c *cli.Context) error {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("IPv4: %v - IPv6: %v", p.AddressV4, p.AddressV6)
+
+	var str string = ""
+
+	if want4 {
+		str = fmt.Sprintf("%sIPv4: %s ", str, p.AddressV4)
+	}
+
+	if want6 {
+		str = fmt.Sprintf("%sIPv6: %s ", str, p.AddressV6)
+	}
+
+	fmt.Println(str)
 	return nil
 }
