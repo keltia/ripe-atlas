@@ -8,7 +8,6 @@ import (
 	"github.com/keltia/ripe-atlas"
 	"os"
 	"strconv"
-	"log"
 )
 
 // probeList displays all probes
