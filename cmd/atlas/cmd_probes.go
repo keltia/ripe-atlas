@@ -5,8 +5,8 @@ package main
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
-	"github.com/keltia/ripe-atlas"
 	"os"
+	"ripe-atlas"
 	"strconv"
 )
 
