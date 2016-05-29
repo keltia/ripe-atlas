@@ -12,10 +12,9 @@ import (
 
 // GetProbe returns data for a single probe
 func GetProbe(id int) (p *Probe, err error) {
-	api := gopencils.Api(apiEndpoint, nil)
-
-	p = &Probe{}
-	r, err := api.Res("probes", &p).Id(id).Get()
+	auth := WantAuth()
+	api := gopencils.Api(apiEndpoint, auth)
+	r, err := api.Res("probes").Id(id, &p).Get()
 	if err != nil {
 		err = fmt.Errorf("err: %v - r:%v\n", err, r)
 		return
@@ -27,8 +26,10 @@ func GetProbe(id int) (p *Probe, err error) {
 type Probes []Probe
 
 // GetProbes returns data for a collection of probes
-func GetProbes() (p *interface{}, err error) {
-	api := gopencils.Api(apiEndpoint, nil)
+func GetProbes(opts map[string]string) (p *ProbesList, err error) {
+	log.Printf("GetProbes: opts=%+v", opts)
+	auth := WantAuth()
+	api := gopencils.Api(apiEndpoint, auth)
 
 	var plist *interface{}
 
