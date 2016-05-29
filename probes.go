@@ -18,7 +18,6 @@ func GetProbe(id int) (p *Probe, err error) {
 		err = fmt.Errorf("err: %v - r:%v\n", err, r)
 		return
 	}
-//	fmt.Printf("r: %#v\np: %#v\n", r, p)
 	return
 }
 
