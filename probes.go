@@ -9,7 +9,6 @@ import (
 	"github.com/bndr/gopencils"
 )
 
-
 // GetProbe returns data for a single probe
 func GetProbe(id int) (p *Probe, err error) {
 	auth := WantAuth()
