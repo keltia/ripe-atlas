@@ -8,6 +8,7 @@ import (
 	"os"
 	"ripe-atlas"
 	"strconv"
+	"log"
 )
 
 // probeList displays all probes
@@ -24,10 +25,10 @@ func probesList(c *cli.Context) error {
 
 	q, err := atlas.GetProbes(opts)
 	if err != nil {
-		fmt.Printf("err: %v", err)
+		log.Printf("GetProbes err: %v - q:%v", err, q)
 		os.Exit(1)
 	}
-	fmt.Printf("q: %#v\n", q)
+	fmt.Println(q)
 
 	return nil
 }
@@ -42,7 +43,7 @@ func probeInfo(c *cli.Context) error {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("p: %#v\n", p)
+	fmt.Println(p)
 
 	return nil
 }
