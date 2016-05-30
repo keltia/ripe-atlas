@@ -29,6 +29,12 @@ func displayProbe(p *atlas.Probe, verbose bool) (res string) {
 func displayAllProbes(pl *[]atlas.Probe, verbose bool) (res string) {
 	res = ""
 	for _, p := range *pl {
+		// Do we want the inactive probes as well?
+		if p.AddressV4 == "" && p.AddressV6 == "" {
+			if !allprobes {
+				continue
+			}
+		}
 		res += displayProbe(&p, verbose)
 	}
 	return
