@@ -13,6 +13,7 @@ var (
 	want6 bool
 	asn string
 	country string
+	verbose bool
 )
 
 // main is the starting point (and everything)
@@ -50,6 +51,11 @@ func main() {
 							Value: "",
 							Destination: &asn,
 						},
+						cli.BoolFlag{
+							Name: "v",
+							Usage: "more verbose",
+							Destination: &verbose,
+						},
 					},
 					Action:      probesList,
 				},
@@ -57,6 +63,25 @@ func main() {
 					Name:        "info",
 					Usage:       "info for one probe",
 					Description: "gives info for one probe",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name: "country,c",
+							Usage: "filter on country",
+							Value: "fr",
+							Destination: &country,
+						},
+						cli.StringFlag{
+							Name: "asn",
+							Usage: "filter on asn",
+							Value: "",
+							Destination: &asn,
+						},
+						cli.BoolFlag{
+							Name: "v",
+							Usage: "more verbose",
+							Destination: &verbose,
+						},
+					},
 					Action:      probeInfo,
 				},
 			},
