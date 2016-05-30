@@ -60,6 +60,10 @@ func probesList(c *cli.Context) error {
 // probeInfo is information about one probe
 func probeInfo(c *cli.Context) error {
 	args := c.Args()
+	if args[0] == "" {
+		log.Fatalf("Error: you must specify a probe ID!")
+	}
+
 	id, _ := strconv.ParseInt(args[0], 10, 32)
 
 	p, err := atlas.GetProbe(int(id))
@@ -81,6 +85,10 @@ func cmdIP(c *cli.Context) error {
 		want6, want4 = true, true
 	}
 	args := c.Args()
+	if args[0] == "" {
+		log.Fatalf("Error: you must specify a probe ID!")
+	}
+
 	id, _ := strconv.ParseInt(args[0], 10, 32)
 
 	p, err := atlas.GetProbe(int(id))
