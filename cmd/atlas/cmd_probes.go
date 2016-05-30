@@ -16,11 +16,12 @@ func displayProbe(p *atlas.Probe, verbose bool) (res string) {
 	if verbose {
 		res = fmt.Sprintf("%v\n", p)
 	} else {
-		res = fmt.Sprintf("ID: %s Country: %s IPv4: %s IPv6: %s\n",
+		res = fmt.Sprintf("ID: %d Country: %s IPv4: %s IPv6: %s Descr: %s\n",
 			p.ID,
 			p.CountryCode,
 			p.AddressV4,
-			p.AddressV6)
+			p.AddressV6,
+			p.Description)
 	}
 	return
 }
