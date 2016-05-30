@@ -11,6 +11,10 @@ import (
 var (
 	want4 bool
 	want6 bool
+	allprobes bool
+	asn string
+	country string
+	verbose bool
 )
 
 // main is the starting point (and everything)
@@ -35,12 +39,55 @@ func main() {
 					Aliases:     []string{"ls"},
 					Usage:       "lists all probes",
 					Description: "displays all probes",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name: "country,c",
+							Usage: "filter on country",
+							Value: "fr",
+							Destination: &country,
+						},
+						cli.StringFlag{
+							Name: "asn",
+							Usage: "filter on asn",
+							Value: "",
+							Destination: &asn,
+						},
+						cli.BoolFlag{
+							Name: "v",
+							Usage: "more verbose",
+							Destination: &verbose,
+						},
+						cli.BoolFlag{
+							Name: "A",
+							Usage: "all probes even inactive ones",
+							Destination: &allprobes,
+						},
+					},
 					Action:      probesList,
 				},
 				{
 					Name:        "info",
 					Usage:       "info for one probe",
 					Description: "gives info for one probe",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name: "country,c",
+							Usage: "filter on country",
+							Value: "fr",
+							Destination: &country,
+						},
+						cli.StringFlag{
+							Name: "asn",
+							Usage: "filter on asn",
+							Value: "",
+							Destination: &asn,
+						},
+						cli.BoolFlag{
+							Name: "v",
+							Usage: "more verbose",
+							Destination: &verbose,
+						},
+					},
 					Action:      probeInfo,
 				},
 			},

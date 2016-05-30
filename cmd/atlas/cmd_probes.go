@@ -5,20 +5,60 @@ package main
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
-	"github.com/keltia/ripe-atlas"
 	"os"
+	"ripe-atlas"
 	"strconv"
 	"log"
 )
 
+// displayProbe display short or verbose data about a probe
+func displayProbe(p *atlas.Probe, verbose bool) (res string) {
+	if verbose {
+		res = fmt.Sprintf("%v\n", p)
+	} else {
+		res = fmt.Sprintf("ID: %d Country: %s IPv4: %s IPv6: %s Descr: %s\n",
+			p.ID,
+			p.CountryCode,
+			p.AddressV4,
+			p.AddressV6,
+			p.Description)
+	}
+	return
+}
+
+func displayAllProbes(pl *[]atlas.Probe, verbose bool) (res string) {
+	res = ""
+	for _, p := range *pl {
+		// Do we want the inactive probes as well?
+		if p.AddressV4 == "" && p.AddressV6 == "" {
+			if !allprobes {
+				continue
+			}
+		}
+		res += displayProbe(&p, verbose)
+	}
+	return
+}
+
 // probeList displays all probes
 func probesList(c *cli.Context) error {
-	q, err := atlas.GetProbes()
+	opts := make(map[string]string)
+
+	if country != "" {
+		opts["country_code"] = country
+	}
+
+	if asn != "" {
+		opts["asn"] = asn
+	}
+
+	q, err := atlas.GetProbes(opts)
 	if err != nil {
-		fmt.Printf("err: %v", err)
+		log.Printf("GetProbes err: %v - q:%v", err, q)
 		os.Exit(1)
 	}
-	fmt.Printf("q: %#v\n", q)
+	log.Printf("Got %d probes with %v\n", len(q), opts)
+	fmt.Print(displayAllProbes(&q, verbose))
 
 	return nil
 }
@@ -26,6 +66,10 @@ func probesList(c *cli.Context) error {
 // probeInfo is information about one probe
 func probeInfo(c *cli.Context) error {
 	args := c.Args()
+	if args[0] == "" {
+		log.Fatalf("Error: you must specify a probe ID!")
+	}
+
 	id, _ := strconv.ParseInt(args[0], 10, 32)
 
 	p, err := atlas.GetProbe(int(id))
@@ -33,7 +77,7 @@ func probeInfo(c *cli.Context) error {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("p: %#v\n", p)
+	fmt.Print(displayProbe(p, verbose))
 
 	return nil
 }
@@ -42,13 +86,15 @@ func probeInfo(c *cli.Context) error {
 
 // cmdIP is a short for displaying the IPs for one probe
 func cmdIP(c *cli.Context) error {
-	log.Printf("flags ipv4(%v) & ipv6(%v)", want4, want6)
-
 	// By default we want both
 	if !want4 && !want6 {
 		want6, want4 = true, true
 	}
 	args := c.Args()
+	if args[0] == "" {
+		log.Fatalf("Error: you must specify a probe ID!")
+	}
+
 	id, _ := strconv.ParseInt(args[0], 10, 32)
 
 	p, err := atlas.GetProbe(int(id))
