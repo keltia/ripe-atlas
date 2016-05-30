@@ -9,12 +9,13 @@ import (
 )
 
 var (
-	want4 bool
-	want6 bool
-	allprobes bool
-	asn string
-	country string
-	verbose bool
+	// flags
+	fWant4 bool
+	fWant6 bool
+	fAllProbes bool
+	fAsn string
+	fCountry string
+	fVerbose bool
 )
 
 // main is the starting point (and everything)
@@ -44,23 +45,23 @@ func main() {
 							Name: "country,c",
 							Usage: "filter on country",
 							Value: "fr",
-							Destination: &country,
+							Destination: &fCountry,
 						},
 						cli.StringFlag{
 							Name: "asn",
 							Usage: "filter on asn",
 							Value: "",
-							Destination: &asn,
+							Destination: &fAsn,
 						},
 						cli.BoolFlag{
 							Name: "v",
 							Usage: "more verbose",
-							Destination: &verbose,
+							Destination: &fVerbose,
 						},
 						cli.BoolFlag{
 							Name: "A",
 							Usage: "all probes even inactive ones",
-							Destination: &allprobes,
+							Destination: &fAllProbes,
 						},
 					},
 					Action:      probesList,
@@ -74,18 +75,18 @@ func main() {
 							Name: "country,c",
 							Usage: "filter on country",
 							Value: "fr",
-							Destination: &country,
+							Destination: &fCountry,
 						},
 						cli.StringFlag{
 							Name: "asn",
 							Usage: "filter on asn",
 							Value: "",
-							Destination: &asn,
+							Destination: &fAsn,
 						},
 						cli.BoolFlag{
 							Name: "v",
 							Usage: "more verbose",
-							Destination: &verbose,
+							Destination: &fVerbose,
 						},
 					},
 					Action:      probeInfo,
@@ -100,12 +101,12 @@ func main() {
 				cli.BoolFlag{
 					Name:  "ipv6",
 					Usage: "displays only IPv6",
-					Destination: &want6,
+					Destination: &fWant6,
 				},
 				cli.BoolFlag{
 					Name:  "ipv4",
 					Usage: "displays only IPv4",
-					Destination: &want4,
+					Destination: &fWant4,
 				},
 			},
 			Action: cmdIP,
