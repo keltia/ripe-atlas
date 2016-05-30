@@ -5,11 +5,72 @@ package main
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
+	"log"
 	"os"
 	"ripe-atlas"
 	"strconv"
-	"log"
 )
+
+// init injects our probe-related commands
+func init() {
+	cliCommands = append(cliCommands, cli.Command{
+		Name: "probes",
+		Aliases: []string{
+			"p",
+			"pb",
+		},
+		Usage:       "probe-related keywords",
+		Description: "All the commands for probes",
+		Subcommands: []cli.Command{
+			{
+				Name:        "list",
+				Aliases:     []string{"ls"},
+				Usage:       "lists all probes",
+				Description: "displays all probes",
+				Flags: []cli.Flag{
+					cli.StringFlag{
+						Name:        "country,c",
+						Usage:       "filter on country",
+						Value:       "fr",
+						Destination: &fCountry,
+					},
+					cli.StringFlag{
+						Name:        "asn",
+						Usage:       "filter on asn",
+						Value:       "",
+						Destination: &fAsn,
+					},
+					cli.BoolFlag{
+						Name:        "A",
+						Usage:       "all probes even inactive ones",
+						Destination: &fAllProbes,
+					},
+				},
+				Action: probesList,
+			},
+			{
+				Name:        "info",
+				Usage:       "info for one probe",
+				Description: "gives info for one probe",
+				Flags: []cli.Flag{
+					cli.StringFlag{
+						Name:        "country,c",
+						Usage:       "filter on country",
+						Value:       "fr",
+						Destination: &fCountry,
+					},
+					cli.StringFlag{
+						Name:        "asn",
+						Usage:       "filter on asn",
+						Value:       "",
+						Destination: &fAsn,
+					},
+				},
+				Action: probeInfo,
+			},
+		},
+	})
+}
 
 // displayProbe display short or verbose data about a probe
 func displayProbe(p *atlas.Probe, verbose bool) (res string) {
@@ -82,37 +143,3 @@ func probeInfo(c *cli.Context) error {
 	return nil
 }
 
-// shortcuts
-
-// cmdIP is a short for displaying the IPs for one probe
-func cmdIP(c *cli.Context) error {
-	// By default we want both
-	if !fWant4 && !fWant6 {
-		fWant6, fWant4 = true, true
-	}
-	args := c.Args()
-	if args[0] == "" {
-		log.Fatalf("Error: you must specify a probe ID!")
-	}
-
-	id, _ := strconv.ParseInt(args[0], 10, 32)
-
-	p, err := atlas.GetProbe(int(id))
-	if err != nil {
-		fmt.Printf("err: %v", err)
-		os.Exit(1)
-	}
-
-	var str string = ""
-
-	if fWant4 {
-		str = fmt.Sprintf("%sIPv4: %s ", str, p.AddressV4)
-	}
-
-	if fWant6 {
-		str = fmt.Sprintf("%sIPv6: %s ", str, p.AddressV6)
-	}
-
-	fmt.Println(str)
-	return nil
-}
