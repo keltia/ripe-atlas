@@ -7,6 +7,7 @@ package atlas
 import (
 	"fmt"
 	"github.com/bndr/gopencils"
+	"log"
 )
 
 // GetProbe returns data for a single probe
@@ -21,7 +22,13 @@ func GetProbe(id int) (p *Probe, err error) {
 	return
 }
 
-type Probes []Probe
+// ProbesList is our main answer
+type ProbesList struct {
+	Count    int
+	Next     string
+	Previous string
+	Results  []Probe
+}
 
 // GetProbes returns data for a collection of probes
 func GetProbes(opts map[string]string) (p *ProbesList, err error) {
@@ -29,14 +36,25 @@ func GetProbes(opts map[string]string) (p *ProbesList, err error) {
 	auth := WantAuth()
 	api := gopencils.Api(apiEndpoint, auth)
 
-	var plist *interface{}
+	var rawlist ProbesList
 
-	r, err := api.Res("probes", plist).Get()
+	r, err := api.Res("probes", &rawlist).Get(opts)
+	log.Printf("rawlist=%+v r=%+v", rawlist, r)
 	if err != nil {
 		err = fmt.Errorf("%v - r:%v\n", err, r)
 		return
 	}
-	fmt.Printf("r: %#v\nplist: %#v\n", r, plist)
-	p = plist
+
+	// Empty answer
+	if rawlist == nil {
+		return nil, fmt.Errorf("empty probe list")
+	}
+
+	if rawlist.Next != "" {
+		// We have pagination
+
+	}
+	p = &rawlist.Results
+	fmt.Printf("r: %#v\np: %#v\n", r, p)
 	return
 }
