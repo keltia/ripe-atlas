@@ -9,7 +9,6 @@ import (
 	"github.com/bndr/gopencils"
 	"log"
 	"regexp"
-	"strconv"
 )
 
 // GetProbe returns data for a single probe
@@ -33,13 +32,12 @@ type ProbesList struct {
 }
 
 // getPageNum returns the value of the page= parameter
-func getPageNum(url string) (page int) {
+func getPageNum(url string) (page string) {
 	re := regexp.MustCompile(`page=(\d+)`)
-	if m := re.FindStringSubmatch(url); len(m) >= 0 {
-		pn, _ := strconv.ParseInt(m[1], 10, 32)
-		return int(pn)
+	if m := re.FindStringSubmatch(url); len(m) >= 1 {
+		return m[1]
 	}
-	return 0
+	return ""
 }
 
 // GetProbes returns data for a collection of probes
