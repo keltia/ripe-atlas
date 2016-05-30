@@ -31,14 +31,14 @@ type ProbesList struct {
 }
 
 // GetProbes returns data for a collection of probes
-func GetProbes(opts map[string]string) (p *ProbesList, err error) {
+func GetProbes(opts map[string]string) (p []Probe, err error) {
 	log.Printf("GetProbes: opts=%+v", opts)
 	auth := WantAuth()
 	api := gopencils.Api(apiEndpoint, auth)
 
-	var rawlist ProbesList
+	var rawlist *ProbesList
 
-	r, err := api.Res("probes", &rawlist).Get(opts)
+	r, err := api.Res("probes", rawlist).Get(opts)
 	log.Printf("rawlist=%+v r=%+v", rawlist, r)
 	if err != nil {
 		err = fmt.Errorf("%v - r:%v\n", err, r)
@@ -54,7 +54,7 @@ func GetProbes(opts map[string]string) (p *ProbesList, err error) {
 		// We have pagination
 
 	}
-	p = &rawlist.Results
+	p = rawlist.Results
 	fmt.Printf("r: %#v\np: %#v\n", r, p)
 	return
 }
