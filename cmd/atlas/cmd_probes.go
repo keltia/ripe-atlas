@@ -45,6 +45,11 @@ func init() {
 						Usage:       "all probes even inactive ones",
 						Destination: &fAllProbes,
 					},
+					cli.BoolFlag{
+						Name:        "is-anchor",
+						Usage:       "select anchor probes",
+						Destination: &fWantAnchor,
+					},
 				},
 				Action: probesList,
 			},
@@ -111,6 +116,10 @@ func probesList(c *cli.Context) error {
 
 	if fAsn != "" {
 		opts["asn"] = fAsn
+	}
+
+	if fWantAnchor {
+		opts["is_anchor"] = "true"
 	}
 
 	q, err := atlas.GetProbes(opts)

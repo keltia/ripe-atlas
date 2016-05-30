@@ -17,6 +17,7 @@ var (
 	fAsn string
 	fCountry string
 	fVerbose bool
+	fWantAnchor bool
 
 	cliCommands []cli.Command
 )
