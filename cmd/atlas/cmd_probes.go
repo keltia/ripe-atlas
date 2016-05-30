@@ -5,15 +5,24 @@ package main
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
-	"github.com/keltia/ripe-atlas"
 	"os"
+	"ripe-atlas"
 	"strconv"
-	"log"
 )
 
 // probeList displays all probes
 func probesList(c *cli.Context) error {
-	q, err := atlas.GetProbes()
+	opts := make(map[string]string)
+
+	if country != "" {
+		opts["country_code"] = country
+	}
+
+	if asn != "" {
+		opts["asn"] = asn
+	}
+
+	q, err := atlas.GetProbes(opts)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
@@ -42,8 +51,6 @@ func probeInfo(c *cli.Context) error {
 
 // cmdIP is a short for displaying the IPs for one probe
 func cmdIP(c *cli.Context) error {
-	log.Printf("flags ipv4(%v) & ipv6(%v)", want4, want6)
-
 	// By default we want both
 	if !want4 && !want6 {
 		want6, want4 = true, true
