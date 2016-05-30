@@ -36,9 +36,9 @@ func GetProbes(opts map[string]string) (p []Probe, err error) {
 	auth := WantAuth()
 	api := gopencils.Api(apiEndpoint, auth)
 
-	var rawlist *ProbesList
+	var rawlist ProbesList
 
-	r, err := api.Res("probes", rawlist).Get(opts)
+	r, err := api.Res("probes", &rawlist).Get(opts)
 	log.Printf("rawlist=%+v r=%+v", rawlist, r)
 	if err != nil {
 		err = fmt.Errorf("%v - r:%v\n", err, r)
@@ -46,7 +46,7 @@ func GetProbes(opts map[string]string) (p []Probe, err error) {
 	}
 
 	// Empty answer
-	if rawlist == nil {
+	if rawlist.Count == 0 {
 		return nil, fmt.Errorf("empty probe list")
 	}
 
