@@ -25,6 +25,17 @@ func main() {
 	app.Usage = "RIPE Atlas cli interface"
 	app.Author = "Ollivier Robert <roberto@keltia.net>"
 	app.Version = "0.0.1"
+
+	// General flags
+	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name: "v",
+			Usage: "more verbose",
+			Destination: &fVerbose,
+		},
+	}
+
+	// Fill-in the various commands
 	app.Commands = []cli.Command{
 		{
 			Name: "probes",
@@ -54,11 +65,6 @@ func main() {
 							Destination: &fAsn,
 						},
 						cli.BoolFlag{
-							Name: "v",
-							Usage: "more verbose",
-							Destination: &fVerbose,
-						},
-						cli.BoolFlag{
 							Name: "A",
 							Usage: "all probes even inactive ones",
 							Destination: &fAllProbes,
@@ -82,11 +88,6 @@ func main() {
 							Usage: "filter on asn",
 							Value: "",
 							Destination: &fAsn,
-						},
-						cli.BoolFlag{
-							Name: "v",
-							Usage: "more verbose",
-							Destination: &fVerbose,
 						},
 					},
 					Action:      probeInfo,
