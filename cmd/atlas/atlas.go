@@ -11,6 +11,7 @@ import (
 var (
 	want4 bool
 	want6 bool
+	allprobes bool
 	asn string
 	country string
 	verbose bool
@@ -55,6 +56,11 @@ func main() {
 							Name: "v",
 							Usage: "more verbose",
 							Destination: &verbose,
+						},
+						cli.BoolFlag{
+							Name: "A",
+							Usage: "all probes even inactive ones",
+							Destination: &allprobes,
 						},
 					},
 					Action:      probesList,
