@@ -28,6 +28,7 @@ func probesList(c *cli.Context) error {
 		log.Printf("GetProbes err: %v - q:%v", err, q)
 		os.Exit(1)
 	}
+	log.Printf("Got %d probes with %v\n", len(q), opts)
 	fmt.Println(q)
 
 	return nil

@@ -56,7 +56,6 @@ func fetchOnePage(api *gopencils.Resource, opts map[string]string) (raw *probeLi
 
 // GetProbes returns data for a collection of probes
 func GetProbes(opts map[string]string) (p []Probe, err error) {
-	//log.Printf("GetProbes: opts=%+v", opts)
 	auth := WantAuth()
 	api := gopencils.Api(apiEndpoint, auth)
 
@@ -66,8 +65,6 @@ func GetProbes(opts map[string]string) (p []Probe, err error) {
 	if rawlist.Count == 0 {
 		return nil, fmt.Errorf("empty probe list")
 	}
-
-	log.Printf("Found %d probes w/ %+v", rawlist.Count, opts)
 
 	var res []Probe
 
