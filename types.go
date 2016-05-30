@@ -2,8 +2,6 @@
 
 package atlas
 
-import "time"
-
 // Probe is holding probe's data
 type Probe struct {
 	AddressV4      string `json:"address_v4"`
@@ -24,7 +22,7 @@ type Probe struct {
 	PrefixV4      string `json:"prefix_v4"`
 	PrefixV6      string `json:"prefix_v6"`
 	Status        struct {
-		Since time.Time `json:"since"`
+		Since string `json:"since"`
 		ID    int       `json:"id"`
 		Name  string    `json:"name"`
 	} `json:"status"`
