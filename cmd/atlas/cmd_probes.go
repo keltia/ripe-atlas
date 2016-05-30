@@ -11,6 +11,28 @@ import (
 	"log"
 )
 
+// displayProbe display short or verbose data about a probe
+func displayProbe(p *atlas.Probe, verbose bool) (res string) {
+	if verbose {
+		res = fmt.Sprintf("%v\n", p)
+	} else {
+		res = fmt.Sprintf("ID: %s Country: %s IPv4: %s IPv6: %s\n",
+			p.ID,
+			p.CountryCode,
+			p.AddressV4,
+			p.AddressV6)
+	}
+	return
+}
+
+func displayAllProbes(pl []atlas.Probe, verbose bool) (res string) {
+	res = ""
+	for _, p := range pl {
+		res += displayProbe(p, verbose)
+	}
+	return
+}
+
 // probeList displays all probes
 func probesList(c *cli.Context) error {
 	opts := make(map[string]string)
@@ -29,7 +51,7 @@ func probesList(c *cli.Context) error {
 		os.Exit(1)
 	}
 	log.Printf("Got %d probes with %v\n", len(q), opts)
-	fmt.Println(q)
+	fmt.Print(displayAllProbes(q, false))
 
 	return nil
 }
@@ -44,7 +66,7 @@ func probeInfo(c *cli.Context) error {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Println(p)
+	fmt.Print(displayProbe(p, false))
 
 	return nil
 }
