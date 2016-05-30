@@ -23,8 +23,8 @@ func GetProbe(id int) (p *Probe, err error) {
 	return
 }
 
-// ProbesList is our main answer
-type ProbesList struct {
+// probeList is our main answer
+type probeList struct {
 	Count    int
 	Next     string
 	Previous string
@@ -40,38 +40,51 @@ func getPageNum(url string) (page string) {
 	return ""
 }
 
+// fetch the given resource
+func fetchOnePage(api *gopencils.Resource, opts map[string]string) (raw *probeList, err error) {
+	var rawlist probeList
+
+	r, err := api.Res("probes", &rawlist).Get(opts)
+	if err != nil {
+		log.Printf("err: %v", err)
+		err = fmt.Errorf("%v - r:%v\n", err, r)
+	}
+	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
+	raw = &rawlist
+	return
+}
+
 // GetProbes returns data for a collection of probes
 func GetProbes(opts map[string]string) (p []Probe, err error) {
-	log.Printf("GetProbes: opts=%+v", opts)
+	//log.Printf("GetProbes: opts=%+v", opts)
 	auth := WantAuth()
 	api := gopencils.Api(apiEndpoint, auth)
 
-	var rawlist ProbesList
-
-	r, err := api.Res("probes", &rawlist).Get(opts)
-	log.Printf("rawlist=%+v r=%+v", rawlist, r)
-	if err != nil {
-		err = fmt.Errorf("%v - r:%v\n", err, r)
-		return
-	}
+	rawlist, err := fetchOnePage(api, opts)
 
 	// Empty answer
 	if rawlist.Count == 0 {
 		return nil, fmt.Errorf("empty probe list")
 	}
 
+	log.Printf("Found %d probes w/ %+v", rawlist.Count, opts)
+
 	var res []Probe
 
 	res = append(res, rawlist.Results...)
 	if rawlist.Next != "" {
 		// We have pagination
-		for pn := 2; pn != 0; getPageNum(rawlist.Next) {
-			opts["page"] = string(pn)
-			r, err = api.Res("probes", &rawlist).Get(opts)
+		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
+			opts["page"] = pn
+
+			rawlist, err = fetchOnePage(api, opts)
+			if err != nil {
+				return
+			}
+
 			res = append(res, rawlist.Results...)
 		}
 	}
 	p = res
-	fmt.Printf("r: %#v\np: %#v\n", r, p)
 	return
 }
