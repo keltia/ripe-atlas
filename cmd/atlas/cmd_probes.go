@@ -25,10 +25,10 @@ func displayProbe(p *atlas.Probe, verbose bool) (res string) {
 	return
 }
 
-func displayAllProbes(pl []atlas.Probe, verbose bool) (res string) {
+func displayAllProbes(pl *[]atlas.Probe, verbose bool) (res string) {
 	res = ""
-	for _, p := range pl {
-		res += displayProbe(p, verbose)
+	for _, p := range *pl {
+		res += displayProbe(&p, verbose)
 	}
 	return
 }
@@ -51,7 +51,7 @@ func probesList(c *cli.Context) error {
 		os.Exit(1)
 	}
 	log.Printf("Got %d probes with %v\n", len(q), opts)
-	fmt.Print(displayAllProbes(q, false))
+	fmt.Print(displayAllProbes(&q, false))
 
 	return nil
 }
