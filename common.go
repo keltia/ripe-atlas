@@ -9,7 +9,7 @@ import ()
 import "github.com/bndr/gopencils"
 
 const (
-	apiEndpoint = "https://atlas.ripe.net/api/v2/"
+	apiEndpoint = "https://atlas.ripe.net/api/v2"
 )
 
 var (
