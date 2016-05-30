@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"github.com/bndr/gopencils"
 	"log"
+	"regexp"
+	"strconv"
 )
 
 // GetProbe returns data for a single probe
@@ -30,6 +32,16 @@ type ProbesList struct {
 	Results  []Probe
 }
 
+// getPageNum returns the value of the page= parameter
+func getPageNum(url string) (page int) {
+	re := regexp.MustCompile(`page=(\d+)`)
+	if m := re.FindStringSubmatch(url); len(m) >= 0 {
+		pn, _ := strconv.ParseInt(m[1], 10, 32)
+		return int(pn)
+	}
+	return 0
+}
+
 // GetProbes returns data for a collection of probes
 func GetProbes(opts map[string]string) (p []Probe, err error) {
 	log.Printf("GetProbes: opts=%+v", opts)
@@ -50,11 +62,18 @@ func GetProbes(opts map[string]string) (p []Probe, err error) {
 		return nil, fmt.Errorf("empty probe list")
 	}
 
+	var res []Probe
+
+	res = append(res, rawlist.Results...)
 	if rawlist.Next != "" {
 		// We have pagination
-
+		for pn := 2; pn != 0; getPageNum(rawlist.Next) {
+			opts["page"] = string(pn)
+			r, err = api.Res("probes", &rawlist).Get(opts)
+			res = append(res, rawlist.Results...)
+		}
 	}
-	p = rawlist.Results
+	p = res
 	fmt.Printf("r: %#v\np: %#v\n", r, p)
 	return
 }
