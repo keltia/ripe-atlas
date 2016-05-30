@@ -52,7 +52,7 @@ func probesList(c *cli.Context) error {
 		os.Exit(1)
 	}
 	log.Printf("Got %d probes with %v\n", len(q), opts)
-	fmt.Print(displayAllProbes(&q, false))
+	fmt.Print(displayAllProbes(&q, verbose))
 
 	return nil
 }
@@ -71,7 +71,7 @@ func probeInfo(c *cli.Context) error {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Print(displayProbe(p, false))
+	fmt.Print(displayProbe(p, verbose))
 
 	return nil
 }
