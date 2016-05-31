@@ -5,7 +5,6 @@
 
 package atlas
 
-import ()
 import "github.com/bndr/gopencils"
 
 const (

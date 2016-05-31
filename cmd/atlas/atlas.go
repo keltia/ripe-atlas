@@ -6,16 +6,62 @@ package main
 import (
 	"github.com/codegangsta/cli"
 	"os"
+	"sort"
+	"strings"
 )
 
 var (
-	want4 bool
-	want6 bool
-	allprobes bool
-	asn string
-	country string
-	verbose bool
+	// flags
+	fWant4 bool
+	fWant6 bool
+	fAllProbes bool
+	fAsn string
+	fCountry string
+	fFieldList string
+	fFormat string
+	fOptFields string
+	fSortOrder string
+	fVerbose bool
+	fWantAnchor bool
+
+	cliCommands []cli.Command
 )
+
+type ByAlphabet []cli.Command
+
+func (a ByAlphabet) Len() int           { return len(a) }
+func (a ByAlphabet) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByAlphabet) Less(i, j int) bool { return a[i].Name < a[j].Name }
+
+// checkGlobalFlags is the place to check global parameters
+func checkGlobalFlags(o map[string]string) (map[string]string) {
+	opts := o
+	if fSortOrder != "" {
+		opts["sort"] = fSortOrder
+	}
+
+	if fFieldList != "" {
+		opts["fields"] = fFieldList
+	}
+
+	if fOptFields != "" {
+		opts["optional_fields"] = fOptFields
+	}
+
+	if fFormat != "" && validateFormat(fFormat) {
+		opts["format"] = fFormat
+	}
+	return opts
+}
+
+// validateFormat allows only supported formats
+func validateFormat(fmt string) bool {
+	f := strings.ToLower(fmt)
+	if f == "json" || f == "xml" || f == "api" || f == "txt" || f == "jsonp" {
+		return true
+	}
+	return false
+}
 
 // main is the starting point (and everything)
 func main() {
@@ -23,94 +69,40 @@ func main() {
 	app.Name = "atlas"
 	app.Usage = "RIPE Atlas cli interface"
 	app.Author = "Ollivier Robert <roberto@keltia.net>"
-	app.Version = "0.0.1"
-	app.Commands = []cli.Command{
-		{
-			Name: "probes",
-			Aliases: []string{
-				"p",
-				"pb",
-			},
-			Usage:       "probe-related keywords",
-			Description: "All the commands for probes",
-			Subcommands: []cli.Command{
-				{
-					Name:        "list",
-					Aliases:     []string{"ls"},
-					Usage:       "lists all probes",
-					Description: "displays all probes",
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name: "country,c",
-							Usage: "filter on country",
-							Value: "fr",
-							Destination: &country,
-						},
-						cli.StringFlag{
-							Name: "asn",
-							Usage: "filter on asn",
-							Value: "",
-							Destination: &asn,
-						},
-						cli.BoolFlag{
-							Name: "v",
-							Usage: "more verbose",
-							Destination: &verbose,
-						},
-						cli.BoolFlag{
-							Name: "A",
-							Usage: "all probes even inactive ones",
-							Destination: &allprobes,
-						},
-					},
-					Action:      probesList,
-				},
-				{
-					Name:        "info",
-					Usage:       "info for one probe",
-					Description: "gives info for one probe",
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name: "country,c",
-							Usage: "filter on country",
-							Value: "fr",
-							Destination: &country,
-						},
-						cli.StringFlag{
-							Name: "asn",
-							Usage: "filter on asn",
-							Value: "",
-							Destination: &asn,
-						},
-						cli.BoolFlag{
-							Name: "v",
-							Usage: "more verbose",
-							Destination: &verbose,
-						},
-					},
-					Action:      probeInfo,
-				},
-			},
+	app.Version = "0.1.0"
+	app.HideVersion = true
+
+	// General flags
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name: "format,f",
+			Usage: "specify output format",
+			Destination: &fFormat,
 		},
-		{
-			Name:        "ip",
-			Usage:       "returns current ip",
-			Description: "shorthand for getting current ip",
-			Flags: []cli.Flag{
-				cli.BoolFlag{
-					Name:  "ipv6",
-					Usage: "displays only IPv6",
-					Destination: &want6,
-				},
-				cli.BoolFlag{
-					Name:  "ipv4",
-					Usage: "displays only IPv4",
-					Destination: &want4,
-				},
-			},
-			Action: cmdIP,
+		cli.BoolFlag{
+			Name: "v",
+			Usage: "verbose mode",
+			Destination: &fVerbose,
+		},
+		cli.StringFlag{
+			Name: "fields,F",
+			Usage: "specify which fields are wanted",
+			Destination: &fFieldList,
+		},
+		cli.StringFlag{
+			Name: "opt-fields,O",
+			Usage: "specify which optional fields are wanted",
+			Destination: &fOptFields,
+		},
+		cli.StringFlag{
+			Name:        "sort,S",
+			Usage:       "sort results",
+			Value:       "id",
+			Destination: &fSortOrder,
 		},
 	}
-	app.Run(os.Args)
 
+	sort.Sort(ByAlphabet(cliCommands))
+	app.Commands = cliCommands
+	app.Run(os.Args)
 }

@@ -5,11 +5,63 @@ package main
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
-	"os"
-	"ripe-atlas"
-	"strconv"
+	"github.com/keltia/ripe-atlas"
 	"log"
+	"os"
+	"strconv"
 )
+
+// init injects our probe-related commands
+func init() {
+	cliCommands = append(cliCommands, cli.Command{
+		Name: "probes",
+		Aliases: []string{
+			"p",
+			"pb",
+		},
+		Usage:       "probe-related keywords",
+		Description: "All the commands for probes",
+		Subcommands: []cli.Command{
+			{
+				Name:        "list",
+				Aliases:     []string{"ls"},
+				Usage:       "lists all probes",
+				Description: "displays all probes",
+				Flags: []cli.Flag{
+					cli.StringFlag{
+						Name:        "country,c",
+						Usage:       "filter on country",
+						Value:       "fr",
+						Destination: &fCountry,
+					},
+					cli.StringFlag{
+						Name:        "asn",
+						Usage:       "filter on asn",
+						Value:       "",
+						Destination: &fAsn,
+					},
+					cli.BoolFlag{
+						Name:        "A",
+						Usage:       "all probes even inactive ones",
+						Destination: &fAllProbes,
+					},
+					cli.BoolFlag{
+						Name:        "is-anchor",
+						Usage:       "select anchor probes",
+						Destination: &fWantAnchor,
+					},
+				},
+				Action: probesList,
+			},
+			{
+				Name:        "info",
+				Usage:       "info for one probe",
+				Description: "gives info for one probe",
+				Action:      probeInfo,
+			},
+		},
+	})
+}
 
 // displayProbe display short or verbose data about a probe
 func displayProbe(p *atlas.Probe, verbose bool) (res string) {
@@ -31,7 +83,7 @@ func displayAllProbes(pl *[]atlas.Probe, verbose bool) (res string) {
 	for _, p := range *pl {
 		// Do we want the inactive probes as well?
 		if p.AddressV4 == "" && p.AddressV6 == "" {
-			if !allprobes {
+			if !fAllProbes {
 				continue
 			}
 		}
@@ -44,13 +96,20 @@ func displayAllProbes(pl *[]atlas.Probe, verbose bool) (res string) {
 func probesList(c *cli.Context) error {
 	opts := make(map[string]string)
 
-	if country != "" {
-		opts["country_code"] = country
+	if fCountry != "" {
+		opts["country_code"] = fCountry
 	}
 
-	if asn != "" {
-		opts["asn"] = asn
+	if fAsn != "" {
+		opts["asn"] = fAsn
 	}
+
+	if fWantAnchor {
+		opts["is_anchor"] = "true"
+	}
+
+	// Check global parameters
+	opts = checkGlobalFlags(opts)
 
 	q, err := atlas.GetProbes(opts)
 	if err != nil {
@@ -58,7 +117,7 @@ func probesList(c *cli.Context) error {
 		os.Exit(1)
 	}
 	log.Printf("Got %d probes with %v\n", len(q), opts)
-	fmt.Print(displayAllProbes(&q, verbose))
+	fmt.Print(displayAllProbes(&q, fVerbose))
 
 	return nil
 }
@@ -77,42 +136,7 @@ func probeInfo(c *cli.Context) error {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Print(displayProbe(p, verbose))
+	fmt.Print(displayProbe(p, fVerbose))
 
-	return nil
-}
-
-// shortcuts
-
-// cmdIP is a short for displaying the IPs for one probe
-func cmdIP(c *cli.Context) error {
-	// By default we want both
-	if !want4 && !want6 {
-		want6, want4 = true, true
-	}
-	args := c.Args()
-	if args[0] == "" {
-		log.Fatalf("Error: you must specify a probe ID!")
-	}
-
-	id, _ := strconv.ParseInt(args[0], 10, 32)
-
-	p, err := atlas.GetProbe(int(id))
-	if err != nil {
-		fmt.Printf("err: %v", err)
-		os.Exit(1)
-	}
-
-	var str string = ""
-
-	if want4 {
-		str = fmt.Sprintf("%sIPv4: %s ", str, p.AddressV4)
-	}
-
-	if want6 {
-		str = fmt.Sprintf("%sIPv6: %s ", str, p.AddressV6)
-	}
-
-	fmt.Println(str)
 	return nil
 }
