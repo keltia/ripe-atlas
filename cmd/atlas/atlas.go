@@ -16,6 +16,7 @@ var (
 	fAllProbes bool
 	fAsn string
 	fCountry string
+	fSortOrder string
 	fVerbose bool
 	fWantAnchor bool
 
