@@ -16,6 +16,7 @@ var (
 	fAllProbes bool
 	fAsn string
 	fCountry string
+	fFieldList string
 	fSortOrder string
 	fVerbose bool
 	fWantAnchor bool
@@ -44,6 +45,11 @@ func main() {
 			Name: "v",
 			Usage: "verbose mode",
 			Destination: &fVerbose,
+		},
+		cli.StringFlag{
+			Name: "fields,F",
+			Usage: "specify which fields are wanted",
+			Destination: &fFieldList,
 		},
 	}
 
