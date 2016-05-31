@@ -69,7 +69,7 @@ func main() {
 	app.Name = "atlas"
 	app.Usage = "RIPE Atlas cli interface"
 	app.Author = "Ollivier Robert <roberto@keltia.net>"
-	app.Version = "0.0.1"
+	app.Version = "0.1.0"
 	app.HideVersion = true
 
 	// General flags
