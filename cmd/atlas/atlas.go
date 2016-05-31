@@ -33,7 +33,7 @@ func (a ByAlphabet) Len() int           { return len(a) }
 func (a ByAlphabet) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByAlphabet) Less(i, j int) bool { return a[i].Name < a[j].Name }
 
-// Check global parameters
+// checkGlobalFlags is the place to check global parameters
 func checkGlobalFlags(o map[string]string) (map[string]string) {
 	opts := o
 	if fSortOrder != "" {
