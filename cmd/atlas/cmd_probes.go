@@ -5,9 +5,9 @@ package main
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
+	"github.com/keltia/ripe-atlas"
 	"log"
 	"os"
-	"ripe-atlas"
 	"strconv"
 )
 
@@ -57,7 +57,7 @@ func init() {
 				Name:        "info",
 				Usage:       "info for one probe",
 				Description: "gives info for one probe",
-				Action: probeInfo,
+				Action:      probeInfo,
 			},
 		},
 	})
@@ -140,4 +140,3 @@ func probeInfo(c *cli.Context) error {
 
 	return nil
 }
-
