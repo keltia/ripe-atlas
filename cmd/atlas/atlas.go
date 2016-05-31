@@ -51,6 +51,17 @@ func main() {
 			Usage: "specify which fields are wanted",
 			Destination: &fFieldList,
 		},
+		cli.StringFlag{
+			Name: "opt-fields,O",
+			Usage: "specify which optional fields are wanted",
+			Destination: &fOptFields,
+		},
+		cli.StringFlag{
+			Name:        "sort,S",
+			Usage:       "sort results",
+			Value:       "id",
+			Destination: &fSortOrder,
+		},
 	}
 
 	sort.Sort(ByAlphabet(cliCommands))

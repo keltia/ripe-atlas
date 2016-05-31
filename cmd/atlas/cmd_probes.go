@@ -50,12 +50,6 @@ func init() {
 						Usage:       "select anchor probes",
 						Destination: &fWantAnchor,
 					},
-					cli.StringFlag{
-						Name:        "sort,S",
-						Usage:       "sort results",
-						Value:       "id",
-						Destination: &fSortOrder,
-					},
 				},
 				Action: probesList,
 			},
