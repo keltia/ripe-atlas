@@ -57,20 +57,6 @@ func init() {
 				Name:        "info",
 				Usage:       "info for one probe",
 				Description: "gives info for one probe",
-				Flags: []cli.Flag{
-					cli.StringFlag{
-						Name:        "country,c",
-						Usage:       "filter on country",
-						Value:       "fr",
-						Destination: &fCountry,
-					},
-					cli.StringFlag{
-						Name:        "asn",
-						Usage:       "filter on asn",
-						Value:       "",
-						Destination: &fAsn,
-					},
-				},
 				Action: probeInfo,
 			},
 		},
