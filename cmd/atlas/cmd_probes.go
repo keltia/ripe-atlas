@@ -108,9 +108,8 @@ func probesList(c *cli.Context) error {
 		opts["is_anchor"] = "true"
 	}
 
-	if fSortOrder != "" {
-		opts["sort"] = fSortOrder
-	}
+	// Check global parameters
+	opts = checkGlobalFlags(opts)
 
 	q, err := atlas.GetProbes(opts)
 	if err != nil {

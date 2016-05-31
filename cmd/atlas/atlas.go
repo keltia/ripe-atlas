@@ -17,6 +17,7 @@ var (
 	fAsn string
 	fCountry string
 	fFieldList string
+	fOptFields string
 	fSortOrder string
 	fVerbose bool
 	fWantAnchor bool
@@ -29,6 +30,23 @@ type ByAlphabet []cli.Command
 func (a ByAlphabet) Len() int           { return len(a) }
 func (a ByAlphabet) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByAlphabet) Less(i, j int) bool { return a[i].Name < a[j].Name }
+
+// Check global parameters
+func checkGlobalFlags(o map[string]string) (map[string]string) {
+	opts := o
+	if fSortOrder != "" {
+		opts["sort"] = fSortOrder
+	}
+
+	if fFieldList != "" {
+		opts["fields"] = fFieldList
+	}
+
+	if fOptFields != "" {
+		opts["optional_fields"] = fOptFields
+	}
+	return opts
+}
 
 // main is the starting point (and everything)
 func main() {
