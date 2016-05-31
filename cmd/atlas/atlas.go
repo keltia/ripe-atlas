@@ -7,6 +7,7 @@ import (
 	"github.com/codegangsta/cli"
 	"os"
 	"sort"
+	"strings"
 )
 
 var (
@@ -17,6 +18,7 @@ var (
 	fAsn string
 	fCountry string
 	fFieldList string
+	fFormat string
 	fOptFields string
 	fSortOrder string
 	fVerbose bool
@@ -45,7 +47,20 @@ func checkGlobalFlags(o map[string]string) (map[string]string) {
 	if fOptFields != "" {
 		opts["optional_fields"] = fOptFields
 	}
+
+	if fFormat != "" && validateFormat(fFormat) {
+		opts["format"] = fFormat
+	}
 	return opts
+}
+
+// validateFormat allows only supported formats
+func validateFormat(fmt string) bool {
+	f := strings.ToLower(fmt)
+	if f == "json" || f == "xml" || f == "api" || f == "txt" || f == "jsonp" {
+		return true
+	}
+	return false
 }
 
 // main is the starting point (and everything)
@@ -59,6 +74,11 @@ func main() {
 
 	// General flags
 	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name: "format,f",
+			Usage: "specify output format",
+			Destination: &fFormat,
+		},
 		cli.BoolFlag{
 			Name: "v",
 			Usage: "verbose mode",
