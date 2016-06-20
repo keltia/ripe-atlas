@@ -29,6 +29,15 @@ func checkType(d Definition) (valid bool) {
 	return
 }
 
+// checkTypeAs is a shortcut
+func checkTypeAs(d Definition, t string) (valid bool) {
+	valid = true
+	if checkType(d) && d.Type != t {
+		valid = false
+	}
+	return
+}
+
 // DNS creates a measurement
 func DNS(d Definition) (m *Measurement, err error) {
 	if checkType(d) || d.Type != "dns" {
