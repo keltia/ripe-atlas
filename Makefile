@@ -17,6 +17,9 @@ atlas: ${SRCS}
 	go build ${OPTS} ./cmd/...
 	go test -v
 
+test:
+	go test -v ./...
+
 install:
 	go install -v
 
