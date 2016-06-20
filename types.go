@@ -84,3 +84,13 @@ type ParticipationRequest struct {
 	Value         string `json:"value"`
 	Logs          string `json:"logs"`
 }
+
+// Definition is used to create measurements
+type Definition struct {
+	// Required fields
+	Description string
+	Type string
+	AF int
+	// Required for all but "dns"
+	Target string
+}
