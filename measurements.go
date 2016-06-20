@@ -40,7 +40,7 @@ func checkTypeAs(d Definition, t string) (valid bool) {
 
 // DNS creates a measurement
 func DNS(d Definition) (m *Measurement, err error) {
-	if checkType(d) || d.Type != "dns" {
+	if checkTypeAs(d, "dns") {
 		err = ErrInvalidMeasurementType
 		return
 	}
@@ -49,20 +49,36 @@ func DNS(d Definition) (m *Measurement, err error) {
 
 // NTP creates a measurement
 func NTP(d Definition) (m *Measurement, err error) {
+	if checkTypeAs(d, "ntp") {
+		err = ErrInvalidMeasurementType
+		return
+	}
 	return
 }
 
 // Ping creates a measurement
 func Ping(d Definition) (m *Measurement, err error) {
+	if checkTypeAs(d, "ping") {
+		err = ErrInvalidMeasurementType
+		return
+	}
 	return
 }
 
 // SSLCert creates a measurement
 func SSLCert(d Definition) (m *Measurement, err error) {
+	if checkTypeAs(d, "sslcert") {
+		err = ErrInvalidMeasurementType
+		return
+	}
 	return
 }
 
 // Traceroute creates a measurement
 func Traceroute(d Definition) (m *Measurement, err error) {
+	if checkTypeAs(d, "traceroute") {
+		err = ErrInvalidMeasurementType
+		return
+	}
 	return
 }
