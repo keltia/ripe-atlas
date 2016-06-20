@@ -9,5 +9,3 @@ branches:
 install:
 - go get github.com/codegangsta/cli
 - go get github.com/keltia/ripe-atlas
-script:
-- go build -v ./cmd/...
