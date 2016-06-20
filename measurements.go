@@ -4,7 +4,7 @@ import (
 	"errors"
 )
 
-const (
+var (
 	allTypes = []string{
 		"dns",
 		"ntp",
