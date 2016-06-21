@@ -82,3 +82,13 @@ func Traceroute(d Definition) (m *Measurement, err error) {
 	}
 	return
 }
+
+// Measurement-related methods
+
+func (m *Measurement) Start() (err error) {
+	return nil
+}
+
+func (m *Measurement) Stop() (err error) {
+	return nil
+}
