@@ -39,22 +39,32 @@ type Measurement struct {
 	Af                    int                    `json:"af"`
 	CreationTime          int                    `json:"creation_time"`
 	Description           string                 `json:"description"`
+	DestinationOptionSize interface{}            `json:"destination_option_size"`
+	DontFragment          interface{}            `json:"dont_fragment"`
+	DuplicateTimeout      interface{}            `json:"duplicate_timeout"`
+	FirstHop              int                    `json:"first_hop"`
 	Group                 string                 `json:"group"`
 	GroupID               int                    `json:"group_id"`
+	HopByHopOptionSize    interface{}            `json:"hop_by_hop_option_size"`
 	ID                    int                    `json:"id"`
 	InWifiGroup           bool                   `json:"in_wifi_group"`
 	Interval              int                    `json:"interval"`
 	IsAllScheduled        bool                   `json:"is_all_scheduled"`
 	IsOneoff              bool                   `json:"is_oneoff"`
 	IsPublic              bool                   `json:"is_public"`
+	MaxHops               int                    `json:"max_hops"`
 	PacketInterval        interface{}            `json:"packet_interval"`
 	Packets               int                    `json:"packets"`
+	Paris                 int                    `json:"paris"`
 	ParticipantCount      int                    `json:"participant_count"`
 	ParticipationRequests []ParticipationRequest `json:"participation_requests"`
+	Port                  interface{}            `json:"port"`
 	ProbesRequested       int                    `json:"probes_requested"`
 	ProbesScheduled       int                    `json:"probes_scheduled"`
+	Protocol              string                 `json:"protocol"`
 	ResolveOnProbe        bool                   `json:"resolve_on_probe"`
 	ResolvedIPs           []string               `json:"resolved_ips"`
+	ResponseTimeout       int                    `json:"response_timeout"`
 	Result                string                 `json:"result"`
 	Size                  int                    `json:"size"`
 	Spread                interface{}            `json:"spread"`
