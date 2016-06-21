@@ -14,14 +14,18 @@ var (
 	// flags
 	fWant4 bool
 	fWant6 bool
+
 	fAllProbes bool
 	fAllMeasurements bool
+
 	fAsn string
 	fCountry string
 	fFieldList string
 	fFormat string
 	fOptFields string
 	fSortOrder string
+	fMeasureType string
+
 	fVerbose bool
 	fWantAnchor bool
 
