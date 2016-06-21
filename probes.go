@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/bndr/gopencils"
 	"log"
-	"regexp"
 )
 
 // GetProbe returns data for a single probe
@@ -29,15 +28,6 @@ type probeList struct {
 	Next     string
 	Previous string
 	Results  []Probe
-}
-
-// getPageNum returns the value of the page= parameter
-func getPageNum(url string) (page string) {
-	re := regexp.MustCompile(`page=(\d+)`)
-	if m := re.FindStringSubmatch(url); len(m) >= 1 {
-		return m[1]
-	}
-	return ""
 }
 
 // fetch the given resource
