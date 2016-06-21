@@ -15,6 +15,7 @@ var (
 	fWant4 bool
 	fWant6 bool
 	fAllProbes bool
+	fAllMeasurements bool
 	fAsn string
 	fCountry string
 	fFieldList string
