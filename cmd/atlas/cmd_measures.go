@@ -4,6 +4,11 @@ package main
 
 import (
 	"github.com/codegangsta/cli"
+	"log"
+	"strconv"
+	"github.com/keltia/ripe-atlas"
+	"fmt"
+	"os"
 )
 
 // init injects our probe-related commands
@@ -46,7 +51,7 @@ func init() {
 						Destination: &fWantAnchor,
 					},
 				},
-				Action: measurementList,
+				Action: measurementsList,
 			},
 			{
 				Name:        "info",
@@ -58,11 +63,65 @@ func init() {
 	})
 }
 
-func measurementList(c *cli.Context) error {
+func displayMeasurement(m *atlas.Measurement, verbose bool) (res string) {
+	if verbose {
+		res = fmt.Sprintf("%v\n", m)
+	} else {
+		res = fmt.Sprintf("ID: %d type: %s description: %s\n", m.ID, m.Type, m.Description)
+	}
+	return
+}
+
+func displayAllMeasurements(ml *[]atlas.Measurement, verbose bool) (res string) {
+	res = ""
+	for _, m := range *ml {
+		res += displayMeasurement(&m, verbose)
+	}
+	return
+}
+
+
+func measurementsList(c *cli.Context) error {
+	opts := make(map[string]string)
+
+	if fCountry != "" {
+		opts["country_code"] = fCountry
+	}
+
+	if fAsn != "" {
+		opts["asn"] = fAsn
+	}
+
+	// Check global parameters
+	opts = checkGlobalFlags(opts)
+
+	q, err := atlas.GetMeasurements(opts)
+	if err != nil {
+		log.Printf("GetMeasurements err: %v - q:%v", err, q)
+		os.Exit(1)
+	}
+	log.Printf("Got %d measurements with %v\n", len(q), opts)
+	fmt.Print(displayAllMeasurements(&q, fVerbose))
+
+	return nil
 	return nil
 }
 
 func measurementInfo(c *cli.Context) error {
+	args := c.Args()
+	if args[0] == "" {
+		log.Fatalf("Error: you must specify a measurement ID!")
+	}
+
+	id, _ := strconv.ParseInt(args[0], 10, 32)
+
+	p, err := atlas.GetMeasurement(int(id))
+	if err != nil {
+		fmt.Printf("err: %v", err)
+		os.Exit(1)
+	}
+	fmt.Print(displayMeasurement(p, fVerbose))
+
 	return nil
 }
 
