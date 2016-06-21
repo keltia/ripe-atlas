@@ -3,12 +3,14 @@
 package main
 
 import (
-	"github.com/codegangsta/cli"
-	"log"
-	"strconv"
-	"github.com/keltia/ripe-atlas"
 	"fmt"
+	"github.com/codegangsta/cli"
+	"github.com/keltia/ripe-atlas"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"os"
+	"strconv"
 )
 
 // init injects our probe-related commands
@@ -65,6 +67,13 @@ func init() {
 				Description: "gives info for one measurement",
 				Action:      measurementInfo,
 			},
+			{
+				Name:        "results",
+				Aliases:     []string{"r", "res"},
+				Usage:       "results for one measurement",
+				Description: "returns results for one measurement",
+				Action:      measurementResults,
+			},
 		},
 	})
 }
@@ -88,6 +97,10 @@ func displayAllMeasurements(ml *[]atlas.Measurement, verbose bool) (res string) 
 	return
 }
 
+// displayResult returns a string with <obj>.Result
+func displayResult(body []byte, verbose bool) (res string) {
+	return string(body)
+}
 
 // measurementsList returns a list of measurements according to parameters
 func measurementsList(c *cli.Context) error {
@@ -117,7 +130,6 @@ func measurementsList(c *cli.Context) error {
 	fmt.Print(displayAllMeasurements(&q, fVerbose))
 
 	return nil
-	return nil
 }
 
 // measurementInfo is for one measurement only
@@ -136,6 +148,41 @@ func measurementInfo(c *cli.Context) error {
 	}
 	fmt.Print(displayMeasurement(p, fVerbose))
 
+	return nil
+}
+
+// measurementResults returns the result part of the measurement
+func measurementResults(c *cli.Context) error {
+	args := c.Args()
+	if args[0] == "" {
+		log.Fatalf("Error: you must specify a measurement ID!")
+	}
+
+	id, _ := strconv.ParseInt(args[0], 10, 32)
+
+	m, err := atlas.GetMeasurement(int(id))
+	if err != nil {
+		fmt.Printf("err: %v", err)
+		os.Exit(1)
+	}
+
+	// m.Result is an URI pointing to results, fetch it
+	if m.Result == "" {
+		fmt.Println("Empty result")
+	}
+
+	resp, err := http.Get(m.Result)
+	if err != nil {
+		fmt.Errorf("Bad net/http answer for %s: %v\n", m.Result, err)
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Errorf("error reading body for %s: %v\n", m.Result, err)
+	}
+
+	fmt.Print(displayResult(body, fVerbose))
 	return nil
 }
 
