@@ -7,7 +7,7 @@
 GOBIN=   ${GOPATH}/bin
 
 SRCS= common.go config.go measurements.go probes.go types.go \
-	cmd/atlas/atlas.go cmd/atlas/cmd_probes.go
+	cmd/atlas/atlas.go cmd/atlas/cmd_probes.go cmd/atlas/cmd_measures.go
 
 OPTS=	-ldflags="-s -w" -v
 
