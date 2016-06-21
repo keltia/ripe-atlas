@@ -69,6 +69,7 @@ func init() {
 	})
 }
 
+// displayMeasurement returns a string with one measurement
 func displayMeasurement(m *atlas.Measurement, verbose bool) (res string) {
 	if verbose {
 		res = fmt.Sprintf("%v\n", m)
@@ -78,6 +79,7 @@ func displayMeasurement(m *atlas.Measurement, verbose bool) (res string) {
 	return
 }
 
+// displayAllMeasurements returns a string with all measurements
 func displayAllMeasurements(ml *[]atlas.Measurement, verbose bool) (res string) {
 	res = ""
 	for _, m := range *ml {
@@ -87,6 +89,7 @@ func displayAllMeasurements(ml *[]atlas.Measurement, verbose bool) (res string) 
 }
 
 
+// measurementsList returns a list of measurements according to parameters
 func measurementsList(c *cli.Context) error {
 	opts := make(map[string]string)
 
@@ -117,6 +120,7 @@ func measurementsList(c *cli.Context) error {
 	return nil
 }
 
+// measurementInfo is for one measurement only
 func measurementInfo(c *cli.Context) error {
 	args := c.Args()
 	if args[0] == "" {
