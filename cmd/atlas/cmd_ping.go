@@ -47,6 +47,8 @@ func cmdPing(c *cli.Context) error {
 	addr := args[0]
 
 	def := atlas.Definition{
+		Description: "My ping",
+		Type: "ping",
 		Target: addr,
 	}
 	defs := []atlas.Definition{}
@@ -61,6 +63,7 @@ func cmdPing(c *cli.Context) error {
 			Requested: 10,
 			Type: "area",
 			Value: "WW",
+			Tags: nil,
 		},
 	}
 
