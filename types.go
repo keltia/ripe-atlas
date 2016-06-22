@@ -105,18 +105,20 @@ type MeasurementRequest struct {
 	Definitions []Definition
 
 	// requested set of probes
-	Probes []struct {
-		Requested int    // number of probes
-		Type      string // area, country, prefix, asn, probes, msm
-		Value     string // can be numeric or string
-		Tags      map[string]string
-	}
+	Probes ProbeSet
 	//
 	BillTo       int  `json:"bill_to"`
 	SkipDNSCheck bool `json:"skip_dns_check"`
 	Times        int  `json:"times"`
 	StartTime    int  `json:"start_time"`
 	StopTime     int  `json:"stop_time"`
+}
+
+type ProbeSet []struct {
+	Requested int    // number of probes
+	Type      string // area, country, prefix, asn, probes, msm
+	Value     string // can be numeric or string
+	Tags      map[string]string
 }
 
 // Definition is used to create measurements
