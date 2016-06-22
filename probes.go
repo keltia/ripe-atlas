@@ -12,9 +12,17 @@ import (
 
 // GetProbe returns data for a single probe
 func GetProbe(id int) (p *Probe, err error) {
-	auth := WantAuth()
-	api := gopencils.Api(apiEndpoint, auth)
-	r, err := api.Res("probes").Id(id, &p).Get()
+	key, ok := HasAPIKey()
+	api := gopencils.Api(apiEndpoint, nil)
+
+	// Add at least one option, the APIkey if present
+	var opts map[string]string
+
+	if ok {
+		opts["key"] = key
+	}
+
+	r, err := api.Res("probes").Id(id, &p).Get(opts)
 	if err != nil {
 		err = fmt.Errorf("err: %v - r:%v\n", err, r)
 		return
@@ -43,9 +51,15 @@ func fetchOneProbePage(api *gopencils.Resource, opts map[string]string) (raw *pr
 
 // GetProbes returns data for a collection of probes
 func GetProbes(opts map[string]string) (p []Probe, err error) {
-	auth := WantAuth()
-	api := gopencils.Api(apiEndpoint, auth)
+	key, ok := HasAPIKey()
+	api := gopencils.Api(apiEndpoint, nil)
 
+	// Add APIKey if set
+	if ok {
+		opts["key"] = key
+	}
+
+	// First call
 	rawlist, err := fetchOneProbePage(api, opts)
 
 	// Empty answer

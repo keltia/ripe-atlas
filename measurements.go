@@ -68,9 +68,17 @@ func fetchOneMeasurementPage(api *gopencils.Resource, opts map[string]string) (r
 
 // GetMeasurement gets info for a single one
 func GetMeasurement(id int) (m *Measurement, err error) {
-	auth := WantAuth()
-	api := gopencils.Api(apiEndpoint, auth)
-	r, err := api.Res("measurements").Id(id, &m).Get()
+	key, ok := HasAPIKey()
+	api := gopencils.Api(apiEndpoint, nil)
+
+	// Add at least one option, the APIkey if present
+	var opts map[string]string
+
+	if ok {
+		opts["key"] = key
+	}
+
+	r, err := api.Res("measurements").Id(id, &m).Get(opts)
 	if err != nil {
 		err = fmt.Errorf("%v - r:%#v\n", err, r.Raw)
 		return
@@ -80,8 +88,13 @@ func GetMeasurement(id int) (m *Measurement, err error) {
 
 // GetMeasurements gets info for a set
 func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
-	auth := WantAuth()
-	api := gopencils.Api(apiEndpoint, auth)
+	key, ok := HasAPIKey()
+	api := gopencils.Api(apiEndpoint, nil)
+
+	// Add at least one option, the APIkey if present
+	if ok {
+		opts["key"] = key
+	}
 
 	rawlist, err := fetchOneMeasurementPage(api, opts)
 
