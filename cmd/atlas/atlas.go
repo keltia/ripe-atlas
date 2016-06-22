@@ -8,6 +8,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"github.com/keltia/ripe-atlas"
 )
 
 var (
@@ -107,6 +108,10 @@ func main() {
 		},
 	}
 
+	conf, err := atlas.LoadConfig("ripe-atlas")
+	if conf.ApiKey != "" && err != nil {
+		atlas.SetAuth(conf.ApiKey)
+	}
 	sort.Sort(ByAlphabet(cliCommands))
 	app.Commands = cliCommands
 	app.Run(os.Args)
