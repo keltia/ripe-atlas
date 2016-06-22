@@ -45,6 +45,18 @@ func checkTypeAs(d Definition, t string) (valid bool) {
 	return
 }
 
+// checkAllTypesAs is a generalization of checkTypeAs
+func checkAllTypesAs(dl []Definition, t string) (valid bool) {
+	valid = true
+	for _, d := range dl {
+		if d.Type != t {
+			valid = false
+			break
+		}
+	}
+	return
+}
+
 // measurementList is our main answer
 type measurementList struct {
 	Count    int

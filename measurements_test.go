@@ -32,6 +32,36 @@ func TestCheckTypeAs(t *testing.T) {
 	}
 }
 
+func TestCheckAllTypesAs(t *testing.T) {
+	dl := []Definition{
+		{Type: "foo"},
+		{Type: "ping"},
+	}
+
+	valid := checkAllTypesAs(dl, "ping")
+	if valid != false {
+		t.Errorf("valid should be false")
+	}
+
+	dl = []Definition{
+			{Type: "dns"},
+			{Type: "ping"},
+		}
+	valid = checkAllTypesAs(dl, "ping")
+	if valid != false {
+		t.Errorf("valid should be false")
+	}
+
+	dl = []Definition{
+			{Type: "ping"},
+			{Type: "ping"},
+		}
+	valid = checkAllTypesAs(dl, "ping")
+	if valid != true {
+		t.Errorf("valid should be true")
+	}
+}
+
 func TestDNS(t *testing.T) {
 	d := Definition{Type: "foo"}
 
