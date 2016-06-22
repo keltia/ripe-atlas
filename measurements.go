@@ -39,12 +39,9 @@ func checkType(d Definition) (valid bool) {
 }
 
 // checkTypeAs is a shortcut
-func checkTypeAs(d Definition, t string) (valid bool) {
-	valid = true
-	if checkType(d) && d.Type != t {
-		valid = false
-	}
-	return
+func checkTypeAs(d Definition, t string) bool {
+	valid := checkType(d)
+	return valid && d.Type == t
 }
 
 // checkAllTypesAs is a generalization of checkTypeAs
