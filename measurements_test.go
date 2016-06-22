@@ -51,9 +51,10 @@ func TestNTP(t *testing.T) {
 }
 
 func TestPing(t *testing.T) {
-	d := Definition{Type: "foo"}
+	d := []Definition{{Type: "foo"}}
+	r := MeasurementRequest{Definitions:d}
 
-	_, err := Ping(d)
+	_, err := Ping(r)
 	if err != ErrInvalidMeasurementType {
 		t.Errorf("error %v should be %v", err, ErrInvalidMeasurementType)
 	}

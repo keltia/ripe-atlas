@@ -138,8 +138,8 @@ func NTP(d Definition) (m *Measurement, err error) {
 }
 
 // Ping creates a measurement
-func Ping(d Definition) (m *Measurement, err error) {
-	if checkTypeAs(d, "ping") {
+func Ping(d MeasurementRequest) (m *Measurement, err error) {
+	if checkTypeAs(d.Definitions[0], "ping") {
 		err = ErrInvalidMeasurementType
 		return
 	}
