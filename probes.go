@@ -16,7 +16,7 @@ func GetProbe(id int) (p *Probe, err error) {
 	api := gopencils.Api(apiEndpoint, nil)
 
 	// Add at least one option, the APIkey if present
-	var opts map[string]string
+	var opts = make(map[string]string)
 
 	if ok {
 		opts["key"] = key
