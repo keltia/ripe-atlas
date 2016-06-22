@@ -1,1 +1,2 @@
-package atlas
+package main
+
