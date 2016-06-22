@@ -85,7 +85,7 @@ func main() {
 			Destination: &fFormat,
 		},
 		cli.BoolFlag{
-			Name: "v",
+			Name: "verbose,v",
 			Usage: "verbose mode",
 			Destination: &fVerbose,
 		},
