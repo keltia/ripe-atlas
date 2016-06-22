@@ -5,7 +5,10 @@
 
 package atlas
 
-import "github.com/bndr/gopencils"
+import (
+	"github.com/bndr/gopencils"
+	"regexp"
+)
 
 const (
 	apiEndpoint = "https://atlas.ripe.net/api/v2"
@@ -34,4 +37,13 @@ func WantAuth() (auth *gopencils.BasicAuth) {
 		Password: APIPassword,
 	}
 	return auth
+}
+
+// getPageNum returns the value of the page= parameter
+func getPageNum(url string) (page string) {
+	re := regexp.MustCompile(`page=(\d+)`)
+	if m := re.FindStringSubmatch(url); len(m) >= 1 {
+		return m[1]
+	}
+	return ""
 }

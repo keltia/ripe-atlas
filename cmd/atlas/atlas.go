@@ -14,13 +14,18 @@ var (
 	// flags
 	fWant4 bool
 	fWant6 bool
+
 	fAllProbes bool
+	fAllMeasurements bool
+
 	fAsn string
 	fCountry string
 	fFieldList string
 	fFormat string
 	fOptFields string
 	fSortOrder string
+	fMeasureType string
+
 	fVerbose bool
 	fWantAnchor bool
 
@@ -80,7 +85,7 @@ func main() {
 			Destination: &fFormat,
 		},
 		cli.BoolFlag{
-			Name: "v",
+			Name: "verbose,v",
 			Usage: "verbose mode",
 			Destination: &fVerbose,
 		},

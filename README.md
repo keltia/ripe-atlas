@@ -6,24 +6,62 @@
 
 **ripe-atlas is a Go library to access the RIPE Atlas [REST API](https://atlas.ripe.net/docs/api/v2/manual/).
 
-It features a simple CLI-based tool which use the library.
+It features a simple CLI-based tool called `atlas` which use the library.
+
+**Work in progress, still incomplete**
 
 ## Table of content
  
 - [Features](#features)
 - [Install](#install)
-- [Examples](#examples)
+
+  Like many Go-based tools, installation is very easy
+  
+    go install github.com/keltia/ripe-atlas
+  
+  The library is fetched, compiled and installed in whichever directory is specified by `$GOPATH`.  The `atlas` binary will also be installed. 
+
+- [API usage](#api-usage)
   - [Basics](#basics)
-	  - [Hello World!](#hello-world)
-	  - [Lookup](#lookup)
-	  - [Countries](#countries)
-	  - [Users](#users)
+      - [Authentication](#auth)
+	  - [Probes](#probes)
+	  - [Measurements](#measurements)
   - [Applications](#applications)
-	  - [API and static files](#api-and-static-files)
-	  - [GORM](#gorm)
-	  - [CORS](#cors)
-	  - [JSONP](#jsonp)
-	  - [Basic Auth](#basic-auth)
-	  - [Status](#status)
-	  - [Status Auth](#status-auth)
+  
+  The `atlas` command is a command-line client for the Go API:
+  
+  ```
+  NAME:
+     atlas - RIPE Atlas cli interface
+  
+  USAGE:
+     atlas [global options] command [command options] [arguments...]
+  
+  AUTHOR(S):
+     Ollivier Robert <roberto@keltia.net>
+  
+  COMMANDS:
+     dns			send dns queries
+     http, https		connect to host/IP through HTTP
+     ip				returns current ip
+     measurements, measures, m	measurements-related keywords
+     ntp			get time from ntp server
+     ping			ping selected address
+     probes, p, pb		probe-related keywords
+     sslcert, tlscert, tls	get TLS certificate from host/IP
+     traceroute, trace		traceroute to given host/IP
+
+  GLOBAL OPTIONS:
+     --format value, -f value	specify output format
+     --verbose, -v		verbose mode
+     --fields value, -F value	specify which fields are wanted
+     --opt-fields value, -O value	specify which optional fields are wanted
+     --sort value, -S value	sort results (default: "id")
+     --help, -h			show help
+  ```
+  
+  In addition to the main `probes` and `measurements` commands, it features fast-access to common tasks like `ping`and `traceroute`.
 - [External Documentation](#external-documentation)
+  [Main RIPE Atlas site](https://atlas.ripe.net/)
+  [REST API Documentation](https://atlas.ripe.net/docs/api/v2/manual/)
+  [REST API Reference](https://atlas.ripe.net/docs/api/v2/reference/)

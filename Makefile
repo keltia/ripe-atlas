@@ -7,7 +7,10 @@
 GOBIN=   ${GOPATH}/bin
 
 SRCS= common.go config.go measurements.go probes.go types.go \
-	cmd/atlas/atlas.go cmd/atlas/cmd_probes.go
+	cmd/atlas/atlas.go cmd/atlas/cmd_probes.go cmd/atlas/cmd_measures.go \
+	cmd/atlas/cmd_dns.go cmd/atlas/cmd_http.go cmd/atlas/cmd_ip.go \
+	cmd/atlas/cmd_ntp.go cmd/atlas/cmd_ping.go cmd/atlas/cmd_sslcert.go \
+	cmd/atlas/cmd_traceroute.go
 
 OPTS=	-ldflags="-s -w" -v
 
@@ -16,6 +19,9 @@ all: atlas
 atlas: ${SRCS}
 	go build ${OPTS} ./cmd/...
 	go test -v
+
+test:
+	go test -v ./...
 
 install:
 	go install -v

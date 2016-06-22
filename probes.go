@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/bndr/gopencils"
 	"log"
-	"regexp"
 )
 
 // GetProbe returns data for a single probe
@@ -31,26 +30,14 @@ type probeList struct {
 	Results  []Probe
 }
 
-// getPageNum returns the value of the page= parameter
-func getPageNum(url string) (page string) {
-	re := regexp.MustCompile(`page=(\d+)`)
-	if m := re.FindStringSubmatch(url); len(m) >= 1 {
-		return m[1]
-	}
-	return ""
-}
-
 // fetch the given resource
-func fetchOnePage(api *gopencils.Resource, opts map[string]string) (raw *probeList, err error) {
-	var rawlist probeList
-
-	r, err := api.Res("probes", &rawlist).Get(opts)
+func fetchOneProbePage(api *gopencils.Resource, opts map[string]string) (raw *probeList, err error) {
+	r, err := api.Res("probes", &raw).Get(opts)
 	if err != nil {
 		log.Printf("err: %v", err)
 		err = fmt.Errorf("%v - r:%v\n", err, r)
 	}
 	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
-	raw = &rawlist
 	return
 }
 
@@ -59,7 +46,7 @@ func GetProbes(opts map[string]string) (p []Probe, err error) {
 	auth := WantAuth()
 	api := gopencils.Api(apiEndpoint, auth)
 
-	rawlist, err := fetchOnePage(api, opts)
+	rawlist, err := fetchOneProbePage(api, opts)
 
 	// Empty answer
 	if rawlist.Count == 0 {
@@ -74,7 +61,7 @@ func GetProbes(opts map[string]string) (p []Probe, err error) {
 		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
 			opts["page"] = pn
 
-			rawlist, err = fetchOnePage(api, opts)
+			rawlist, err = fetchOneProbePage(api, opts)
 			if err != nil {
 				return
 			}
