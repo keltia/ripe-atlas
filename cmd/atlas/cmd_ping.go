@@ -49,10 +49,12 @@ func cmdPing(c *cli.Context) error {
 	def := atlas.Definition{
 		Target: addr,
 	}
+	defs := []atlas.Definition{}
+	defs = append(defs, def)
 	req := atlas.MeasurementRequest{
-		Definitions: [ def ],
+		Definitions: defs,
 	}
-	_, err := atlas.Ping(def)
+	_, err := atlas.Ping(req)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
