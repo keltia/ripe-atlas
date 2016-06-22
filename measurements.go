@@ -10,6 +10,7 @@ import (
 var (
 	allTypes = []string{
 		"dns",
+		"http",
 		"ntp",
 		"ping",
 		"sslcert",
@@ -112,6 +113,15 @@ func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 // DNS creates a measurement
 func DNS(d Definition) (m *Measurement, err error) {
 	if checkTypeAs(d, "dns") {
+		err = ErrInvalidMeasurementType
+		return
+	}
+	return
+}
+
+// HTTP creates a measurement
+func HTTP(d Definition) (m *Measurement, err error) {
+	if checkTypeAs(d, "http") {
 		err = ErrInvalidMeasurementType
 		return
 	}
