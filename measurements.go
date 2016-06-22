@@ -135,8 +135,9 @@ func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 }
 
 // DNS creates a measurement
-func DNS(d Definition) (m *Measurement, err error) {
-	if checkTypeAs(d, "dns") {
+func DNS(d MeasurementRequest) (m *Measurement, err error) {
+	// Check that all Definition.Type are the same and compliant
+	if !checkAllTypesAs(d.Definitions, "dns") {
 		err = ErrInvalidMeasurementType
 		return
 	}
@@ -144,8 +145,9 @@ func DNS(d Definition) (m *Measurement, err error) {
 }
 
 // HTTP creates a measurement
-func HTTP(d Definition) (m *Measurement, err error) {
-	if checkTypeAs(d, "http") {
+func HTTP(d MeasurementRequest) (m *Measurement, err error) {
+	// Check that all Definition.Type are the same and compliant
+	if !checkAllTypesAs(d.Definitions, "http") {
 		err = ErrInvalidMeasurementType
 		return
 	}
@@ -153,8 +155,9 @@ func HTTP(d Definition) (m *Measurement, err error) {
 }
 
 // NTP creates a measurement
-func NTP(d Definition) (m *Measurement, err error) {
-	if checkTypeAs(d, "ntp") {
+func NTP(d MeasurementRequest) (m *Measurement, err error) {
+	// Check that all Definition.Type are the same and compliant
+	if !checkAllTypesAs(d.Definitions, "ntp") {
 		err = ErrInvalidMeasurementType
 		return
 	}
@@ -163,7 +166,8 @@ func NTP(d Definition) (m *Measurement, err error) {
 
 // Ping creates a measurement
 func Ping(d MeasurementRequest) (m *Measurement, err error) {
-	if checkTypeAs(d.Definitions[0], "ping") {
+	// Check that all Definition.Type are the same and compliant
+	if !checkAllTypesAs(d.Definitions, "ping") {
 		err = ErrInvalidMeasurementType
 		return
 	}
@@ -171,8 +175,9 @@ func Ping(d MeasurementRequest) (m *Measurement, err error) {
 }
 
 // SSLCert creates a measurement
-func SSLCert(d Definition) (m *Measurement, err error) {
-	if checkTypeAs(d, "sslcert") {
+func SSLCert(d MeasurementRequest) (m *Measurement, err error) {
+	// Check that all Definition.Type are the same and compliant
+	if !checkAllTypesAs(d.Definitions, "sslcert") {
 		err = ErrInvalidMeasurementType
 		return
 	}
@@ -180,8 +185,9 @@ func SSLCert(d Definition) (m *Measurement, err error) {
 }
 
 // Traceroute creates a measurement
-func Traceroute(d Definition) (m *Measurement, err error) {
-	if checkTypeAs(d, "traceroute") {
+func Traceroute(d MeasurementRequest) (m *Measurement, err error) {
+	// Check that all Definition.Type are the same and compliant
+	if !checkAllTypesAs(d.Definitions, "traceroute") {
 		err = ErrInvalidMeasurementType
 		return
 	}
