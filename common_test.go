@@ -2,41 +2,36 @@ package atlas
 
 import (
 	"testing"
-	"reflect"
 )
 
 func TestSetAuth(t *testing.T) {
 
-	SetAuth("foo", "bar")
+	SetAuth("foo")
 
-	if APIUser != "foo" {
-		t.Errorf("APIUser is not set")
-	}
-
-	if APIPassword != "bar" {
-		t.Errorf("APIPassword is not set")
+	if APIKey != "foo" {
+		t.Errorf("APIKey is not set")
 	}
 }
 
 func TestWantAuth(t *testing.T) {
 
-	SetAuth("", "")
-	if WantAuth() != nil {
-		t.Errorf("WantAuth() should be nil")
+	var (
+		key string
+		ok bool
+	)
+
+	SetAuth("")
+	if key, ok = HasAPIKey(); ok != false {
+		t.Errorf("WantAuth() should be true")
 	}
 
-	SetAuth("foo", "bar")
-	auth := WantAuth()
-	if ta := reflect.TypeOf(auth).String(); ta != "*gopencils.BasicAuth" {
-		t.Errorf("auth should be of type %s but is %s\n%#v", "*gopencils.BasicAuth", ta)
+	SetAuth("foo")
+	if key, ok = HasAPIKey(); ok != true {
+		t.Errorf("ok should be true")
 	}
 
-	if auth.Username != "foo" {
-		t.Errorf("auth.Username should be %s but is %s", "foo", auth.Username)
-	}
-
-	if auth.Password != "bar" {
-		t.Errorf("auth.Password should be %s but is %s", "bar", auth.Password)
+	if key != "foo" {
+		t.Errorf("APIKey should be %s but is %s", "foo", key)
 	}
 }
 

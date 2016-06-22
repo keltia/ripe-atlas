@@ -6,7 +6,6 @@
 package atlas
 
 import (
-	"github.com/bndr/gopencils"
 	"regexp"
 )
 
@@ -15,28 +14,21 @@ const (
 )
 
 var (
-	// APIUser is the RIPE username
-	APIUser string
-	// APIPassword is the RIPE user password
-	APIPassword string
+	// APIKey is the API key
+	APIKey string
 )
 
 // SetAuth stores the credentials for later use
-func SetAuth(user, pwd string) {
-	APIUser = user
-	APIPassword = pwd
+func SetAuth(key string) {
+	APIKey = key
 }
 
-// WantAuth returns either a BasicAuth or nil depending on stored credentials
-func WantAuth() (auth *gopencils.BasicAuth) {
-	if APIUser == "" || APIPassword == "" {
-		return nil
+// HasAPIKey returns whether an API key is stored
+func HasAPIKey() (string, bool) {
+	if APIKey == "" {
+		return "", false
 	}
-	auth = &gopencils.BasicAuth{
-		Username: APIUser,
-		Password: APIPassword,
-	}
-	return auth
+	return APIKey, true
 }
 
 // getPageNum returns the value of the page= parameter
