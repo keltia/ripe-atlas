@@ -68,14 +68,15 @@ func cmdPing(c *cli.Context) error {
 	}
 
 	req.Probes = probes
-	_, err := atlas.Ping(req)
+	log.Printf("req=%v", req)
+	m, err := atlas.Ping(req)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
 
 	//str := res.Result.Display()
-	fmt.Println()
+	fmt.Printf("m: %v\n", m)
 	return nil
 }
 
