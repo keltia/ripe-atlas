@@ -53,7 +53,7 @@ It features a simple CLI-based tool called `atlas` which use the library.
 
   GLOBAL OPTIONS:
      --format value, -f value	specify output format
-     -v				verbose mode
+     --verbose, -v		verbose mode
      --fields value, -F value	specify which fields are wanted
      --opt-fields value, -O value	specify which optional fields are wanted
      --sort value, -S value	sort results (default: "id")
