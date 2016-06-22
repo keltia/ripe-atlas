@@ -95,12 +95,65 @@ type ParticipationRequest struct {
 	Logs          string `json:"logs"`
 }
 
+const (
+	ProbeTypes = []string{"area", "country", "prefix", "asn", "probes", "msm"}
+	AreaTypes = []string{"WW", "West", "North-Central",	"South-Central", "North-East", "South-East"}
+)
+
+type MeasurementRequest struct {
+	// see below for definition
+	Definitions []Definition
+
+	// requested set of probes
+	Probes []struct {
+		Requested int    // number of probes
+		Type      string // area, country, prefix, asn, probes, msm
+		Value     string // can be numeric or string
+		Tags      map[string]string
+	}
+}
+
 // Definition is used to create measurements
 type Definition struct {
 	// Required fields
 	Description string
-	Type string
-	AF int
+	Type        string
+	AF          int
+
 	// Required for all but "dns"
 	Target string
+
+	// Common parameters
+	ResolveOnProbe bool
+	IsOneoff       bool
+	IsPublic       bool
+
+	// Default depends on type
+	Interval int
+
+	// dns parameters
+	QueryClass    string
+	QueryType     string
+	QueryArgument string
+
+	// ping parameters
+	//   none (see target)
+
+	// traceroute parameters
+	//   none (see target)
+
+	// ntp parameters
+	//   none (see target)
+
+	// http parameters
+	//   none (see target)
+
+	// sslcert parameters
+	//   none (see target)
+
+	//
+	BillTo    int `json:"bill_to"`
+	Times     int `json:"times"`
+	StartTime int `json:"start_time"`
+	StopTime  int `json:"stop_time"`
 }
