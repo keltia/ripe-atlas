@@ -1,6 +1,6 @@
 package main
 
-import "github.com/codegangsta/cli"
+import "github.com/urfave/cli"
 
 // init injects our "ntp" related commands/options.
 func init() {

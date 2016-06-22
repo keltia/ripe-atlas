@@ -4,7 +4,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 	"github.com/keltia/ripe-atlas"
 	"log"
 	"os"

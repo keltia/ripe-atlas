@@ -4,7 +4,7 @@ This package is just a collection of test cases
 package main
 
 import (
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 	"os"
 	"sort"
 	"strings"

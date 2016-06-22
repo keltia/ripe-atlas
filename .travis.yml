@@ -7,5 +7,5 @@ branches:
   - develop
   - master
 install:
-- go get github.com/codegangsta/cli
+- go get github.com/urfave/cli
 - go get github.com/keltia/ripe-atlas
