@@ -111,6 +111,12 @@ type MeasurementRequest struct {
 		Value     string // can be numeric or string
 		Tags      map[string]string
 	}
+	//
+	BillTo       int  `json:"bill_to"`
+	SkipDNSCheck bool `json:"skip_dns_check"`
+	Times        int  `json:"times"`
+	StartTime    int  `json:"start_time"`
+	StopTime     int  `json:"stop_time"`
 }
 
 // Definition is used to create measurements
@@ -124,9 +130,10 @@ type Definition struct {
 	Target string
 
 	// Common parameters
-	ResolveOnProbe bool
-	IsOneoff       bool
-	IsPublic       bool
+	ExtraWait      int  `json:"extra_wait"`
+	IsOneoff       bool `json:"is_oneoff"`
+	IsPublic       bool `json:"is_public"`
+	ResolveOnProbe bool `json:"resolve_on_probe"`
 
 	// Default depends on type
 	Interval int
@@ -151,9 +158,8 @@ type Definition struct {
 	// sslcert parameters
 	//   none (see target)
 
-	//
-	BillTo    int `json:"bill_to"`
-	Times     int `json:"times"`
-	StartTime int `json:"start_time"`
-	StopTime  int `json:"stop_time"`
+	// wifi parameters
+	AnonymousIdentity string `json:"anonymous_identity"`
+	Cert              string `json:"cert"`
+	EAP               string `json:"eap"`
 }
