@@ -95,9 +95,9 @@ type ParticipationRequest struct {
 	Logs          string `json:"logs"`
 }
 
-const (
+var (
 	ProbeTypes = []string{"area", "country", "prefix", "asn", "probes", "msm"}
-	AreaTypes = []string{"WW", "West", "North-Central",	"South-Central", "North-East", "South-East"}
+	AreaTypes  = []string{"WW", "West", "North-Central", "South-Central", "North-East", "South-East"}
 )
 
 type MeasurementRequest struct {
