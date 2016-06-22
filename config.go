@@ -17,8 +17,8 @@ import (
 
 // Config holds our parameters
 type Config struct {
-	User string
-	Password string
+	DefProbes int
+	ApiKey string
 }
 
 // Check the parameter for either tag or filename
