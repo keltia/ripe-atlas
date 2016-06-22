@@ -51,9 +51,20 @@ func cmdPing(c *cli.Context) error {
 	}
 	defs := []atlas.Definition{}
 	defs = append(defs, def)
+
 	req := atlas.MeasurementRequest{
 		Definitions: defs,
 	}
+	// Default set of probes
+	probes := atlas.ProbeSet{
+		{
+			Requested: 10,
+			Type: "area",
+			Value: "WW",
+		},
+	}
+
+	req.Probes = probes
 	_, err := atlas.Ping(req)
 	if err != nil {
 		fmt.Printf("err: %v", err)
