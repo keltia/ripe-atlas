@@ -41,11 +41,16 @@ It features a simple CLI-based tool called `atlas` which use the library.
      Ollivier Robert <roberto@keltia.net>
   
   COMMANDS:
-       ip				returns current ip
-       measurements, measures, m	measurements-related keywords
-       ping			ping selected address
-       probes, p, pb		probe-related keywords
-  
+     dns			send dns queries
+     http, https		connect to host/IP through HTTP
+     ip				returns current ip
+     measurements, measures, m	measurements-related keywords
+     ntp			get time from ntp server
+     ping			ping selected address
+     probes, p, pb		probe-related keywords
+     sslcert, tlscert, tls	get TLS certificate from host/IP
+     traceroute, trace		traceroute to given host/IP
+
   GLOBAL OPTIONS:
      --format value, -f value	specify output format
      -v				verbose mode
