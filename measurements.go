@@ -3,6 +3,7 @@ package atlas
 import (
 	"errors"
 	"github.com/bndr/gopencils"
+	"github.com/go-resty/resty"
 	"log"
 	"fmt"
 )
@@ -164,13 +165,60 @@ func NTP(d MeasurementRequest) (m *Measurement, err error) {
 	return
 }
 
+type pingResp struct {
+	Measurements []int
+}
+
+type pingError struct {
+	Error struct {
+			  Status int
+			  Code   int
+			  Detail string
+			  Title  string
+		  }
+}
+
 // Ping creates a measurement
-func Ping(d MeasurementRequest) (m *Measurement, err error) {
+func Ping(d MeasurementRequest) (m pingResp, err error) {
 	// Check that all Definition.Type are the same and compliant
 	if !checkAllTypesAs(d.Definitions, "ping") {
 		err = ErrInvalidMeasurementType
 		return
 	}
+
+	//api := gopencils.Api(apiEndpoint, nil)
+	//fmt.Printf("api: %#v\n", api)
+
+	// Add at least one option, the APIkey if present
+	var opts = make(map[string]string)
+
+	key, ok := HasAPIKey()
+	if ok {
+		opts["key"] = key
+	} else {
+		err = ErrInvalidAPIKey
+		return
+	}
+
+	var mr pingResp
+	var pe pingError
+
+	base := fmt.Sprintf("%s/%s/?key=%s", apiEndpoint, "measurements/ping", key)
+
+	resp, err := resty.R().
+					SetBody(d).
+					SetResult(&mr).
+					SetError(&pe).
+					Post(base)
+
+	//r, err := api.Res(base, &resp).Post(d)
+	fmt.Printf("mr: %v\nresp: %#v\nd: %v\n\npe: %#v", mr, string(resp.Body()), d, pe)
+	if err != nil {
+		err = fmt.Errorf("err: %v - mr:%v - pe: %v\n", err, mr, pe)
+		return
+	}
+
+	m = mr
 	return
 }
 
