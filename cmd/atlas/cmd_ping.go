@@ -40,7 +40,7 @@ func cmdPing(c *cli.Context) error {
 		fWant6, fWant4 = true, true
 	}
 	args := c.Args()
-	if args[0] == "" {
+	if args == nil || len(args) != 1 {
 		log.Fatalf("Error: you must specify a hostname/IP")
 	}
 
