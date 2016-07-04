@@ -51,6 +51,13 @@ func cmdPing(c *cli.Context) error {
 		Type: "ping",
 		Target: addr,
 	}
+	// AF is filled only if neither are true together
+	if !fWant4 {
+		def.AF = 6
+	}
+	if !fWant6 {
+		def.AF = 4
+	}
 	defs := []atlas.Definition{}
 	defs = append(defs, def)
 
