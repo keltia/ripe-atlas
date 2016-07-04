@@ -56,6 +56,7 @@ func cmdPing(c *cli.Context) error {
 
 	req := atlas.MeasurementRequest{
 		Definitions: defs,
+		IsOneoff: true,
 	}
 	// Default set of probes
 	probes := atlas.ProbeSet{
