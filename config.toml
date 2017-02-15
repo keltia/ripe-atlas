@@ -1,2 +1,2 @@
 def_probes = 10
-api_key = "<INSERT-API-KEY>"
+API_key = "<INSERT-API-KEY>"
