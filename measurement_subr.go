@@ -36,7 +36,7 @@ func NTP(d MeasurementRequest) (m *Measurement, err error) {
 	return
 }
 
-type pingResp struct {
+type PingResp struct {
 	Measurements []int
 }
 
@@ -50,7 +50,7 @@ type pingError struct {
 }
 
 // Ping creates a measurement
-func Ping(d MeasurementRequest) (m *pingResp, err error) {
+func Ping(d MeasurementRequest) (m *PingResp, err error) {
 	// Check that all Definition.Type are the same and compliant
 	if !checkAllTypesAs(d.Definitions, "ping") {
 		err = ErrInvalidMeasurementType
@@ -86,7 +86,7 @@ func Ping(d MeasurementRequest) (m *pingResp, err error) {
 
 	resp, err := rest.API(req)
 
-	m = &pingResp{}
+	m = &PingResp{}
 	err = json.Unmarshal([]byte(resp.Body), m)
 	//r, err := api.Res(base, &resp).Post(d)
 	fmt.Printf("m: %v\nresp: %#v\nd: %v\n", m, string(resp.Body), d)
