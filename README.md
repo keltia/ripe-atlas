@@ -67,7 +67,7 @@ This package uses a configuration file in the [TOML](https://github.com/naoina/t
 
 There are only a few parameters for now, the most important one being your API Key for autheicate against the RIPE API endpoint.
 
-    api_key = "UUID"
+    API_key = "UUID"
     def_probes = 10
 
 ### Basics
