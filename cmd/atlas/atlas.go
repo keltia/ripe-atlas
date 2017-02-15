@@ -4,10 +4,12 @@ This package is just a collection of test cases
 package main
 
 import (
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 	"os"
 	"sort"
 	"strings"
+	"github.com/keltia/ripe-atlas"
+	"log"
 )
 
 var (
@@ -107,6 +109,13 @@ func main() {
 		},
 	}
 
+	conf, err := atlas.LoadConfig("ripe-atlas")
+	if conf.APIKey != "" && err == nil {
+		atlas.SetAuth(conf.APIKey)
+		log.Printf("Found API key!")
+	} else {
+		log.Printf("No API key!")
+	}
 	sort.Sort(ByAlphabet(cliCommands))
 	app.Commands = cliCommands
 	app.Run(os.Args)

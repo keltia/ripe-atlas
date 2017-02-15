@@ -1,11 +1,12 @@
 language: go
 go:
-- 1.6.2
+- 1.6.3
+- 1.7
 - tip
 branches:
   only:
   - develop
   - master
 install:
-- go get github.com/codegangsta/cli
+- go get github.com/urfave/cli
 - go get github.com/keltia/ripe-atlas

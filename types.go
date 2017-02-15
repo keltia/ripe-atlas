@@ -1,6 +1,26 @@
 // types.go
 
+// This file contains the various types used by the API
+
 package atlas
+
+// Key is holding the API key parameters
+type Key struct {
+	UUID      string `json:"uuid"`
+	ValidFrom int    `json:"valid_from"`
+	ValidTo   int    `json:"valid_to"`
+	Enabled   bool
+	IsActive  bool   `json:"is_active"`
+	CreatedAt int    `json:"created_at"`
+	Label     string
+	Grants    []Grant
+}
+
+// Grant is the permission(s) associated with a key
+type Grant struct {
+	Permission string
+	Target     string
+}
 
 // Probe is holding probe's data
 type Probe struct {
@@ -96,52 +116,66 @@ type ParticipationRequest struct {
 }
 
 var (
+    // ProbeTypes should be obvious
 	ProbeTypes = []string{"area", "country", "prefix", "asn", "probes", "msm"}
+    // AreaTypes should also be obvious
 	AreaTypes  = []string{"WW", "West", "North-Central", "South-Central", "North-East", "South-East"}
 )
 
+// MeasurementRequest contains the different measurement to create/view
 type MeasurementRequest struct {
 	// see below for definition
-	Definitions []Definition
+	Definitions []Definition `json:"definitions"`
 
 	// requested set of probes
-	Probes []struct {
-		Requested int    // number of probes
-		Type      string // area, country, prefix, asn, probes, msm
-		Value     string // can be numeric or string
-		Tags      map[string]string
-	}
+	Probes ProbeSet `json:"probes"`
 	//
-	BillTo       int  `json:"bill_to"`
-	SkipDNSCheck bool `json:"skip_dns_check"`
-	Times        int  `json:"times"`
-	StartTime    int  `json:"start_time"`
-	StopTime     int  `json:"stop_time"`
+	BillTo       int  `json:"bill_to,omitempty"`
+	IsOneoff     bool `json:"is_oneoff,omitempty"`
+	SkipDNSCheck bool `json:"skip_dns_check,omitempty"`
+	Times        int  `json:"times,omitempty"`
+	StartTime    int  `json:"start_time,omitempty"`
+	StopTime     int  `json:"stop_time,omitempty"`
+}
+
+// ProbeSet is a set of probes obviously
+type ProbeSet []struct {
+	Requested int               `json:"requested"` // number of probes
+	Type      string            `json:"type"`      // area, country, prefix, asn, probes, msm
+	Value     string            `json:"value"`     // can be numeric or string
+	Tags      map[string]string `json:"tags,omitempty"`
 }
 
 // Definition is used to create measurements
 type Definition struct {
 	// Required fields
-	Description string
-	Type        string
-	AF          int
+	Description string `json:"description"`
+	Type        string `json:"type"`
+	AF          int    `json:"af"`
 
 	// Required for all but "dns"
-	Target string
+	Target string `json:"target,omitempty"`
+
+	GroupID        int    `json:"group_id,omitempty"`
+	Group          string `json:"group,omitempty"`
+	InWifiGroup    bool   `json:"in_wifi_group,omitempty"`
+	Spread         int    `json:"spread,omitempty"`
+	Packets        int    `json:"packets,omitempty"`
+	PacketInterval int    `json:"packet_interval,omitempty"`
 
 	// Common parameters
-	ExtraWait      int  `json:"extra_wait"`
-	IsOneoff       bool `json:"is_oneoff"`
-	IsPublic       bool `json:"is_public"`
-	ResolveOnProbe bool `json:"resolve_on_probe"`
+	ExtraWait      int  `json:"extra_wait,omitempty"`
+	IsOneoff       bool `json:"is_oneoff,omitempty"`
+	IsPublic       bool `json:"is_public,omitempty"`
+	ResolveOnProbe bool `json:"resolve_on_probe,omitempty"`
 
 	// Default depends on type
-	Interval int
+	Interval int `json:"interval,omitempty"`
 
 	// dns parameters
-	QueryClass    string
-	QueryType     string
-	QueryArgument string
+	QueryClass    string `json:",omitempty"`
+	QueryType     string `json:",omitempty"`
+	QueryArgument string `json:",omitempty"`
 
 	// ping parameters
 	//   none (see target)
@@ -159,7 +193,7 @@ type Definition struct {
 	//   none (see target)
 
 	// wifi parameters
-	AnonymousIdentity string `json:"anonymous_identity"`
-	Cert              string `json:"cert"`
-	EAP               string `json:"eap"`
+	AnonymousIdentity string `json:"anonymous_identity,omitempty"`
+	Cert              string `json:"cert,omitempty"`
+	EAP               string `json:"eap,omitempty"`
 }

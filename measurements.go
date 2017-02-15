@@ -1,10 +1,9 @@
 package atlas
 
 import (
-	"errors"
-	"github.com/bndr/gopencils"
-	"log"
+	"encoding/json"
 	"fmt"
+	"github.com/sendgrid/rest"
 )
 
 var (
@@ -18,9 +17,6 @@ var (
 		"wifi",
 	}
 )
-
-// ErrInvalidMeasurementType is a new error
-var ErrInvalidMeasurementType = errors.New("invalid measurement type")
 
 // -- private
 
@@ -37,10 +33,19 @@ func checkType(d Definition) (valid bool) {
 }
 
 // checkTypeAs is a shortcut
-func checkTypeAs(d Definition, t string) (valid bool) {
+func checkTypeAs(d Definition, t string) bool {
+	valid := checkType(d)
+	return valid && d.Type == t
+}
+
+// checkAllTypesAs is a generalization of checkTypeAs
+func checkAllTypesAs(dl []Definition, t string) (valid bool) {
 	valid = true
-	if checkType(d) && d.Type != t {
-		valid = false
+	for _, d := range dl {
+		if d.Type != t {
+			valid = false
+			break
+		}
 	}
 	return
 }
@@ -54,12 +59,23 @@ type measurementList struct {
 }
 
 // fetch the given resource
-func fetchOneMeasurementPage(api *gopencils.Resource, opts map[string]string) (raw *measurementList, err error) {
-	r, err := api.Res("measurements", &raw).Get(opts)
-	if err != nil {
-		log.Printf("err: %v", err)
-		err = fmt.Errorf("%v - r:%v\n", err, r)
+func fetchOneMeasurementPage(MeasurementEP string, opts map[string]string) (raw *measurementList, err error) {
+	hdrs := make(map[string]string)
+	req := rest.Request{
+		BaseURL:     MeasurementEP,
+		Method:      rest.Get,
+		Headers:     hdrs,
+		QueryParams: opts,
 	}
+
+	r, err := rest.API(req)
+	if err != nil {
+		err = fmt.Errorf("err: %v - r:%v\n", err, r)
+		return
+	}
+
+	raw = &measurementList{}
+	err = json.Unmarshal([]byte(r.Body), raw)
 	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
 	return
 }
@@ -68,22 +84,80 @@ func fetchOneMeasurementPage(api *gopencils.Resource, opts map[string]string) (r
 
 // GetMeasurement gets info for a single one
 func GetMeasurement(id int) (m *Measurement, err error) {
-	auth := WantAuth()
-	api := gopencils.Api(apiEndpoint, auth)
-	r, err := api.Res("measurements").Id(id, &m).Get()
+	measurementEP := apiEndpoint + "/measurements"
+
+	key, ok := HasAPIKey()
+
+	// Add at least one option, the APIkey if present
+	hdrs := make(map[string]string)
+	opts := make(map[string]string)
+
+	if ok {
+		opts["key"] = key
+	}
+
+	req := rest.Request{
+		BaseURL:     measurementEP + fmt.Sprintf("/%d", id),
+		Method:      rest.Get,
+		Headers:     hdrs,
+		QueryParams: opts,
+	}
+
+	//log.Printf("req: %#v", req)
+	r, err := rest.API(req)
 	if err != nil {
-		err = fmt.Errorf("%v - r:%#v\n", err, r.Raw)
+		err = fmt.Errorf("err: %v - r:%v\n", err, r)
 		return
+	}
+
+	m = &Measurement{}
+	err = json.Unmarshal([]byte(r.Body), m)
+	//log.Printf("json: %#v\n", m)
+	return
+}
+
+// DeleteMeasurement stops (not really deletes) a given measurement
+func DeleteMeasurement(id int) (err error) {
+	measurementEP := apiEndpoint + "/measurements"
+
+	key, ok := HasAPIKey()
+
+	// Add at least one option, the APIkey if present
+	hdrs := make(map[string]string)
+	opts := make(map[string]string)
+
+	if ok {
+		opts["key"] = key
+	}
+
+	req := rest.Request{
+		BaseURL:     measurementEP + fmt.Sprintf("/%d", id),
+		Method:      rest.Delete,
+		Headers:     hdrs,
+		QueryParams: opts,
+	}
+
+	//log.Printf("req: %#v", req)
+	r, err := rest.API(req)
+	if err != nil {
+		err = fmt.Errorf("err: %v - r:%v\n", err, r)
 	}
 	return
 }
 
 // GetMeasurements gets info for a set
 func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
-	auth := WantAuth()
-	api := gopencils.Api(apiEndpoint, auth)
+	measurementEP := apiEndpoint + "/measurements"
 
-	rawlist, err := fetchOneMeasurementPage(api, opts)
+	key, ok := HasAPIKey()
+
+	// Add APIKey if set
+	if ok {
+		opts["key"] = key
+	}
+
+	// First call
+	rawlist, err := fetchOneMeasurementPage(measurementEP, opts)
 
 	// Empty answer
 	if rawlist.Count == 0 {
@@ -98,7 +172,7 @@ func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
 			opts["page"] = pn
 
-			rawlist, err = fetchOneMeasurementPage(api, opts)
+			rawlist, err = fetchOneMeasurementPage(measurementEP, opts)
 			if err != nil {
 				return
 			}
@@ -110,68 +184,9 @@ func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 	return
 }
 
-// DNS creates a measurement
-func DNS(d Definition) (m *Measurement, err error) {
-	if checkTypeAs(d, "dns") {
-		err = ErrInvalidMeasurementType
-		return
-	}
-	return
-}
-
-// HTTP creates a measurement
-func HTTP(d Definition) (m *Measurement, err error) {
-	if checkTypeAs(d, "http") {
-		err = ErrInvalidMeasurementType
-		return
-	}
-	return
-}
-
-// NTP creates a measurement
-func NTP(d Definition) (m *Measurement, err error) {
-	if checkTypeAs(d, "ntp") {
-		err = ErrInvalidMeasurementType
-		return
-	}
-	return
-}
-
-// Ping creates a measurement
-func Ping(d MeasurementRequest) (m *Measurement, err error) {
-	if checkTypeAs(d.Definitions[0], "ping") {
-		err = ErrInvalidMeasurementType
-		return
-	}
-	return
-}
-
-// SSLCert creates a measurement
-func SSLCert(d Definition) (m *Measurement, err error) {
-	if checkTypeAs(d, "sslcert") {
-		err = ErrInvalidMeasurementType
-		return
-	}
-	return
-}
-
-// Traceroute creates a measurement
-func Traceroute(d Definition) (m *Measurement, err error) {
-	if checkTypeAs(d, "traceroute") {
-		err = ErrInvalidMeasurementType
-		return
-	}
-	return
-}
-
 // Measurement-related methods
 
 // Start is for starting a given measurement
 func (m *Measurement) Start(id int) (err error) {
-	return nil
-}
-
-// Stop is for stopping a given measurement
-func (m *Measurement) Stop(id int) (err error) {
 	return nil
 }

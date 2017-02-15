@@ -32,19 +32,51 @@ func TestCheckTypeAs(t *testing.T) {
 	}
 }
 
-func TestDNS(t *testing.T) {
-	d := Definition{Type: "foo"}
+func TestCheckAllTypesAs(t *testing.T) {
+	dl := []Definition{
+		{Type: "foo"},
+		{Type: "ping"},
+	}
 
-	_, err := DNS(d)
+	valid := checkAllTypesAs(dl, "ping")
+	if valid != false {
+		t.Errorf("valid should be false")
+	}
+
+	dl = []Definition{
+			{Type: "dns"},
+			{Type: "ping"},
+		}
+	valid = checkAllTypesAs(dl, "ping")
+	if valid != false {
+		t.Errorf("valid should be false")
+	}
+
+	dl = []Definition{
+			{Type: "ping"},
+			{Type: "ping"},
+		}
+	valid = checkAllTypesAs(dl, "ping")
+	if valid != true {
+		t.Errorf("valid should be true")
+	}
+}
+
+func TestDNS(t *testing.T) {
+	d := []Definition{{Type: "foo"}}
+	r := MeasurementRequest{Definitions:d}
+
+	_, err := DNS(r)
 	if err != ErrInvalidMeasurementType {
 		t.Errorf("error %v should be %v", err, ErrInvalidMeasurementType)
 	}
 }
 
 func TestNTP(t *testing.T) {
-	d := Definition{Type: "foo"}
+	d := []Definition{{Type: "foo"}}
+	r := MeasurementRequest{Definitions:d}
 
-	_, err := NTP(d)
+	_, err := NTP(r)
 	if err != ErrInvalidMeasurementType {
 		t.Errorf("error %v should be %v", err, ErrInvalidMeasurementType)
 	}
@@ -61,18 +93,20 @@ func TestPing(t *testing.T) {
 }
 
 func TestSSLCert(t *testing.T) {
-	d := Definition{Type: "foo"}
+	d := []Definition{{Type: "foo"}}
+	r := MeasurementRequest{Definitions:d}
 
-	_, err := SSLCert(d)
+	_, err := SSLCert(r)
 	if err != ErrInvalidMeasurementType {
 		t.Errorf("error %v should be %v", err, ErrInvalidMeasurementType)
 	}
 }
 
 func TestTraceroute(t *testing.T) {
-	d := Definition{Type: "foo"}
+	d := []Definition{{Type: "foo"}}
+	r := MeasurementRequest{Definitions:d}
 
-	_, err := Traceroute(d)
+	_, err := Traceroute(r)
 	if err != ErrInvalidMeasurementType {
 		t.Errorf("error %v should be %v", err, ErrInvalidMeasurementType)
 	}

@@ -40,13 +40,13 @@ func TestLoadConfig(t *testing.T) {
 		t.Errorf("Malformed file %s: %v", file, err)
 	}
 
-	user := "foo"
-	if conf.User != user {
-		t.Errorf("Malformed default %s: %s", conf.User, user)
+	defProbes := 10
+	if conf.DefProbes != defProbes {
+		t.Errorf("Malformed default %s: %s", conf.DefProbes, defProbes)
 	}
 
-	pwd := "secret"
-	if conf.Password != pwd {
-		t.Errorf("Malformed default %s: %s", conf.Password, pwd)
+	key := "<INSERT-API-KEY>"
+	if conf.APIKey != key {
+		t.Errorf("Malformed default %s: %s", conf.APIKey, key)
 	}
 }

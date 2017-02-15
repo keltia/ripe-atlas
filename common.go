@@ -6,37 +6,34 @@
 package atlas
 
 import (
-	"github.com/bndr/gopencils"
-	"regexp"
+    "regexp"
+    "errors"
 )
 
 const (
 	apiEndpoint = "https://atlas.ripe.net/api/v2"
 )
 
-var (
-	// APIUser is the RIPE username
-	APIUser string
-	// APIPassword is the RIPE user password
-	APIPassword string
-)
+// APIKey is the API key
+var APIKey string
+
+// ErrInvalidMeasurementType is a new error
+var ErrInvalidMeasurementType = errors.New("invalid measurement type")
+
+// ErrInvalidAPIKey is returned when the key is invalid
+var ErrInvalidAPIKey = errors.New("invalid API key")
 
 // SetAuth stores the credentials for later use
-func SetAuth(user, pwd string) {
-	APIUser = user
-	APIPassword = pwd
+func SetAuth(key string) {
+	APIKey = key
 }
 
-// WantAuth returns either a BasicAuth or nil depending on stored credentials
-func WantAuth() (auth *gopencils.BasicAuth) {
-	if APIUser == "" || APIPassword == "" {
-		return nil
+// HasAPIKey returns whether an API key is stored
+func HasAPIKey() (string, bool) {
+	if APIKey == "" {
+		return "", false
 	}
-	auth = &gopencils.BasicAuth{
-		Username: APIUser,
-		Password: APIPassword,
-	}
-	return auth
+	return APIKey, true
 }
 
 // getPageNum returns the value of the page= parameter

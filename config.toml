@@ -1,2 +1,2 @@
-user = "foo"
-password = "secret"
+def_probes = 10
+API_key = "<INSERT-API-KEY>"

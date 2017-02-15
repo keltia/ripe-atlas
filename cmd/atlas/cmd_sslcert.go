@@ -1,6 +1,6 @@
 package main
 
-import "github.com/codegangsta/cli"
+import "github.com/urfave/cli"
 
 // init injects our "sslcert" related commands/options.
 func init() {
@@ -12,12 +12,12 @@ func init() {
 		Description: "connect and fetch TLS certificate from host/IP",
 		Flags: []cli.Flag{
 			cli.BoolFlag{
-				Name:        "ipv6",
+				Name:        "6, ipv6",
 				Usage:       "displays only IPv6",
 				Destination: &fWant6,
 			},
 			cli.BoolFlag{
-				Name:        "ipv4",
+				Name:        "4, ipv4",
 				Usage:       "displays only IPv4",
 				Destination: &fWant4,
 			},

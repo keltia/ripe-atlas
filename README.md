@@ -14,6 +14,44 @@ It features a simple CLI-based tool called `atlas` which use the library.
  
 - [Features](#features)
 - [Install](#install)
+- [API usage](#api-usage)
+  - [Basics](#basics)
+      - [Authentication](#auth)
+	  - [Probes](#probes)
+	  - [Measurements](#measurements)
+  - [Applications](#applications)
+- [External Documentation](#external-documentation)
+
+## [#features]: Features
+
+I am trying to implement the full REST API in Go.  The API itself is not particularly complex but the settings and parameters are.
+
+The following topic are available:
+
+- probes
+
+  you can query one probe or ask for a list of probes with a few criterias
+  
+- measurements
+
+  you can create and list measurements.
+  
+- results
+
+  every measurement has a URI in the result json that points to the actual results. This fetch and display them. 
+
+In addition to these major commands, there are a few shortcut commands (see below):
+
+- dns
+- http
+- ip
+- keys
+- ntp
+- ping
+- sslcert
+- traceroute
+
+## Installation
 
   Like many Go-based tools, installation is very easy
   
@@ -21,13 +59,24 @@ It features a simple CLI-based tool called `atlas` which use the library.
   
   The library is fetched, compiled and installed in whichever directory is specified by `$GOPATH`.  The `atlas` binary will also be installed. 
 
-- [API usage](#api-usage)
-  - [Basics](#basics)
-      - [Authentication](#auth)
-	  - [Probes](#probes)
-	  - [Measurements](#measurements)
-  - [Applications](#applications)
-  
+## API usage
+
+### Configuration
+
+This package uses a configuration file in the [TOML](https://github.com/naoina/toml) file format located by default in `$HOME/.ripe-atlas/config.toml`.
+
+There are only a few parameters for now, the most important one being your API Key for autheicate against the RIPE API endpoint.
+
+    API_key = "UUID"
+    def_probes = 10
+
+### Basics
+
+- Authentication
+- Probes
+- Measurements
+- Applications
+
   The `atlas` command is a command-line client for the Go API:
   
   ```
@@ -42,6 +91,7 @@ It features a simple CLI-based tool called `atlas` which use the library.
   
   COMMANDS:
      dns			send dns queries
+     keys           key management
      http, https		connect to host/IP through HTTP
      ip				returns current ip
      measurements, measures, m	measurements-related keywords
@@ -61,7 +111,10 @@ It features a simple CLI-based tool called `atlas` which use the library.
   ```
   
   In addition to the main `probes` and `measurements` commands, it features fast-access to common tasks like `ping`and `traceroute`.
-- [External Documentation](#external-documentation)
-  [Main RIPE Atlas site](https://atlas.ripe.net/)
-  [REST API Documentation](https://atlas.ripe.net/docs/api/v2/manual/)
-  [REST API Reference](https://atlas.ripe.net/docs/api/v2/reference/)
+
+### External Documentation
+
+  - [Main RIPE Atlas site](https://atlas.ripe.net/)
+  - [REST API Documentation](https://atlas.ripe.net/docs/api/v2/manual/)
+  - [REST API Reference](https://atlas.ripe.net/docs/api/v2/reference/)
+  

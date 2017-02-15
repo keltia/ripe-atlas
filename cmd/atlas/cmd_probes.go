@@ -4,7 +4,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 	"github.com/keltia/ripe-atlas"
 	"log"
 	"os"
@@ -29,7 +29,7 @@ func init() {
 				Description: "displays all probes",
 				Flags: []cli.Flag{
 					cli.StringFlag{
-						Name:        "country,c",
+						Name:        "country, c",
 						Usage:       "filter on country",
 						Value:       "fr",
 						Destination: &fCountry,
@@ -41,7 +41,7 @@ func init() {
 						Destination: &fAsn,
 					},
 					cli.BoolFlag{
-						Name:        "A",
+						Name:        "A, all",
 						Usage:       "all probes even inactive ones",
 						Destination: &fAllProbes,
 					},
