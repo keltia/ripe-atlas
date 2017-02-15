@@ -7,6 +7,7 @@
 GOBIN=   ${GOPATH}/bin
 
 SRCS= common.go config.go measurements.go probes.go types.go \
+    measurement_subr.go \
 	cmd/atlas/atlas.go cmd/atlas/cmd_probes.go cmd/atlas/cmd_measures.go \
 	cmd/atlas/cmd_dns.go cmd/atlas/cmd_http.go cmd/atlas/cmd_ip.go \
 	cmd/atlas/cmd_ntp.go cmd/atlas/cmd_ping.go cmd/atlas/cmd_sslcert.go \
