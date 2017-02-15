@@ -12,7 +12,7 @@ import (
     "github.com/sendgrid/rest"
 )
 
-// GetKeys returns a given API key
+// GetKey returns a given API key
 func GetKey(uuid string) (k Key, err error) {
     keyEP := apiEndpoint + "/keys"
 
