@@ -123,6 +123,35 @@ func GetMeasurement(id int) (m *Measurement, err error) {
 	return
 }
 
+// DeleteMeasurement stops (not really deletes) a given measurement
+func DeleteMeasurement(id int) (err error) {
+	measurementEP := apiEndpoint + "/measurements"
+
+	key, ok := HasAPIKey()
+
+	// Add at least one option, the APIkey if present
+	hdrs := make(map[string]string)
+	opts := make(map[string]string)
+
+	if ok {
+		opts["key"] = key
+	}
+
+	req := rest.Request{
+		BaseURL:     measurementEP + fmt.Sprintf("/%d", id),
+		Method:      rest.Delete,
+		Headers:     hdrs,
+		QueryParams: opts,
+	}
+
+	//log.Printf("req: %#v", req)
+	r, err := rest.API(req)
+	if err != nil {
+		err = fmt.Errorf("err: %v - r:%v\n", err, r)
+	}
+	return
+}
+
 // GetMeasurements gets info for a set
 func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 	measurementEP := apiEndpoint + "/measurements"
