@@ -74,6 +74,20 @@ func init() {
 				Description: "returns results for one measurement",
 				Action:      measurementResults,
 			},
+			{
+				Name:        "delete",
+				Aliases:     []string{"rm", "del", "destroy"},
+				Usage:       "info for one measurement",
+				Description: "stops one measurement (or all)",
+                Flags: []cli.Flag{
+                    cli.BoolFlag{
+                        Name:        "A",
+                        Usage:       "select all measurements",
+                        Destination: &fAllMeasurements,
+                    },
+                },
+				Action:      measurementDelete,
+			},
 		},
 	})
 }
@@ -188,4 +202,22 @@ func measurementResults(c *cli.Context) error {
 
 func measurementCreate(c *cli.Context) error {
 	return nil
+}
+
+func measurementDelete(c *cli.Context) ( err error) {
+    var id int64
+
+    if fAllMeasurements {
+
+    } else {
+        args := c.Args()
+        if args[0] == "" {
+            log.Fatalf("Error: you must specify a measurement ID!")
+        }
+
+        id, _ = strconv.ParseInt(args[0], 10, 32)
+    }
+
+    err = atlas.DeleteMeasurement(int(id))
+    return
 }
