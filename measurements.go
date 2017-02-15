@@ -2,7 +2,6 @@ package atlas
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/sendgrid/rest"
 )
