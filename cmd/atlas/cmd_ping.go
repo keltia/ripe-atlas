@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/urfave/cli"
 	"github.com/keltia/ripe-atlas"
+	"github.com/urfave/cli"
 	"log"
 	"os"
 )
@@ -46,39 +46,39 @@ func cmdPing(c *cli.Context) error {
 
 	addr := args[0]
 
-    var defs []atlas.Definition
+	var defs []atlas.Definition
 
-    if fWant4 {
-        def := atlas.Definition{
-            Description: "My ping",
-            Type: "ping",
-            Target: addr,
-            AF: 4,
-        }
-        defs = append(defs, def)
+	if fWant4 {
+		def := atlas.Definition{
+			Description: "My ping",
+			Type:        "ping",
+			Target:      addr,
+			AF:          4,
+		}
+		defs = append(defs, def)
 	}
 
 	if fWant6 {
-        def := atlas.Definition{
-            Description: "My ping",
-            Type: "ping",
-            Target: addr,
-            AF: 6,
-        }
-        defs = append(defs, def)
+		def := atlas.Definition{
+			Description: "My ping",
+			Type:        "ping",
+			Target:      addr,
+			AF:          6,
+		}
+		defs = append(defs, def)
 	}
 
 	req := atlas.MeasurementRequest{
 		Definitions: defs,
-		IsOneoff: true,
+		IsOneoff:    true,
 	}
 	// Default set of probes
 	probes := atlas.ProbeSet{
 		{
 			Requested: 10,
-			Type: "area",
-			Value: "WW",
-			Tags: nil,
+			Type:      "area",
+			Value:     "WW",
+			Tags:      nil,
 		},
 	}
 
@@ -94,4 +94,3 @@ func cmdPing(c *cli.Context) error {
 	fmt.Printf("m: %v\n", m)
 	return nil
 }
-
