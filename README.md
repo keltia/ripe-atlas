@@ -45,6 +45,7 @@ In addition to these major commands, there are a few shortcut commands (see belo
 - dns
 - http
 - ip
+- keys
 - ntp
 - ping
 - sslcert
@@ -59,6 +60,15 @@ In addition to these major commands, there are a few shortcut commands (see belo
   The library is fetched, compiled and installed in whichever directory is specified by `$GOPATH`.  The `atlas` binary will also be installed. 
 
 ## API usage
+
+### Configuration
+
+This package uses a configuration file in the [TOML](https://github.com/naoina/toml) file format located by default in `$HOME/.ripe-atlas/config.toml`.
+
+There are only a few parameters for now, the most important one being your API Key for autheicate against the RIPE API endpoint.
+
+    api_key = "UUID"
+    def_probes = 10
 
 ### Basics
 
@@ -81,6 +91,7 @@ In addition to these major commands, there are a few shortcut commands (see belo
   
   COMMANDS:
      dns			send dns queries
+     keys           key management
      http, https		connect to host/IP through HTTP
      ip				returns current ip
      measurements, measures, m	measurements-related keywords
@@ -106,3 +117,4 @@ In addition to these major commands, there are a few shortcut commands (see belo
   - [Main RIPE Atlas site](https://atlas.ripe.net/)
   - [REST API Documentation](https://atlas.ripe.net/docs/api/v2/manual/)
   - [REST API Reference](https://atlas.ripe.net/docs/api/v2/reference/)
+  
