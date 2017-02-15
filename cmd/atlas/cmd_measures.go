@@ -31,7 +31,7 @@ func init() {
 				Description: "displays all measurements",
 				Flags: []cli.Flag{
 					cli.StringFlag{
-						Name:        "country,c",
+						Name:        "country, c",
 						Usage:       "filter on country",
 						Value:       "fr",
 						Destination: &fCountry,
@@ -43,7 +43,7 @@ func init() {
 						Destination: &fAsn,
 					},
 					cli.BoolFlag{
-						Name:        "A",
+						Name:        "A, all",
 						Usage:       "all measurements even inactive ones",
 						Destination: &fAllMeasurements,
 					},
@@ -53,7 +53,7 @@ func init() {
 						Destination: &fWantAnchor,
 					},
 					cli.StringFlag{
-						Name:        "type",
+						Name:        "t, type",
 						Usage:       "filter on measurement type",
 						Value:       "",
 						Destination: &fMeasureType,
