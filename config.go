@@ -17,8 +17,9 @@ import (
 
 // Config holds our parameters
 type Config struct {
-	DefProbes int
-	APIKey    string
+	APIKey    	 string
+	DefaultProbe int
+	PoolSize     int
 }
 
 // Check the parameter for either tag or filename

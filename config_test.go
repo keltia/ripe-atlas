@@ -40,9 +40,9 @@ func TestLoadConfig(t *testing.T) {
 		t.Errorf("Malformed file %s: %v", file, err)
 	}
 
-	defProbes := 10
-	if conf.DefProbes != defProbes {
-		t.Errorf("Malformed default %s: %s", conf.DefProbes, defProbes)
+	defaultProbe := 666
+	if conf.DefaultProbe != defaultProbe {
+		t.Errorf("Malformed default %s: %s", conf.DefaultProbe, defaultProbe)
 	}
 
 	key := "<INSERT-API-KEY>"
