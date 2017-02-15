@@ -6,17 +6,22 @@
 package atlas
 
 import (
-	"regexp"
+    "regexp"
+    "errors"
 )
 
 const (
 	apiEndpoint = "https://atlas.ripe.net/api/v2"
 )
 
-var (
-	// APIKey is the API key
-	APIKey string
-)
+// APIKey is the API key
+var APIKey string
+
+// ErrInvalidMeasurementType is a new error
+var ErrInvalidMeasurementType = errors.New("invalid measurement type")
+
+// ErrInvalidAPIKey is returned when the key is invalid
+var ErrInvalidAPIKey = errors.New("invalid API key")
 
 // SetAuth stores the credentials for later use
 func SetAuth(key string) {

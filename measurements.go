@@ -19,12 +19,6 @@ var (
 	}
 )
 
-// ErrInvalidMeasurementType is a new error
-var ErrInvalidMeasurementType = errors.New("invalid measurement type")
-
-// ErrInvalidAPIKey is returned when the key is invalid
-var ErrInvalidAPIKey = errors.New("invalid API key")
-
 // -- private
 
 // checkType verify that the type is valid
