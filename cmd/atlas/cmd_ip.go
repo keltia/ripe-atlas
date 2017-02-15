@@ -41,7 +41,7 @@ func cmdIP(c *cli.Context) error {
 		fWant6, fWant4 = true, true
 	}
 	args := c.Args()
-	if args[0] == "" {
+	if len(args) == 0 {
 		log.Fatalf("Error: you must specify a probe ID!")
 	}
 
