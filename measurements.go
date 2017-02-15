@@ -1,11 +1,10 @@
 package atlas
 
 import (
+	"encoding/json"
 	"errors"
-	"github.com/bndr/gopencils"
-	"github.com/go-resty/resty"
-	"log"
 	"fmt"
+	"github.com/sendgrid/rest"
 )
 
 var (
@@ -23,6 +22,7 @@ var (
 // ErrInvalidMeasurementType is a new error
 var ErrInvalidMeasurementType = errors.New("invalid measurement type")
 
+// ErrInvalidAPIKey is returned when the key is invalid
 var ErrInvalidAPIKey = errors.New("invalid API key")
 
 // -- private
@@ -66,12 +66,23 @@ type measurementList struct {
 }
 
 // fetch the given resource
-func fetchOneMeasurementPage(api *gopencils.Resource, opts map[string]string) (raw *measurementList, err error) {
-	r, err := api.Res("measurements", &raw).Get(opts)
-	if err != nil {
-		log.Printf("err: %v", err)
-		err = fmt.Errorf("%v - r:%v\n", err, r)
+func fetchOneMeasurementPage(MeasurementEP string, opts map[string]string) (raw *measurementList, err error) {
+	hdrs := make(map[string]string)
+	req := rest.Request{
+		BaseURL:     MeasurementEP,
+		Method:      rest.Get,
+		Headers:     hdrs,
+		QueryParams: opts,
 	}
+
+	r, err := rest.API(req)
+	if err != nil {
+		err = fmt.Errorf("err: %v - r:%v\n", err, r)
+		return
+	}
+
+	raw = &measurementList{}
+	err = json.Unmarshal([]byte(r.Body), raw)
 	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
 	return
 }
@@ -80,35 +91,51 @@ func fetchOneMeasurementPage(api *gopencils.Resource, opts map[string]string) (r
 
 // GetMeasurement gets info for a single one
 func GetMeasurement(id int) (m *Measurement, err error) {
+	measurementEP := apiEndpoint + "/measurements"
+
 	key, ok := HasAPIKey()
-	api := gopencils.Api(apiEndpoint, nil)
 
 	// Add at least one option, the APIkey if present
-	var opts map[string]string
+	hdrs := make(map[string]string)
+	opts := make(map[string]string)
 
 	if ok {
 		opts["key"] = key
 	}
 
-	r, err := api.Res("measurements").Id(id, &m).Get(opts)
+	req := rest.Request{
+		BaseURL:     measurementEP + fmt.Sprintf("/%d", id),
+		Method:      rest.Get,
+		Headers:     hdrs,
+		QueryParams: opts,
+	}
+
+	//log.Printf("req: %#v", req)
+	r, err := rest.API(req)
 	if err != nil {
-		err = fmt.Errorf("%v - r:%#v\n", err, r.Raw)
+		err = fmt.Errorf("err: %v - r:%v\n", err, r)
 		return
 	}
+
+	m = &Measurement{}
+	err = json.Unmarshal([]byte(r.Body), m)
+	//log.Printf("json: %#v\n", m)
 	return
 }
 
 // GetMeasurements gets info for a set
 func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
-	key, ok := HasAPIKey()
-	api := gopencils.Api(apiEndpoint, nil)
+	measurementEP := apiEndpoint + "/measurements"
 
-	// Add at least one option, the APIkey if present
+	key, ok := HasAPIKey()
+
+	// Add APIKey if set
 	if ok {
 		opts["key"] = key
 	}
 
-	rawlist, err := fetchOneMeasurementPage(api, opts)
+	// First call
+	rawlist, err := fetchOneMeasurementPage(measurementEP, opts)
 
 	// Empty answer
 	if rawlist.Count == 0 {
@@ -123,7 +150,7 @@ func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
 			opts["page"] = pn
 
-			rawlist, err = fetchOneMeasurementPage(api, opts)
+			rawlist, err = fetchOneMeasurementPage(measurementEP, opts)
 			if err != nil {
 				return
 			}
@@ -179,18 +206,18 @@ type pingError struct {
 }
 
 // Ping creates a measurement
-func Ping(d MeasurementRequest) (m pingResp, err error) {
+func Ping(d MeasurementRequest) (m *pingResp, err error) {
 	// Check that all Definition.Type are the same and compliant
 	if !checkAllTypesAs(d.Definitions, "ping") {
 		err = ErrInvalidMeasurementType
 		return
 	}
 
-	//api := gopencils.Api(apiEndpoint, nil)
-	//fmt.Printf("api: %#v\n", api)
+	pingEP := apiEndpoint + "/measurements/ping"
 
 	// Add at least one option, the APIkey if present
-	var opts = make(map[string]string)
+	hdrs := make(map[string]string)
+	opts := make(map[string]string)
 
 	key, ok := HasAPIKey()
 	if ok {
@@ -200,25 +227,29 @@ func Ping(d MeasurementRequest) (m pingResp, err error) {
 		return
 	}
 
-	var mr pingResp
-	var pe pingError
-
-	base := fmt.Sprintf("%s/%s/?key=%s", apiEndpoint, "measurements/ping", key)
-
-	resp, err := resty.R().
-					SetBody(d).
-					SetResult(&mr).
-					SetError(&pe).
-					Post(base)
-
-	//r, err := api.Res(base, &resp).Post(d)
-	fmt.Printf("mr: %v\nresp: %#v\nd: %v\n\npe: %#v", mr, string(resp.Body()), d, pe)
+	body, err := json.Marshal(d)
 	if err != nil {
-		err = fmt.Errorf("err: %v - mr:%v - pe: %v\n", err, mr, pe)
 		return
 	}
 
-	m = mr
+	req := rest.Request{
+		BaseURL: pingEP,
+		Method: rest.Post,
+		Headers: hdrs,
+		QueryParams: opts,
+		Body:body,
+	}
+
+	resp, err := rest.API(req)
+
+	m = &pingResp{}
+	err = json.Unmarshal([]byte(resp.Body), m)
+	//r, err := api.Res(base, &resp).Post(d)
+	fmt.Printf("m: %v\nresp: %#v\nd: %v\n", m, string(resp.Body), d)
+	if err != nil {
+		err = fmt.Errorf("err: %v - m:%v\n", err, m)
+		return
+	}
 	return
 }
 
