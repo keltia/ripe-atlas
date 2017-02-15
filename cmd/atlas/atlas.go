@@ -31,9 +31,12 @@ var (
 	fVerbose bool
 	fWantAnchor bool
 
+	mycnf *atlas.Config
+
 	cliCommands []cli.Command
 )
 
+// ByAlphabet is for sorting
 type ByAlphabet []cli.Command
 
 func (a ByAlphabet) Len() int           { return len(a) }
@@ -109,12 +112,17 @@ func main() {
 		},
 	}
 
-	conf, err := atlas.LoadConfig("ripe-atlas")
-	if conf.APIKey != "" && err == nil {
-		atlas.SetAuth(conf.APIKey)
+	var err error
+
+	mycnf, err = atlas.LoadConfig("ripe-atlas")
+	if mycnf.APIKey != "" && err == nil {
+		atlas.SetAuth(mycnf.APIKey)
 		log.Printf("Found API key!")
 	} else {
 		log.Printf("No API key!")
+	}
+	if mycnf.DefaultProbe != 0 && err == nil {
+		log.Printf("Found default probe: %d\n", mycnf.DefaultProbe)
 	}
 	sort.Sort(ByAlphabet(cliCommands))
 	app.Commands = cliCommands
