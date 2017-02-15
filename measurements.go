@@ -198,11 +198,11 @@ type pingResp struct {
 
 type pingError struct {
 	Error struct {
-			  Status int
-			  Code   int
-			  Detail string
-			  Title  string
-		  }
+		Status int
+		Code   int
+		Detail string
+		Title  string
+	}
 }
 
 // Ping creates a measurement
@@ -233,11 +233,11 @@ func Ping(d MeasurementRequest) (m *pingResp, err error) {
 	}
 
 	req := rest.Request{
-		BaseURL: pingEP,
-		Method: rest.Post,
-		Headers: hdrs,
+		BaseURL:     pingEP,
+		Method:      rest.Post,
+		Headers:     hdrs,
 		QueryParams: opts,
-		Body:body,
+		Body:        body,
 	}
 
 	resp, err := rest.API(req)
