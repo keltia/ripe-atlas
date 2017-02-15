@@ -46,7 +46,7 @@ func TestLoadConfig(t *testing.T) {
 	}
 
 	key := "<INSERT-API-KEY>"
-	if conf.ApiKey != key {
-		t.Errorf("Malformed default %s: %s", conf.ApiKey, key)
+	if conf.APIKey != key {
+		t.Errorf("Malformed default %s: %s", conf.APIKey, key)
 	}
 }
