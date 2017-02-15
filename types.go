@@ -1,6 +1,26 @@
 // types.go
 
+// This file contains the various types used by the API
+
 package atlas
+
+// Key is holding the API key parameters
+type Key struct {
+	UUID      string `json:"uuid"`
+	ValidFrom int    `json:"valid_from"`
+	ValidTo   int    `json:"valid_to"`
+	Enabled   bool
+	IsActive  bool   `json:"is_active"`
+	CreatedAt int    `json:"created_at"`
+	Label     string
+	Grants    []Grant
+}
+
+// Grant is the permission(s) associated with a key
+type Grant struct {
+	Permission string
+	Target     string
+}
 
 // Probe is holding probe's data
 type Probe struct {
@@ -105,7 +125,7 @@ type MeasurementRequest struct {
 	Definitions []Definition `json:"definitions"`
 
 	// requested set of probes
-	Probes ProbeSet   `json:"probes"`
+	Probes ProbeSet `json:"probes"`
 	//
 	BillTo       int  `json:"bill_to,omitempty"`
 	IsOneoff     bool `json:"is_oneoff,omitempty"`
@@ -130,14 +150,14 @@ type Definition struct {
 	AF          int    `json:"af"`
 
 	// Required for all but "dns"
-	Target string  `json:"target,omitempty"`
+	Target string `json:"target,omitempty"`
 
-	GroupId     int    `json:"group_id,omitempty"`
-	Group       string `json:"group,omitempty"`
-	InWifiGroup bool   `json:"in_wifi_group,omitempty"`
-	Spread      int    `json:"spread,omitempty"`
-	Packets     int    `json:"packets,omitempty"`
-	PacketInterval int `json:"packet_interval,omitempty"`
+	GroupId        int    `json:"group_id,omitempty"`
+	Group          string `json:"group,omitempty"`
+	InWifiGroup    bool   `json:"in_wifi_group,omitempty"`
+	Spread         int    `json:"spread,omitempty"`
+	Packets        int    `json:"packets,omitempty"`
+	PacketInterval int    `json:"packet_interval,omitempty"`
 
 	// Common parameters
 	ExtraWait      int  `json:"extra_wait,omitempty"`
