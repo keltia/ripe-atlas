@@ -110,8 +110,8 @@ func main() {
 	}
 
 	conf, err := atlas.LoadConfig("ripe-atlas")
-	if conf.ApiKey != "" && err == nil {
-		atlas.SetAuth(conf.ApiKey)
+	if conf.APIKey != "" && err == nil {
+		atlas.SetAuth(conf.APIKey)
 		log.Printf("Found API key!")
 	} else {
 		log.Printf("No API key!")
