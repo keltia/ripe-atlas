@@ -5,28 +5,42 @@
 package atlas
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/bndr/gopencils"
-	"log"
+	"github.com/sendgrid/rest"
 )
 
 // GetProbe returns data for a single probe
 func GetProbe(id int) (p *Probe, err error) {
+	probeEP := apiEndpoint + "/probes"
+
 	key, ok := HasAPIKey()
-	api := gopencils.Api(apiEndpoint, nil)
 
 	// Add at least one option, the APIkey if present
-	var opts = make(map[string]string)
+	hdrs := make(map[string]string)
+	opts := make(map[string]string)
 
 	if ok {
 		opts["key"] = key
 	}
 
-	r, err := api.Res("probes").Id(id, &p).Get(opts)
+	req := rest.Request{
+		BaseURL:     probeEP + fmt.Sprintf("/%d", id),
+		Method:      rest.Get,
+		Headers:     hdrs,
+		QueryParams: opts,
+	}
+
+	//log.Printf("req: %#v", req)
+	r, err := rest.API(req)
 	if err != nil {
 		err = fmt.Errorf("err: %v - r:%v\n", err, r)
 		return
 	}
+
+	p = &Probe{}
+	err = json.Unmarshal([]byte(r.Body), p)
+	//log.Printf("json: %#v\n", p)
 	return
 }
 
@@ -39,20 +53,32 @@ type probeList struct {
 }
 
 // fetch the given resource
-func fetchOneProbePage(api *gopencils.Resource, opts map[string]string) (raw *probeList, err error) {
-	r, err := api.Res("probes", &raw).Get(opts)
-	if err != nil {
-		log.Printf("err: %v", err)
-		err = fmt.Errorf("%v - r:%v\n", err, r)
+func fetchOneProbePage(probeEP string, opts map[string]string) (raw *probeList, err error) {
+	hdrs := make(map[string]string)
+	req := rest.Request{
+		BaseURL:     probeEP,
+		Method:      rest.Get,
+		Headers:     hdrs,
+		QueryParams: opts,
 	}
+
+	r, err := rest.API(req)
+	if err != nil {
+		err = fmt.Errorf("err: %v - r:%v\n", err, r)
+		return
+	}
+
+	raw = &probeList{}
+	err = json.Unmarshal([]byte(r.Body), raw)
 	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
 	return
 }
 
 // GetProbes returns data for a collection of probes
 func GetProbes(opts map[string]string) (p []Probe, err error) {
+	probeEP := apiEndpoint + "/probes"
+
 	key, ok := HasAPIKey()
-	api := gopencils.Api(apiEndpoint, nil)
 
 	// Add APIKey if set
 	if ok {
@@ -60,7 +86,7 @@ func GetProbes(opts map[string]string) (p []Probe, err error) {
 	}
 
 	// First call
-	rawlist, err := fetchOneProbePage(api, opts)
+	rawlist, err := fetchOneProbePage(probeEP, opts)
 
 	// Empty answer
 	if rawlist.Count == 0 {
@@ -75,7 +101,7 @@ func GetProbes(opts map[string]string) (p []Probe, err error) {
 		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
 			opts["page"] = pn
 
-			rawlist, err = fetchOneProbePage(api, opts)
+			rawlist, err = fetchOneProbePage(probeEP, opts)
 			if err != nil {
 				return
 			}
