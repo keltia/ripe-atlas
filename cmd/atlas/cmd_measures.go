@@ -187,13 +187,13 @@ func measurementResults(c *cli.Context) error {
 
 	resp, err := http.Get(m.Result)
 	if err != nil {
-		fmt.Errorf("Bad net/http answer for %s: %v\n", m.Result, err)
+		fmt.Errorf("bad net/http answer for %s: %v", m.Result, err)
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Errorf("error reading body for %s: %v\n", m.Result, err)
+		fmt.Errorf("error reading body for %s: %v", m.Result, err)
 	}
 
 	fmt.Print(displayResult(body, fVerbose))
