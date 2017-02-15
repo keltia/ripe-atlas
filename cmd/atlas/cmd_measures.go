@@ -208,7 +208,23 @@ func measurementDelete(c *cli.Context) ( err error) {
     var id int64
 
     if fAllMeasurements {
+        opts := make(map[string]string)
 
+        // Check global parameters
+        opts = checkGlobalFlags(opts)
+
+        list, err := atlas.GetMeasurements(opts)
+        if err != nil {
+            fmt.Errorf("Delete all failed: %v", err)
+        } else {
+            for _, m := range list {
+                err = atlas.DeleteMeasurement(m.ID)
+                if err != nil {
+                    err = fmt.Errorf("Error: can not delete measurement %d", m.ID)
+                }
+            }
+            fmt.Printf("All measurements stopped.")
+        }
     } else {
         args := c.Args()
         if args[0] == "" {
@@ -216,8 +232,8 @@ func measurementDelete(c *cli.Context) ( err error) {
         }
 
         id, _ = strconv.ParseInt(args[0], 10, 32)
+        err = atlas.DeleteMeasurement(int(id))
     }
 
-    err = atlas.DeleteMeasurement(int(id))
     return
 }
