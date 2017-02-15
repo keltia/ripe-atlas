@@ -116,10 +116,13 @@ type ParticipationRequest struct {
 }
 
 var (
+    // ProbeTypes should be obvious
 	ProbeTypes = []string{"area", "country", "prefix", "asn", "probes", "msm"}
+    // AreaTypes should also be obvious
 	AreaTypes  = []string{"WW", "West", "North-Central", "South-Central", "North-East", "South-East"}
 )
 
+// MeasurementRequest contains the different measurement to create/view
 type MeasurementRequest struct {
 	// see below for definition
 	Definitions []Definition `json:"definitions"`
@@ -135,6 +138,7 @@ type MeasurementRequest struct {
 	StopTime     int  `json:"stop_time,omitempty"`
 }
 
+// ProbeSet is a set of probes obviously
 type ProbeSet []struct {
 	Requested int               `json:"requested"` // number of probes
 	Type      string            `json:"type"`      // area, country, prefix, asn, probes, msm
@@ -152,7 +156,7 @@ type Definition struct {
 	// Required for all but "dns"
 	Target string `json:"target,omitempty"`
 
-	GroupId        int    `json:"group_id,omitempty"`
+	GroupID        int    `json:"group_id,omitempty"`
 	Group          string `json:"group,omitempty"`
 	InWifiGroup    bool   `json:"in_wifi_group,omitempty"`
 	Spread         int    `json:"spread,omitempty"`
