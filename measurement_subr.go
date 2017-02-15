@@ -36,6 +36,7 @@ func NTP(d MeasurementRequest) (m *Measurement, err error) {
 	return
 }
 
+// PingResp contains all the results of the ping measurements
 type PingResp struct {
 	Measurements []int
 }
