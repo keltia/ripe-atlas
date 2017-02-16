@@ -20,7 +20,10 @@ type Key struct {
 // Grant is the permission(s) associated with a key
 type Grant struct {
 	Permission string
-	Target     string
+	Target     struct {
+		Type string
+		ID   string
+	}
 }
 
 // Probe is holding probe's data
