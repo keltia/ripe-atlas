@@ -68,6 +68,7 @@ func fetchOneMeasurementPage(MeasurementEP string, opts map[string]string) (raw 
 		QueryParams: opts,
 	}
 
+	//log.Printf("req=%s qp=%#v", MeasurementEP, opts)
 	r, err := rest.API(req)
 	if err != nil {
 		err = fmt.Errorf("err: %v - r:%v\n", err, r)
@@ -76,6 +77,7 @@ func fetchOneMeasurementPage(MeasurementEP string, opts map[string]string) (raw 
 
 	raw = &measurementList{}
 	err = json.Unmarshal([]byte(r.Body), raw)
+	//log.Printf("Count=%d raw=%v", raw.Count, r)
 	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
 	return
 }
