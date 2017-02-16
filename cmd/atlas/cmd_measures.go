@@ -52,6 +52,11 @@ func init() {
 						Usage:       "select anchor measurements",
 						Destination: &fWantAnchor,
 					},
+					cli.BoolFlag{
+						Name:        "mine",
+						Usage:        "limit to my own measurements",
+						Destination: &fWantMine,
+					},
 					cli.StringFlag{
 						Name:        "t, type",
 						Usage:       "filter on measurement type",
@@ -130,6 +135,10 @@ func measurementsList(c *cli.Context) error {
 
 	if fMeasureType != "" {
 		opts["type"] = fMeasureType
+	}
+
+	if fWantMine {
+		opts["mine"] = "true"
 	}
 
 	// Check global parameters

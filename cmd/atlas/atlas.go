@@ -16,6 +16,7 @@ var (
 	// flags
 	fWant4 bool
 	fWant6 bool
+	fWantMine bool
 
 	fAllProbes bool
 	fAllMeasurements bool
