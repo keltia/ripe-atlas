@@ -4,7 +4,6 @@
 
 package atlas
 
-import ()
 import (
 	"encoding/json"
 	"fmt"
