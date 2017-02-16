@@ -55,10 +55,16 @@ In addition to these major commands, there are a few shortcut commands (see belo
 
   Like many Go-based tools, installation is very easy
   
-    go install github.com/keltia/ripe-atlas
+    go get github.com/keltia/ripe-atlas
+
+  or
   
+    git clone https://github.com/keltia/ripe-atlas
+    go install ./cmd/...
+    
   The library is fetched, compiled and installed in whichever directory is specified by `$GOPATH`.  The `atlas` binary will also be installed. 
 
+  Dependencies:
 ## API usage
 
 ### Configuration
@@ -68,7 +74,8 @@ This package uses a configuration file in the [TOML](https://github.com/naoina/t
 There are only a few parameters for now, the most important one being your API Key for autheicate against the RIPE API endpoint.
 
     API_key = "UUID"
-    def_probes = 10
+    pool_size = 10
+    default_probe = "YOUR-PROBE-ID"
 
 ### Basics
 
@@ -111,6 +118,13 @@ There are only a few parameters for now, the most important one being your API K
   ```
   
   In addition to the main `probes` and `measurements` commands, it features fast-access to common tasks like `ping`and `traceroute`.
+
+### TODO
+
+- more tests
+- better display of results
+- implementation behind many keywords
+- even more tests
 
 ### External Documentation
 
