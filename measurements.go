@@ -147,7 +147,7 @@ func DeleteMeasurement(id int) (err error) {
 
 // GetMeasurements gets info for a set
 func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
-	measurementEP := apiEndpoint + "/measurements"
+	measurementEP := apiEndpoint + "/measurements/"
 
 	key, ok := HasAPIKey()
 
