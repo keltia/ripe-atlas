@@ -14,7 +14,7 @@ type Key struct {
 	CreatedAt string `json:"created_at"`
 	Label     string
 	Grants    []Grant
-	Type       string
+	Type      string
 }
 
 // Grant is the permission(s) associated with a key
@@ -117,10 +117,10 @@ type ParticipationRequest struct {
 }
 
 var (
-    // ProbeTypes should be obvious
+	// ProbeTypes should be obvious
 	ProbeTypes = []string{"area", "country", "prefix", "asn", "probes", "msm"}
-    // AreaTypes should also be obvious
-	AreaTypes  = []string{"WW", "West", "North-Central", "South-Central", "North-East", "South-East"}
+	// AreaTypes should also be obvious
+	AreaTypes = []string{"WW", "West", "North-Central", "South-Central", "North-East", "South-East"}
 )
 
 // MeasurementRequest contains the different measurement to create/view
