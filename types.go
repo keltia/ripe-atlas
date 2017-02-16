@@ -7,13 +7,14 @@ package atlas
 // Key is holding the API key parameters
 type Key struct {
 	UUID      string `json:"uuid"`
-	ValidFrom int    `json:"valid_from"`
-	ValidTo   int    `json:"valid_to"`
+	ValidFrom string `json:"valid_from"`
+	ValidTo   string `json:"valid_to"`
 	Enabled   bool
 	IsActive  bool   `json:"is_active"`
-	CreatedAt int    `json:"created_at"`
+	CreatedAt string `json:"created_at"`
 	Label     string
 	Grants    []Grant
+	Type       string
 }
 
 // Grant is the permission(s) associated with a key
