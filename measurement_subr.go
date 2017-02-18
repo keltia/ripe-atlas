@@ -6,8 +6,13 @@ import (
 	"github.com/sendgrid/rest"
 )
 
+// MeasurementResp contains all the results of the measurements
+type MeasurementResp struct {
+	Measurements []int
+}
+
 // DNS creates a measurement
-func DNS(d MeasurementRequest) (m *Measurement, err error) {
+func DNS(d MeasurementRequest) (m *MeasurementResp, err error) {
 	// Check that all Definition.Type are the same and compliant
 	if !checkAllTypesAs(d.Definitions, "dns") {
 		err = ErrInvalidMeasurementType
@@ -36,11 +41,6 @@ func NTP(d MeasurementRequest) (m *Measurement, err error) {
 	return
 }
 
-// PingResp contains all the results of the ping measurements
-type PingResp struct {
-	Measurements []int
-}
-
 type pingError struct {
 	Error struct {
 		Status int
@@ -51,7 +51,7 @@ type pingError struct {
 }
 
 // Ping creates a measurement
-func Ping(d MeasurementRequest) (m *PingResp, err error) {
+func Ping(d MeasurementRequest) (m *MeasurementResp, err error) {
 	// Check that all Definition.Type are the same and compliant
 	if !checkAllTypesAs(d.Definitions, "ping") {
 		err = ErrInvalidMeasurementType
@@ -87,7 +87,7 @@ func Ping(d MeasurementRequest) (m *PingResp, err error) {
 
 	resp, err := rest.API(req)
 
-	m = &PingResp{}
+	m = &MeasurementResp{}
 	err = json.Unmarshal([]byte(resp.Body), m)
 	//r, err := api.Res(base, &resp).Post(d)
 	fmt.Printf("m: %v\nresp: %#v\nd: %v\n", m, string(resp.Body), d)
@@ -109,7 +109,7 @@ func SSLCert(d MeasurementRequest) (m *Measurement, err error) {
 }
 
 // Traceroute creates a measurement
-func Traceroute(d MeasurementRequest) (m *Measurement, err error) {
+func Traceroute(d MeasurementRequest) (m *MeasurementResp, err error) {
 	// Check that all Definition.Type are the same and compliant
 	if !checkAllTypesAs(d.Definitions, "traceroute") {
 		err = ErrInvalidMeasurementType
