@@ -180,6 +180,13 @@ type Definition struct {
 	QueryClass    string `json:",omitempty"`
 	QueryType     string `json:",omitempty"`
 	QueryArgument string `json:",omitempty"`
+	Retry         int
+	SetCDBit      bool   `json:"set_cd_bit"`
+	SetDOBit      bool   `json:"set_do_bit"`
+	SetNSIDBit    bool   `json:"set_nsid_bit"`
+	SetRDBit      bool   `json:"set_rd_bit"`
+	UDPPayloadSize int `json:"udp_payload_size"`
+	UseProbeResolver bool `json:"use_probe_resolver"`
 
 	// ping parameters
 	//   none (see target)
