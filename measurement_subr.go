@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/sendgrid/rest"
+	"log"
 )
 
 // MeasurementResp contains all the results of the measurements
@@ -18,6 +19,46 @@ func DNS(d MeasurementRequest) (m *MeasurementResp, err error) {
 		err = ErrInvalidMeasurementType
 		return
 	}
+
+	dnsEP := apiEndpoint + "/measurements/dns/"
+
+	// Add at least one option, the APIkey if present
+	hdrs := make(map[string]string)
+	opts := make(map[string]string)
+
+	key, ok := HasAPIKey()
+	if ok {
+		opts["key"] = key
+	} else {
+		err = ErrInvalidAPIKey
+		return
+	}
+
+	body, err := json.Marshal(d)
+	if err != nil {
+		return
+	}
+
+	req := rest.Request{
+		BaseURL:     dnsEP,
+		Method:      rest.Post,
+		Headers:     hdrs,
+		QueryParams: opts,
+		Body:        body,
+	}
+
+	log.Printf("body: %s", body)
+	resp, err := rest.API(req)
+
+	m = &MeasurementResp{}
+	err = json.Unmarshal([]byte(resp.Body), m)
+	//r, err := api.Res(base, &resp).Post(d)
+	fmt.Printf("m: %v\nresp: %#v\nd: %v\n", m, string(resp.Body), d)
+	if err != nil {
+		err = fmt.Errorf("err: %v - m:%v\n", err, m)
+		return
+	}
+
 	return
 }
 
