@@ -99,9 +99,9 @@ func Ping(d MeasurementRequest) (m *MeasurementResp, err error) {
 }
 
 // SSLCert creates a measurement
-func SSLCert(d MeasurementRequest) (m *Measurement, err error) {
+func SSLCert(d MeasurementRequest) (m *MeasurementResp, err error) {
 	// Check that all Definition.Type are the same and compliant
-	if !checkAllTypesAs(d.Definitions, "sslcert") {
+	if !checkAllTypesAs(d.Definitions, "SSL") {
 		err = ErrInvalidMeasurementType
 		return
 	}
