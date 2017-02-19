@@ -10,20 +10,20 @@ type Key struct {
 	ValidFrom string `json:"valid_from"`
 	ValidTo   string `json:"valid_to"`
 	Enabled   bool
-	IsActive  bool   `json:"is_active"`
-	CreatedAt string `json:"created_at"`
-	Label     string
-	Grants    []Grant
-	Type      string
+	IsActive  bool    `json:"is_active"`
+	CreatedAt string  `json:"created_at"`
+	Label     string  `json:"label"`
+	Grants    []Grant `json:"grants"`
+	Type      string  `json:"type"`
 }
 
 // Grant is the permission(s) associated with a key
 type Grant struct {
-	Permission string
+	Permission string `json:"permission"`
 	Target     struct {
-		Type string
-		ID   string
-	}
+		Type string `json:"type"`
+		ID   string `json:"id"`
+	} `json:"target"`
 }
 
 // Probe is holding probe's data
@@ -177,16 +177,17 @@ type Definition struct {
 	Interval int `json:"interval,omitempty"`
 
 	// dns parameters
-	QueryClass    string `json:",omitempty"`
-	QueryType     string `json:",omitempty"`
-	QueryArgument string `json:",omitempty"`
-	Retry         int
-	SetCDBit      bool   `json:"set_cd_bit"`
-	SetDOBit      bool   `json:"set_do_bit"`
-	SetNSIDBit    bool   `json:"set_nsid_bit"`
-	SetRDBit      bool   `json:"set_rd_bit"`
-	UDPPayloadSize int `json:"udp_payload_size"`
-	UseProbeResolver bool `json:"use_probe_resolver"`
+	Protocol         string `json:"protocol"`
+	QueryClass       string `json:"query_class,omitempty"`
+	QueryType        string `json:"query_type,omitempty"`
+	QueryArgument    string `json:"query_argument,omitempty"`
+	Retry            int    `json:"retry"`
+	SetCDBit         bool   `json:"set_cd_bit"`
+	SetDOBit         bool   `json:"set_do_bit"`
+	SetNSIDBit       bool   `json:"set_nsid_bit"`
+	SetRDBit         bool   `json:"set_rd_bit"`
+	UDPPayloadSize   int    `json:"udp_payload_size"`
+	UseProbeResolver bool   `json:"use_probe_resolver"`
 
 	// ping parameters
 	//   none (see target)
