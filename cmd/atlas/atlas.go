@@ -4,32 +4,33 @@ This package is just a collection of test cases
 package main
 
 import (
+	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
+	"log"
 	"os"
 	"sort"
 	"strings"
-	"github.com/keltia/ripe-atlas"
-	"log"
 )
 
 var (
 	// flags
-	fWant4 bool
-	fWant6 bool
+	fWant4    bool
+	fWant6    bool
 	fWantMine bool
 
-	fAllProbes bool
+	fAllProbes       bool
 	fAllMeasurements bool
 
-	fAsn string
-	fCountry string
-	fFieldList string
-	fFormat string
-	fOptFields string
-	fSortOrder string
+	fAsn         string
+	fCountry     string
+	fFieldList   string
+	fFormat      string
+	fOptFields   string
+	fProtocol    string
+	fSortOrder   string
 	fMeasureType string
 
-	fVerbose bool
+	fVerbose    bool
 	fWantAnchor bool
 
 	mycnf *atlas.Config
@@ -45,7 +46,7 @@ func (a ByAlphabet) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByAlphabet) Less(i, j int) bool { return a[i].Name < a[j].Name }
 
 // checkGlobalFlags is the place to check global parameters
-func checkGlobalFlags(o map[string]string) (map[string]string) {
+func checkGlobalFlags(o map[string]string) map[string]string {
 	opts := o
 	if fSortOrder != "" {
 		opts["sort"] = fSortOrder
@@ -86,23 +87,23 @@ func main() {
 	// General flags
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name: "format,f",
-			Usage: "specify output format",
+			Name:        "format,f",
+			Usage:       "specify output format",
 			Destination: &fFormat,
 		},
 		cli.BoolFlag{
-			Name: "verbose,v",
-			Usage: "verbose mode",
+			Name:        "verbose,v",
+			Usage:       "verbose mode",
 			Destination: &fVerbose,
 		},
 		cli.StringFlag{
-			Name: "fields,F",
-			Usage: "specify which fields are wanted",
+			Name:        "fields,F",
+			Usage:       "specify which fields are wanted",
 			Destination: &fFieldList,
 		},
 		cli.StringFlag{
-			Name: "opt-fields,O",
-			Usage: "specify which optional fields are wanted",
+			Name:        "opt-fields,O",
+			Usage:       "specify which optional fields are wanted",
 			Destination: &fOptFields,
 		},
 		cli.StringFlag{
