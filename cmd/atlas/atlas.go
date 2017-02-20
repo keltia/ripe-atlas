@@ -75,6 +75,13 @@ func validateFormat(fmt string) bool {
 	return false
 }
 
+func displayOptions(opts map[string]string) {
+	log.Println("Options:")
+	for key, val := range opts {
+		log.Printf("  %s: %s", key, val)
+	}
+}
+
 // main is the starting point (and everything)
 func main() {
 	app := cli.NewApp()
