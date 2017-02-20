@@ -20,32 +20,15 @@ func createMeasurement(t string, d MeasurementRequest) (m *MeasurementResp, err 
         return
     }
 
-    endPoint := apiEndpoint + fmt.Sprintf("/measurements/%s/", t)
-
-    // Add at least one option, the APIkey if present
-    hdrs := make(map[string]string)
-    opts := make(map[string]string)
-
-    key, ok := HasAPIKey()
-    if ok {
-        opts["key"] = key
-    } else {
-        err = ErrInvalidAPIKey
-        return
-    }
+    req := prepareRequest(fmt.Sprintf("measurements/%s", t))
 
     body, err := json.Marshal(d)
     if err != nil {
         return
     }
 
-    req := rest.Request{
-        BaseURL:     endPoint,
-        Method:      rest.Post,
-        Headers:     hdrs,
-        QueryParams: opts,
-        Body:        body,
-    }
+    req.Method = rest.Post
+    req.Body = body
 
     log.Printf("body: %s", body)
     resp, err := rest.API(req)
