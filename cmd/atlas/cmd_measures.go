@@ -33,7 +33,6 @@ func init() {
 					cli.StringFlag{
 						Name:        "country, c",
 						Usage:       "filter on country",
-						Value:       "fr",
 						Destination: &fCountry,
 					},
 					cli.StringFlag{
