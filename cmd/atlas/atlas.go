@@ -120,7 +120,6 @@ func main() {
 		cli.StringFlag{
 			Name:        "sort,S",
 			Usage:       "sort results",
-			Value:       "id",
 			Destination: &fSortOrder,
 		},
 	}
