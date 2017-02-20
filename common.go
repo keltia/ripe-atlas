@@ -8,6 +8,8 @@ package atlas
 import (
     "regexp"
     "errors"
+	"github.com/sendgrid/rest"
+	"fmt"
 )
 
 const (
@@ -45,4 +47,29 @@ func getPageNum(url string) (page string) {
 		return m[1]
 	}
 	return ""
+}
+
+// prepareRequest insert all pre-defined stuff
+func prepareRequest(what string) (req rest.Request) {
+	endPoint := apiEndpoint + fmt.Sprintf("/%s/", what)
+	key, ok := HasAPIKey()
+
+	// Add at least one option, the APIkey if present
+	hdrs := make(map[string]string)
+	opts := make(map[string]string)
+
+	// Insert our sig
+	hdrs["User-Agent"] = fmt.Sprintf("ripe-atlas/%s", ourVersion)
+
+	// Insert key
+	if ok {
+		opts["key"] = key
+	}
+
+	req = rest.Request{
+		BaseURL: endPoint,
+		Headers: hdrs,
+		QueryParams: opts,
+	}
+	return
 }
