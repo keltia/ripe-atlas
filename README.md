@@ -104,7 +104,7 @@ There are only a few parameters for now, the most important one being your API K
      measurements, measures, m	measurements-related keywords
      ntp			get time from ntp server
      ping			ping selected address
-     probes, p, pb		probe-related keywords
+     probes, pb		probe-related keywords
      sslcert, tlscert, tls	get TLS certificate from host/IP
      traceroute, trace		traceroute to given host/IP
 
