@@ -144,6 +144,10 @@ func measurementsList(c *cli.Context) error {
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
 
+    if fVerbose {
+        displayOptions(opts)
+    }
+
 	q, err := atlas.GetMeasurements(opts)
 	if err != nil {
 		log.Printf("GetMeasurements err: %v - q:%v", err, q)
