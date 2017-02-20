@@ -4,6 +4,16 @@
 
 package atlas
 
+// APIError is for errors returned by the RIPE API.
+type APIError struct {
+    Error struct {
+        Status int
+        Code   int
+        Detail string
+        Title  string
+    }
+}
+
 // Key is holding the API key parameters
 type Key struct {
 	UUID      string `json:"uuid"`

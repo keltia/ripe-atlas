@@ -78,15 +78,6 @@ func NTP(d MeasurementRequest) (m *MeasurementResp, err error) {
     return createMeasurement("ntp", d)
 }
 
-type measurementError struct {
-	Error struct {
-		Status int
-		Code   int
-		Detail string
-		Title  string
-	}
-}
-
 // Ping creates a measurement
 func Ping(d MeasurementRequest) (m *MeasurementResp, err error) {
     return createMeasurement("ping", d)
