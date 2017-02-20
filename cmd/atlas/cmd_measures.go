@@ -102,7 +102,7 @@ func displayMeasurement(m *atlas.Measurement, verbose bool) (res string) {
 	if verbose {
 		res = fmt.Sprintf("%v\n", m)
 	} else {
-		res = fmt.Sprintf("ID: %d type: %s description: %s\n", m.ID, m.Type, m.Description)
+		res = fmt.Sprintf("ID: %d type: %s description: %s Target: %s\n", m.ID, m.Type, m.Description,m.Target)
 	}
 	return
 }
