@@ -38,6 +38,10 @@ var (
 	cliCommands []cli.Command
 )
 
+const (
+	atlasVersion = "0.8"
+)
+
 // ByAlphabet is for sorting
 type ByAlphabet []cli.Command
 
@@ -88,7 +92,7 @@ func main() {
 	app.Name = "atlas"
 	app.Usage = "RIPE Atlas cli interface"
 	app.Author = "Ollivier Robert <roberto@keltia.net>"
-	app.Version = "0.1.0"
+	app.Version = atlasVersion
 	app.HideVersion = true
 
 	// General flags
