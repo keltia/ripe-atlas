@@ -17,26 +17,35 @@ type keyList struct {
 	Results  []Key
 }
 
+// fetch the given resource
+func fetchOneKeyPage(opts map[string]string) (raw *keyList, err error) {
+
+	req := prepareRequest("keys")
+	req.Method = rest.Get
+
+	// Do not forget to copy our options
+	for qp, val := range opts {
+		req.QueryParams[qp] = val
+	}
+
+	r, err := rest.API(req)
+	if err != nil {
+		err = fmt.Errorf("err: %v - r:%v\n", err, r)
+		return
+	}
+
+	raw = &keyList{}
+	err = json.Unmarshal([]byte(r.Body), raw)
+	//log.Printf("Count=%d raw=%v", raw.Count, r)
+	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
+	return
+}
+
 // GetKey returns a given API key
 func GetKey(uuid string) (k Key, err error) {
-	keyEP := apiEndpoint + "/keys"
 
-	key, ok := HasAPIKey()
-
-	// Add at least one option, the APIkey if present
-	hdrs := make(map[string]string)
-	opts := make(map[string]string)
-
-	if ok {
-		opts["key"] = key
-	}
-
-	req := rest.Request{
-		BaseURL:     keyEP + fmt.Sprintf("/%d", uuid),
-		Method:      rest.Get,
-		Headers:     hdrs,
-		QueryParams: opts,
-	}
+	req := prepareRequest(fmt.Sprintf("keys/%d", uuid))
+	req.Method = rest.Get
 
 	//log.Printf("req: %#v", req)
 	r, err := rest.API(req)
@@ -52,37 +61,32 @@ func GetKey(uuid string) (k Key, err error) {
 }
 
 // GetKeys returns all your API keys
-func GetKeys() (kl []Key, err error) {
-	keyEP := apiEndpoint + "/keys"
+func GetKeys(opts map[string]string) (kl []Key, err error) {
 
-	key, ok := HasAPIKey()
+	// First call
+	rawlist, err := fetchOneKeyPage(opts)
 
-	// Add at least one option, the APIkey if present
-	hdrs := make(map[string]string)
-	opts := make(map[string]string)
-
-	if ok {
-		opts["key"] = key
+	// Empty answer
+	if rawlist.Count == 0 {
+		return nil, fmt.Errorf("empty key list")
 	}
 
-	req := rest.Request{
-		BaseURL:     keyEP,
-		Method:      rest.Get,
-		Headers:     hdrs,
-		QueryParams: opts,
-	}
+	var res []Key
 
-	//log.Printf("req: %#v", req)
-	r, err := rest.API(req)
-	if err != nil {
-		err = fmt.Errorf("err: %v - r:%v\n", err, r)
-		return
-	}
+	res = append(res, rawlist.Results...)
+	if rawlist.Next != "" {
+		// We have pagination
+		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
+			opts["page"] = pn
 
-	list := &keyList{}
-	fmt.Printf("r: %#v", r.Body)
-	err = json.Unmarshal([]byte(r.Body), list)
-	kl = list.Results
-	//log.Printf("json: %#v\n", p)
+			rawlist, err = fetchOneKeyPage(opts)
+			if err != nil {
+				return
+			}
+
+			res = append(res, rawlist.Results...)
+		}
+	}
+	kl = res
 	return
 }
