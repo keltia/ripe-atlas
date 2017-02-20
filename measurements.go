@@ -53,13 +53,13 @@ type measurementList struct {
 }
 
 // fetch the given resource
-func fetchOneMeasurementPage(MeasurementEP string, opts map[string]string) (raw *measurementList, err error) {
-	hdrs := make(map[string]string)
-	req := rest.Request{
-		BaseURL:     MeasurementEP,
-		Method:      rest.Get,
-		Headers:     hdrs,
-		QueryParams: opts,
+func fetchOneMeasurementPage(opts map[string]string) (raw *measurementList, err error) {
+	req := prepareRequest("measurements")
+	req.Method = rest.Get
+
+	// Do not forget to copy our options
+	for qp, val := range opts {
+		req.QueryParams[qp] = val
 	}
 
 	//log.Printf("req=%s qp=%#v", MeasurementEP, opts)
@@ -80,24 +80,9 @@ func fetchOneMeasurementPage(MeasurementEP string, opts map[string]string) (raw 
 
 // GetMeasurement gets info for a single one
 func GetMeasurement(id int) (m *Measurement, err error) {
-	measurementEP := apiEndpoint + "/measurements"
 
-	key, ok := HasAPIKey()
-
-	// Add at least one option, the APIkey if present
-	hdrs := make(map[string]string)
-	opts := make(map[string]string)
-
-	if ok {
-		opts["key"] = key
-	}
-
-	req := rest.Request{
-		BaseURL:     measurementEP + fmt.Sprintf("/%d", id),
-		Method:      rest.Get,
-		Headers:     hdrs,
-		QueryParams: opts,
-	}
+	req := prepareRequest(fmt.Sprintf("/measurements/%d", id))
+	req.Method = rest.Get
 
 	//log.Printf("req: %#v", req)
 	r, err := rest.API(req)
@@ -114,24 +99,9 @@ func GetMeasurement(id int) (m *Measurement, err error) {
 
 // DeleteMeasurement stops (not really deletes) a given measurement
 func DeleteMeasurement(id int) (err error) {
-	measurementEP := apiEndpoint + "/measurements"
 
-	key, ok := HasAPIKey()
-
-	// Add at least one option, the APIkey if present
-	hdrs := make(map[string]string)
-	opts := make(map[string]string)
-
-	if ok {
-		opts["key"] = key
-	}
-
-	req := rest.Request{
-		BaseURL:     measurementEP + fmt.Sprintf("/%d", id),
-		Method:      rest.Delete,
-		Headers:     hdrs,
-		QueryParams: opts,
-	}
+	req := prepareRequest(fmt.Sprintf("/measurements/%d", id))
+	req.Method = rest.Delete
 
 	//log.Printf("req: %#v", req)
 	r, err := rest.API(req)
@@ -143,17 +113,8 @@ func DeleteMeasurement(id int) (err error) {
 
 // GetMeasurements gets info for a set
 func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
-	measurementEP := apiEndpoint + "/measurements/"
-
-	key, ok := HasAPIKey()
-
-	// Add APIKey if set
-	if ok {
-		opts["key"] = key
-	}
-
 	// First call
-	rawlist, err := fetchOneMeasurementPage(measurementEP, opts)
+	rawlist, err := fetchOneMeasurementPage(opts)
 
 	// Empty answer
 	if rawlist.Count == 0 {
@@ -168,7 +129,7 @@ func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
 			opts["page"] = pn
 
-			rawlist, err = fetchOneMeasurementPage(measurementEP, opts)
+			rawlist, err = fetchOneMeasurementPage(opts)
 			if err != nil {
 				return
 			}
