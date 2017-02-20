@@ -7,14 +7,14 @@ import (
 )
 
 var (
-	allTypes = []string{
-		"dns",
-		"http",
-		"ntp",
-		"ping",
-		"sslcert",
-		"traceroute",
-		"wifi",
+	allTypes = map[string]bool{
+		"dns":        true,
+		"http":       true,
+		"ntp":        true,
+		"ping":       true,
+		"SSL":        true,
+		"traceroute": true,
+		"wifi":       true,
 	}
 )
 
@@ -22,14 +22,8 @@ var (
 
 // checkType verify that the type is valid
 func checkType(d Definition) (valid bool) {
-	valid = false
-	for _, t := range allTypes {
-		if d.Type == t {
-			valid = true
-			break
-		}
-	}
-	return
+	_, ok := allTypes[d.Type]
+	return ok
 }
 
 // checkTypeAs is a shortcut
