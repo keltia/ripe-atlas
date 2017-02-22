@@ -88,6 +88,12 @@ func displayOptions(opts map[string]string) {
 
 // main is the starting point (and everything)
 func main() {
+	cli.VersionFlag = cli.BoolFlag{Name: "version, V"}
+
+	cli.VersionPrinter = func(c *cli.Context) {
+		log.Printf("API wrapper: %s Atlas CLI: %s\n", c.App.Version, atlas.GetVersion())
+	}
+
 	app := cli.NewApp()
 	app.Name = "atlas"
 	app.Usage = "RIPE Atlas CLI interface"
