@@ -77,7 +77,7 @@ func prepareRequest(what string) (req rest.Request) {
 
 // handleAPIResponse check status code & errors from the API
 func handleAPIResponse(r *rest.Response) (err error) {
-	if r.StatusCode != 200 {
+	if r.StatusCode != 200 || r.StatusCode != 0 {
 		var aerr APIError
 
 		err = json.Unmarshal([]byte(r.Body), &aerr)
