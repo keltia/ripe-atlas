@@ -29,14 +29,8 @@ func fetchOneKeyPage(opts map[string]string) (raw *keyList, err error) {
 	}
 
 	r, err := rest.API(req)
+	err = handleAPIResponse(r)
 	if err != nil {
-		var aerr APIError
-
-		err = json.Unmarshal([]byte(r.Body), &aerr)
-		err = fmt.Errorf("status: %d code: %d - r:%v\n",
-			aerr.Error.Status,
-			aerr.Error.Code,
-			aerr.Error.Detail)
 		return
 	}
 
@@ -55,14 +49,8 @@ func GetKey(uuid string) (k Key, err error) {
 
 	//log.Printf("req: %#v", req)
 	r, err := rest.API(req)
+	err = handleAPIResponse(r)
 	if err != nil {
-		var aerr APIError
-
-		err = json.Unmarshal([]byte(r.Body), &aerr)
-		err = fmt.Errorf("status: %d code: %d - r:%v\n",
-			aerr.Error.Status,
-			aerr.Error.Code,
-			aerr.Error.Detail)
 		return
 	}
 

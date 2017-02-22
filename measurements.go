@@ -64,14 +64,8 @@ func fetchOneMeasurementPage(opts map[string]string) (raw *measurementList, err 
 
 	//log.Printf("req=%s qp=%#v", MeasurementEP, opts)
 	r, err := rest.API(req)
+	err = handleAPIResponse(r)
 	if err != nil {
-		var aerr APIError
-
-		err = json.Unmarshal([]byte(r.Body), &aerr)
-		err = fmt.Errorf("status: %d code: %d - r:%v\n",
-			aerr.Error.Status,
-			aerr.Error.Code,
-			aerr.Error.Detail)
 		return
 	}
 
@@ -92,14 +86,8 @@ func GetMeasurement(id int) (m *Measurement, err error) {
 
 	//log.Printf("req: %#v", req)
 	r, err := rest.API(req)
+	err = handleAPIResponse(r)
 	if err != nil {
-		var aerr APIError
-
-		err = json.Unmarshal([]byte(r.Body), &aerr)
-		err = fmt.Errorf("status: %d code: %d - r:%v\n",
-			aerr.Error.Status,
-			aerr.Error.Code,
-			aerr.Error.Detail)
 		return
 	}
 
@@ -117,15 +105,7 @@ func DeleteMeasurement(id int) (err error) {
 
 	//log.Printf("req: %#v", req)
 	r, err := rest.API(req)
-	if err != nil {
-		var aerr APIError
-
-		err = json.Unmarshal([]byte(r.Body), &aerr)
-		err = fmt.Errorf("status: %d code: %d - r:%v\n",
-			aerr.Error.Status,
-			aerr.Error.Code,
-			aerr.Error.Detail)
-	}
+	err = handleAPIResponse(r)
 	return
 }
 
