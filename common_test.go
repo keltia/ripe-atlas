@@ -61,6 +61,6 @@ func TestGetPageNum(t *testing.T) {
 	url = ""
 	n = getPageNum(url)
 	if n != "" {
-		t.Errorf("n=%d should be ''", n)
+		t.Errorf("n=%s should be ''", n)
 	}
 }
