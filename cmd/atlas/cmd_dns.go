@@ -16,27 +16,6 @@ const (
 )
 
 var (
-	dnsQueryType = map[string]bool{
-		"A":    true,
-		"AAAA": true,
-		"MX":   true,
-		"PTR":  true,
-		"SIG":  true,
-		"SOA":  true,
-		"TLSA": true,
-		"TXT":  true,
-	}
-
-	dnsQueryClass = map[string]bool{
-		"CHAOS": true,
-		"IN":    true,
-	}
-
-	dnsProtocol = map[string]bool{
-		"TCP": true,
-		"UDP": true,
-	}
-
 	eDns0 = false
 )
 
@@ -125,29 +104,17 @@ func cmdDNS(c *cli.Context) error {
 		proto = fProtocol
 	}
 
-	if !checkQueryParam(qtype, dnsQueryType) {
-		log.Fatalf("Bad query type: %s", qtype)
-	}
-
-	if !checkQueryParam(qclass, dnsQueryClass) {
-		log.Fatalf("Bad query class: %s", qclass)
-	}
-
-	if !checkQueryParam(proto, dnsProtocol) {
-		log.Fatalf("Bad protocol: %s", proto)
-	}
-
 	var defs []atlas.Definition
 
 	if fWant4 {
 		def := atlas.Definition{
-			AF:             4,
-			Description:    fmt.Sprintf("DNS v4 - %s %s %s", addr, qtype, qclass),
-			Type:           "dns",
-			Protocol:       proto,
-			QueryArgument:  addr,
-			QueryClass:     qclass,
-			QueryType:      qtype,
+			AF:            4,
+			Description:   fmt.Sprintf("DNS v4 - %s %s %s", addr, qtype, qclass),
+			Type:          "dns",
+			Protocol:      proto,
+			QueryArgument: addr,
+			QueryClass:    qclass,
+			QueryType:     qtype,
 		}
 		if eDns0 {
 			def.UDPPayloadSize = 4096
@@ -158,13 +125,13 @@ func cmdDNS(c *cli.Context) error {
 
 	if fWant6 {
 		def := atlas.Definition{
-			AF:             6,
-			Description:    fmt.Sprintf("DNS v6 - %s %s %s", addr, qtype, qclass),
-			Type:           "dns",
-			Protocol:       proto,
-			QueryArgument:  addr,
-			QueryClass:     qclass,
-			QueryType:      qtype,
+			AF:            6,
+			Description:   fmt.Sprintf("DNS v6 - %s %s %s", addr, qtype, qclass),
+			Type:          "dns",
+			Protocol:      proto,
+			QueryArgument: addr,
+			QueryClass:    qclass,
+			QueryType:     qtype,
 		}
 		if eDns0 {
 			def.UDPPayloadSize = 4096
