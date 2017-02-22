@@ -199,13 +199,15 @@ func measurementResults(c *cli.Context) error {
 
 	resp, err := http.Get(m.Result)
 	if err != nil {
-		fmt.Errorf("bad net/http answer for %s: %v", m.Result, err)
+		err = fmt.Errorf("bad net/http answer for %s: %v", m.Result, err)
+		return err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Errorf("error reading body for %s: %v", m.Result, err)
+		err = fmt.Errorf("error reading body for %s: %v", m.Result, err)
+		return err
 	}
 
 	fmt.Print(displayResult(body, fVerbose))
@@ -227,7 +229,7 @@ func measurementDelete(c *cli.Context) (err error) {
 
 		list, err := atlas.GetMeasurements(opts)
 		if err != nil {
-			fmt.Errorf("Delete all failed: %v", err)
+			err = fmt.Errorf("Delete all failed: %v", err)
 		} else {
 			for _, m := range list {
 				err = atlas.DeleteMeasurement(m.ID)
