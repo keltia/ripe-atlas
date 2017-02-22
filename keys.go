@@ -44,7 +44,7 @@ func fetchOneKeyPage(opts map[string]string) (raw *keyList, err error) {
 // GetKey returns a given API key
 func GetKey(uuid string) (k Key, err error) {
 
-	req := prepareRequest(fmt.Sprintf("keys/%d", uuid))
+	req := prepareRequest(fmt.Sprintf("keys/%s", uuid))
 	req.Method = rest.Get
 
 	//log.Printf("req: %#v", req)

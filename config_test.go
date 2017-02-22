@@ -42,7 +42,7 @@ func TestLoadConfig(t *testing.T) {
 
 	defaultProbe := 666
 	if conf.DefaultProbe != defaultProbe {
-		t.Errorf("Malformed default %s: %s", conf.DefaultProbe, defaultProbe)
+		t.Errorf("Malformed default %d: %d", conf.DefaultProbe, defaultProbe)
 	}
 
 	key := "<INSERT-API-KEY>"
