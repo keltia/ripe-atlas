@@ -83,8 +83,6 @@ func prepareRequest(what string) (req rest.Request) {
 
 // handleAPIResponse check status code & errors from the API
 func handleAPIResponse(r *rest.Response) (err error) {
-	log.Printf("handleAPIResponse: %#v", r)
-
 	// Everything is fine
 	if r.StatusCode == 0 {
 		return nil
