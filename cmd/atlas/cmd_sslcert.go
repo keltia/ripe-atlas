@@ -31,7 +31,7 @@ func cmdTLSCert(c *cli.Context) (err error) {
 
 	args := c.Args()
 	if len(args) == 0 {
-		log.Fatalf("Error: you must specify a hostname/site!")
+		log.Fatal("Error: you must specify a hostname/site!")
 	}
 
 	target := args[0]
