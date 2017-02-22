@@ -119,6 +119,10 @@ There are only a few parameters for now, the most important one being your API K
   
   In addition to the main `probes` and `measurements` commands, it features fast-access to common tasks like `ping`and `traceroute`.
 
+When looking at measurement results, it is very easy to use something like [jq](https://stedolan.github.io/jq) to properly display JSON data:
+
+    atlas results <ID> | jq .
+
 ### TODO
 
 - more tests (and better ones!)
