@@ -180,8 +180,8 @@ func measurementInfo(c *cli.Context) error {
 // measurementResults returns the result part of the measurement
 func measurementResults(c *cli.Context) error {
 	args := c.Args()
-	if args[0] == "" {
-		log.Fatalf("Error: you must specify a measurement ID!")
+	if len(args) == 0 {
+		log.Fatal("Error: you must specify a measurement ID!")
 	}
 
 	id, _ := strconv.ParseInt(args[0], 10, 32)
