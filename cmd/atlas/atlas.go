@@ -39,7 +39,7 @@ var (
 )
 
 const (
-	atlasVersion = "0.8"
+	atlasVersion = "0.9"
 )
 
 // ByAlphabet is for sorting
