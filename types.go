@@ -7,11 +7,11 @@ package atlas
 // APIError is for errors returned by the RIPE API.
 type APIError struct {
     Error struct {
-        Status int
-        Code   int
-        Detail string
-        Title  string
-    }
+        Status int    `json:"status"`
+        Code   int    `json:"code"`
+        Detail string `json:"detail"`
+        Title  string `json:"title"`
+    } `json:"error"`
 }
 
 // Key is holding the API key parameters
