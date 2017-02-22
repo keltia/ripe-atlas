@@ -10,6 +10,7 @@ import (
     "errors"
 	"github.com/sendgrid/rest"
 	"fmt"
+	"encoding/json"
 )
 
 const (
@@ -70,6 +71,20 @@ func prepareRequest(what string) (req rest.Request) {
 		BaseURL: endPoint,
 		Headers: hdrs,
 		QueryParams: opts,
+	}
+	return
+}
+
+// handleAPIResponse check status code & errors from the API
+func handleAPIResponse(r *rest.Response) (err error) {
+	if r.StatusCode != 200 {
+		var aerr APIError
+
+		err = json.Unmarshal([]byte(r.Body), &aerr)
+		err = fmt.Errorf("status: %d code: %d - r:%v\n",
+			aerr.Error.Status,
+			aerr.Error.Code,
+			aerr.Error.Detail)
 	}
 	return
 }
