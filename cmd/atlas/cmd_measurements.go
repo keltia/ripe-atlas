@@ -94,6 +94,14 @@ func init() {
 			},
 		},
 	})
+
+	cliCommands = append(cliCommands, cli.Command{
+		Name:        "results",
+		Aliases:     []string{"r", "res"},
+		Usage:       "results for one measurement",
+		Description: "returns results for one measurement",
+		Action:      measurementResults,
+	})
 }
 
 // displayMeasurement returns a string with one measurement
