@@ -161,7 +161,7 @@ func measurementsList(c *cli.Context) error {
 // measurementInfo is for one measurement only
 func measurementInfo(c *cli.Context) error {
 	args := c.Args()
-	if args[0] == "" {
+	if len(args) == 0 {
 		log.Fatalf("Error: you must specify a measurement ID!")
 	}
 
