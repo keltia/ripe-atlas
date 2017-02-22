@@ -36,6 +36,8 @@ var (
 		"TCP": true,
 		"UDP": true,
 	}
+
+	eDns0 = false
 )
 
 // checkQueryParam checks against possible list of parameters
@@ -65,6 +67,11 @@ func init() {
 				Name:        "4, ipv4",
 				Usage:       "displays only IPv4",
 				Destination: &fWant4,
+			},
+			cli.BoolFlag{
+				Name:        "E, edns0",
+				Usage:       "use EDNS0",
+				Destination: &eDns0,
 			},
 			/*			cli.StringFlag{
 							Name:        "t, qtype",
@@ -141,7 +148,10 @@ func cmdDNS(c *cli.Context) error {
 			QueryArgument:  addr,
 			QueryClass:     qclass,
 			QueryType:      qtype,
-			UDPPayloadSize: 4096,
+		}
+		if eDns0 {
+			def.UDPPayloadSize = 4096
+			def.Protocol = "UDP"
 		}
 		defs = append(defs, def)
 	}
@@ -155,7 +165,10 @@ func cmdDNS(c *cli.Context) error {
 			QueryArgument:  addr,
 			QueryClass:     qclass,
 			QueryType:      qtype,
-			UDPPayloadSize: 4096,
+		}
+		if eDns0 {
+			def.UDPPayloadSize = 4096
+			def.Protocol = "UDP"
 		}
 		defs = append(defs, def)
 	}
