@@ -6,11 +6,11 @@
 package atlas
 
 import (
-    "regexp"
-    "errors"
-	"github.com/sendgrid/rest"
-	"fmt"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/sendgrid/rest"
+	"regexp"
 )
 
 const (
@@ -41,6 +41,11 @@ func HasAPIKey() (string, bool) {
 	return APIKey, true
 }
 
+// GetVersion returns the API wrapper version
+func GetVersion() string {
+	return ourVersion
+}
+
 // getPageNum returns the value of the page= parameter
 func getPageNum(url string) (page string) {
 	re := regexp.MustCompile(`page=(\d+)`)
@@ -68,8 +73,8 @@ func prepareRequest(what string) (req rest.Request) {
 	}
 
 	req = rest.Request{
-		BaseURL: endPoint,
-		Headers: hdrs,
+		BaseURL:     endPoint,
+		Headers:     hdrs,
 		QueryParams: opts,
 	}
 	return
