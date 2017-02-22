@@ -32,6 +32,10 @@ func createMeasurement(t string, d MeasurementRequest) (m *MeasurementResp, err 
 
     log.Printf("body: %s", body)
     resp, err := rest.API(req)
+    err = handleAPIResponse(resp)
+    if err != nil {
+        return
+    }
 
     m = &MeasurementResp{}
     err = json.Unmarshal([]byte(resp.Body), m)
