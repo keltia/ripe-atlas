@@ -39,7 +39,7 @@ var (
 )
 
 const (
-	atlasVersion = "0.8"
+	atlasVersion = "0.9"
 )
 
 // ByAlphabet is for sorting
@@ -90,10 +90,10 @@ func displayOptions(opts map[string]string) {
 func main() {
 	app := cli.NewApp()
 	app.Name = "atlas"
-	app.Usage = "RIPE Atlas cli interface"
+	app.Usage = "RIPE Atlas CLI interface"
 	app.Author = "Ollivier Robert <roberto@keltia.net>"
 	app.Version = atlasVersion
-	app.HideVersion = true
+	//app.HideVersion = true
 
 	// General flags
 	app.Flags = []cli.Flag{
