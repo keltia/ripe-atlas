@@ -12,7 +12,7 @@ var (
 		"http":       true,
 		"ntp":        true,
 		"ping":       true,
-		"SSL":        true,
+		"sslcert":    true,
 		"traceroute": true,
 		"wifi":       true,
 	}

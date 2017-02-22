@@ -72,7 +72,7 @@ func Ping(d MeasurementRequest) (m *MeasurementResp, err error) {
 
 // SSLCert creates a measurement
 func SSLCert(d MeasurementRequest) (m *MeasurementResp, err error) {
-    return createMeasurement("SSL", d)
+    return createMeasurement("sslcert", d)
 }
 
 // Traceroute creates a measurement
