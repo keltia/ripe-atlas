@@ -36,7 +36,7 @@ func createMeasurement(t string, d MeasurementRequest) (m *MeasurementResp, err 
 	//r, err := api.Res(base, &resp).Post(d)
 	fmt.Printf("m: %v\nresp: %#v\nd: %v\n", m, string(resp.Body), d)
 	if err != nil {
-		err = fmt.Errorf("err: %v - m:%v\n", err, m)
+		err = fmt.Errorf("err: %v - m:%v", err, m)
 		return
 	}
 

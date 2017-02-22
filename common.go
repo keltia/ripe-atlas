@@ -109,7 +109,7 @@ func handleAPIResponse(r *rest.Response) (err error) {
 	var aerr APIError
 
 	err = json.Unmarshal([]byte(r.Body), &aerr)
-	err = fmt.Errorf("status: %d code: %d - r:%v\n",
+	err = fmt.Errorf("status: %d code: %d - r:%v",
 		aerr.Error.Status,
 		aerr.Error.Code,
 		aerr.Error.Detail)
