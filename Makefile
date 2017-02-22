@@ -24,10 +24,11 @@ test:
 	go test -v ./...
 
 install:
-	go install -v
+	go install -v ./cmd/...
 
 clean:
-	go clean -v
+	go clean -v ./...
+	rm -f atlas
 
 push:
 	git push --all
