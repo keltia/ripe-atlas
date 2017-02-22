@@ -90,10 +90,10 @@ func displayOptions(opts map[string]string) {
 func main() {
 	app := cli.NewApp()
 	app.Name = "atlas"
-	app.Usage = "RIPE Atlas cli interface"
+	app.Usage = "RIPE Atlas CLI interface"
 	app.Author = "Ollivier Robert <roberto@keltia.net>"
 	app.Version = atlasVersion
-	app.HideVersion = true
+	//app.HideVersion = true
 
 	// General flags
 	app.Flags = []cli.Flag{
