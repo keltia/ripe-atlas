@@ -88,7 +88,7 @@ There are only a few parameters for now, the most important one being your API K
   
   ```
   NAME:
-     atlas - RIPE Atlas cli interface
+     atlas - RIPE Atlas CLI interface
   
   USAGE:
      atlas [global options] command [command options] [arguments...]
@@ -104,7 +104,7 @@ There are only a few parameters for now, the most important one being your API K
      measurements, measures, m	measurements-related keywords
      ntp			get time from ntp server
      ping			ping selected address
-     probes, pb		probe-related keywords
+     probes, p, pb		probe-related keywords
      sslcert, tlscert, tls	get TLS certificate from host/IP
      traceroute, trace		traceroute to given host/IP
 
@@ -121,9 +121,11 @@ There are only a few parameters for now, the most important one being your API K
 
 ### TODO
 
-- more tests
+- more tests (and better ones!)
 - better display of results
 - implementation behind many keywords
+  dns, keys, sslcert, ping, ntp, probes, measurements: done
+  traceroute, http, https: pending
 - even more tests
 
 ### External Documentation
