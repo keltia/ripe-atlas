@@ -18,7 +18,13 @@ func GetProbe(id int) (p *Probe, err error) {
 	//log.Printf("req: %#v", req)
 	r, err := rest.API(req)
 	if err != nil {
-		err = fmt.Errorf("err: %v - r:%v\n", err, r)
+        var aerr APIError
+
+        err = json.Unmarshal([]byte(r.Body), &aerr)
+		err = fmt.Errorf("status: %d code: %d - r:%v\n",
+            aerr.Error.Status,
+            aerr.Error.Code,
+            aerr.Error.Detail)
 		return
 	}
 
@@ -49,7 +55,13 @@ func fetchOneProbePage(opts map[string]string) (raw *probeList, err error) {
 
     r, err := rest.API(req)
     if err != nil {
-        err = fmt.Errorf("err: %v - r:%v\n", err, r)
+        var aerr APIError
+
+        err = json.Unmarshal([]byte(r.Body), &aerr)
+        err = fmt.Errorf("status: %d code: %d - r:%v\n",
+            aerr.Error.Status,
+            aerr.Error.Code,
+            aerr.Error.Detail)
         return
     }
 
