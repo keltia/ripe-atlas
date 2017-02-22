@@ -31,13 +31,11 @@ func init() {
 					cli.StringFlag{
 						Name:        "country, c",
 						Usage:       "filter on country",
-						Value:       "fr",
 						Destination: &fCountry,
 					},
 					cli.StringFlag{
 						Name:        "asn",
 						Usage:       "filter on asn",
-						Value:       "",
 						Destination: &fAsn,
 					},
 					cli.BoolFlag{
@@ -110,6 +108,10 @@ func probesList(c *cli.Context) error {
 
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
+
+	if fVerbose {
+		displayOptions(opts)
+	}
 
 	q, err := atlas.GetProbes(opts)
 	if err != nil {

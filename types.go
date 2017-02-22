@@ -4,22 +4,36 @@
 
 package atlas
 
+// APIError is for errors returned by the RIPE API.
+type APIError struct {
+    Error struct {
+        Status int    `json:"status"`
+        Code   int    `json:"code"`
+        Detail string `json:"detail"`
+        Title  string `json:"title"`
+    } `json:"error"`
+}
+
 // Key is holding the API key parameters
 type Key struct {
 	UUID      string `json:"uuid"`
-	ValidFrom int    `json:"valid_from"`
-	ValidTo   int    `json:"valid_to"`
+	ValidFrom string `json:"valid_from"`
+	ValidTo   string `json:"valid_to"`
 	Enabled   bool
-	IsActive  bool   `json:"is_active"`
-	CreatedAt int    `json:"created_at"`
-	Label     string
-	Grants    []Grant
+	IsActive  bool    `json:"is_active"`
+	CreatedAt string  `json:"created_at"`
+	Label     string  `json:"label"`
+	Grants    []Grant `json:"grants"`
+	Type      string  `json:"type"`
 }
 
 // Grant is the permission(s) associated with a key
 type Grant struct {
-	Permission string
-	Target     string
+	Permission string `json:"permission"`
+	Target     struct {
+		Type string `json:"type"`
+		ID   string `json:"id"`
+	} `json:"target"`
 }
 
 // Probe is holding probe's data
@@ -116,10 +130,10 @@ type ParticipationRequest struct {
 }
 
 var (
-    // ProbeTypes should be obvious
+	// ProbeTypes should be obvious
 	ProbeTypes = []string{"area", "country", "prefix", "asn", "probes", "msm"}
-    // AreaTypes should also be obvious
-	AreaTypes  = []string{"WW", "West", "North-Central", "South-Central", "North-East", "South-East"}
+	// AreaTypes should also be obvious
+	AreaTypes = []string{"WW", "West", "North-Central", "South-Central", "North-East", "South-East"}
 )
 
 // MeasurementRequest contains the different measurement to create/view
@@ -173,9 +187,17 @@ type Definition struct {
 	Interval int `json:"interval,omitempty"`
 
 	// dns parameters
-	QueryClass    string `json:",omitempty"`
-	QueryType     string `json:",omitempty"`
-	QueryArgument string `json:",omitempty"`
+	Protocol         string `json:"protocol"`
+	QueryClass       string `json:"query_class,omitempty"`
+	QueryType        string `json:"query_type,omitempty"`
+	QueryArgument    string `json:"query_argument,omitempty"`
+	Retry            int    `json:"retry"`
+	SetCDBit         bool   `json:"set_cd_bit"`
+	SetDOBit         bool   `json:"set_do_bit"`
+	SetNSIDBit       bool   `json:"set_nsid_bit"`
+	SetRDBit         bool   `json:"set_rd_bit"`
+	UDPPayloadSize   int    `json:"udp_payload_size"`
+	UseProbeResolver bool   `json:"use_probe_resolver"`
 
 	// ping parameters
 	//   none (see target)

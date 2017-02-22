@@ -1,11 +1,11 @@
-// cmd_measures.go
+// cmd_measurements.go
 
 package main
 
 import (
 	"fmt"
-	"github.com/urfave/cli"
 	"github.com/keltia/ripe-atlas"
+	"github.com/urfave/cli"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 	"strconv"
 )
 
-// init injects our probe-related commands
+// init injects our measurement-related commands
 func init() {
 	cliCommands = append(cliCommands, cli.Command{
 		Name: "measurements",
@@ -33,7 +33,6 @@ func init() {
 					cli.StringFlag{
 						Name:        "country, c",
 						Usage:       "filter on country",
-						Value:       "fr",
 						Destination: &fCountry,
 					},
 					cli.StringFlag{
@@ -51,6 +50,11 @@ func init() {
 						Name:        "is-anchor",
 						Usage:       "select anchor measurements",
 						Destination: &fWantAnchor,
+					},
+					cli.BoolFlag{
+						Name:        "mine",
+						Usage:       "limit to my own measurements",
+						Destination: &fWantMine,
 					},
 					cli.StringFlag{
 						Name:        "t, type",
@@ -79,14 +83,14 @@ func init() {
 				Aliases:     []string{"rm", "del", "destroy"},
 				Usage:       "info for one measurement",
 				Description: "stops one measurement (or all)",
-                Flags: []cli.Flag{
-                    cli.BoolFlag{
-                        Name:        "A",
-                        Usage:       "select all measurements",
-                        Destination: &fAllMeasurements,
-                    },
-                },
-				Action:      measurementDelete,
+				Flags: []cli.Flag{
+					cli.BoolFlag{
+						Name:        "A",
+						Usage:       "select all measurements",
+						Destination: &fAllMeasurements,
+					},
+				},
+				Action: measurementDelete,
 			},
 		},
 	})
@@ -97,7 +101,7 @@ func displayMeasurement(m *atlas.Measurement, verbose bool) (res string) {
 	if verbose {
 		res = fmt.Sprintf("%v\n", m)
 	} else {
-		res = fmt.Sprintf("ID: %d type: %s description: %s\n", m.ID, m.Type, m.Description)
+		res = fmt.Sprintf("ID: %d type: %s description: %s Target: %s\n", m.ID, m.Type, m.Description, m.Target)
 	}
 	return
 }
@@ -132,8 +136,16 @@ func measurementsList(c *cli.Context) error {
 		opts["type"] = fMeasureType
 	}
 
+	if fWantMine {
+		opts["mine"] = "true"
+	}
+
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
+
+	if fVerbose {
+		displayOptions(opts)
+	}
 
 	q, err := atlas.GetMeasurements(opts)
 	if err != nil {
@@ -187,13 +199,13 @@ func measurementResults(c *cli.Context) error {
 
 	resp, err := http.Get(m.Result)
 	if err != nil {
-		fmt.Errorf("Bad net/http answer for %s: %v\n", m.Result, err)
+		fmt.Errorf("bad net/http answer for %s: %v", m.Result, err)
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Errorf("error reading body for %s: %v\n", m.Result, err)
+		fmt.Errorf("error reading body for %s: %v", m.Result, err)
 	}
 
 	fmt.Print(displayResult(body, fVerbose))
@@ -204,36 +216,36 @@ func measurementCreate(c *cli.Context) error {
 	return nil
 }
 
-func measurementDelete(c *cli.Context) ( err error) {
-    var id int64
+func measurementDelete(c *cli.Context) (err error) {
+	var id int64
 
-    if fAllMeasurements {
-        opts := make(map[string]string)
+	if fAllMeasurements {
+		opts := make(map[string]string)
 
-        // Check global parameters
-        opts = checkGlobalFlags(opts)
+		// Check global parameters
+		opts = checkGlobalFlags(opts)
 
-        list, err := atlas.GetMeasurements(opts)
-        if err != nil {
-            fmt.Errorf("Delete all failed: %v", err)
-        } else {
-            for _, m := range list {
-                err = atlas.DeleteMeasurement(m.ID)
-                if err != nil {
-                    err = fmt.Errorf("Error: can not delete measurement %d", m.ID)
-                }
-            }
-            fmt.Printf("All measurements stopped.")
-        }
-    } else {
-        args := c.Args()
-        if args[0] == "" {
-            log.Fatalf("Error: you must specify a measurement ID!")
-        }
+		list, err := atlas.GetMeasurements(opts)
+		if err != nil {
+			fmt.Errorf("Delete all failed: %v", err)
+		} else {
+			for _, m := range list {
+				err = atlas.DeleteMeasurement(m.ID)
+				if err != nil {
+					err = fmt.Errorf("Error: can not delete measurement %d", m.ID)
+				}
+			}
+			fmt.Printf("All measurements stopped.")
+		}
+	} else {
+		args := c.Args()
+		if args[0] == "" {
+			log.Fatalf("Error: you must specify a measurement ID!")
+		}
 
-        id, _ = strconv.ParseInt(args[0], 10, 32)
-        err = atlas.DeleteMeasurement(int(id))
-    }
+		id, _ = strconv.ParseInt(args[0], 10, 32)
+		err = atlas.DeleteMeasurement(int(id))
+	}
 
-    return
+	return
 }

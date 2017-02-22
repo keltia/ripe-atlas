@@ -7,14 +7,14 @@ import (
 )
 
 var (
-	allTypes = []string{
-		"dns",
-		"http",
-		"ntp",
-		"ping",
-		"sslcert",
-		"traceroute",
-		"wifi",
+	allTypes = map[string]bool{
+		"dns":        true,
+		"http":       true,
+		"ntp":        true,
+		"ping":       true,
+		"SSL":        true,
+		"traceroute": true,
+		"wifi":       true,
 	}
 )
 
@@ -22,14 +22,8 @@ var (
 
 // checkType verify that the type is valid
 func checkType(d Definition) (valid bool) {
-	valid = false
-	for _, t := range allTypes {
-		if d.Type == t {
-			valid = true
-			break
-		}
-	}
-	return
+	_, ok := allTypes[d.Type]
+	return ok
 }
 
 // checkTypeAs is a shortcut
@@ -59,23 +53,25 @@ type measurementList struct {
 }
 
 // fetch the given resource
-func fetchOneMeasurementPage(MeasurementEP string, opts map[string]string) (raw *measurementList, err error) {
-	hdrs := make(map[string]string)
-	req := rest.Request{
-		BaseURL:     MeasurementEP,
-		Method:      rest.Get,
-		Headers:     hdrs,
-		QueryParams: opts,
+func fetchOneMeasurementPage(opts map[string]string) (raw *measurementList, err error) {
+	req := prepareRequest("measurements")
+	req.Method = rest.Get
+
+	// Do not forget to copy our options
+	for qp, val := range opts {
+		req.QueryParams[qp] = val
 	}
 
+	//log.Printf("req=%s qp=%#v", MeasurementEP, opts)
 	r, err := rest.API(req)
+	err = handleAPIResponse(r)
 	if err != nil {
-		err = fmt.Errorf("err: %v - r:%v\n", err, r)
 		return
 	}
 
 	raw = &measurementList{}
 	err = json.Unmarshal([]byte(r.Body), raw)
+	//log.Printf("Count=%d raw=%v", raw.Count, r)
 	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
 	return
 }
@@ -84,29 +80,14 @@ func fetchOneMeasurementPage(MeasurementEP string, opts map[string]string) (raw 
 
 // GetMeasurement gets info for a single one
 func GetMeasurement(id int) (m *Measurement, err error) {
-	measurementEP := apiEndpoint + "/measurements"
 
-	key, ok := HasAPIKey()
-
-	// Add at least one option, the APIkey if present
-	hdrs := make(map[string]string)
-	opts := make(map[string]string)
-
-	if ok {
-		opts["key"] = key
-	}
-
-	req := rest.Request{
-		BaseURL:     measurementEP + fmt.Sprintf("/%d", id),
-		Method:      rest.Get,
-		Headers:     hdrs,
-		QueryParams: opts,
-	}
+	req := prepareRequest(fmt.Sprintf("/measurements/%d", id))
+	req.Method = rest.Get
 
 	//log.Printf("req: %#v", req)
 	r, err := rest.API(req)
+	err = handleAPIResponse(r)
 	if err != nil {
-		err = fmt.Errorf("err: %v - r:%v\n", err, r)
 		return
 	}
 
@@ -118,46 +99,20 @@ func GetMeasurement(id int) (m *Measurement, err error) {
 
 // DeleteMeasurement stops (not really deletes) a given measurement
 func DeleteMeasurement(id int) (err error) {
-	measurementEP := apiEndpoint + "/measurements"
 
-	key, ok := HasAPIKey()
-
-	// Add at least one option, the APIkey if present
-	hdrs := make(map[string]string)
-	opts := make(map[string]string)
-
-	if ok {
-		opts["key"] = key
-	}
-
-	req := rest.Request{
-		BaseURL:     measurementEP + fmt.Sprintf("/%d", id),
-		Method:      rest.Delete,
-		Headers:     hdrs,
-		QueryParams: opts,
-	}
+	req := prepareRequest(fmt.Sprintf("/measurements/%d", id))
+	req.Method = rest.Delete
 
 	//log.Printf("req: %#v", req)
 	r, err := rest.API(req)
-	if err != nil {
-		err = fmt.Errorf("err: %v - r:%v\n", err, r)
-	}
+	err = handleAPIResponse(r)
 	return
 }
 
 // GetMeasurements gets info for a set
 func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
-	measurementEP := apiEndpoint + "/measurements"
-
-	key, ok := HasAPIKey()
-
-	// Add APIKey if set
-	if ok {
-		opts["key"] = key
-	}
-
 	// First call
-	rawlist, err := fetchOneMeasurementPage(measurementEP, opts)
+	rawlist, err := fetchOneMeasurementPage(opts)
 
 	// Empty answer
 	if rawlist.Count == 0 {
@@ -172,7 +127,7 @@ func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
 			opts["page"] = pn
 
-			rawlist, err = fetchOneMeasurementPage(measurementEP, opts)
+			rawlist, err = fetchOneMeasurementPage(opts)
 			if err != nil {
 				return
 			}

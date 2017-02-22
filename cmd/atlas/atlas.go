@@ -4,36 +4,45 @@ This package is just a collection of test cases
 package main
 
 import (
+	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
+	"log"
 	"os"
 	"sort"
 	"strings"
-	"github.com/keltia/ripe-atlas"
-	"log"
 )
 
 var (
 	// flags
-	fWant4 bool
-	fWant6 bool
+	fWant4    bool
+	fWant6    bool
+	fWantMine bool
 
-	fAllProbes bool
+	fAllProbes       bool
 	fAllMeasurements bool
 
-	fAsn string
-	fCountry string
-	fFieldList string
-	fFormat string
-	fOptFields string
-	fSortOrder string
+	fAsn         string
+	fCountry     string
+	fFieldList   string
+	fFormat      string
+	fOptFields   string
+	fProtocol    string
+	fSortOrder   string
 	fMeasureType string
 
-	fVerbose bool
+	fVerbose    bool
 	fWantAnchor bool
+
+	mycnf *atlas.Config
 
 	cliCommands []cli.Command
 )
 
+const (
+	atlasVersion = "0.9"
+)
+
+// ByAlphabet is for sorting
 type ByAlphabet []cli.Command
 
 func (a ByAlphabet) Len() int           { return len(a) }
@@ -41,7 +50,7 @@ func (a ByAlphabet) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByAlphabet) Less(i, j int) bool { return a[i].Name < a[j].Name }
 
 // checkGlobalFlags is the place to check global parameters
-func checkGlobalFlags(o map[string]string) (map[string]string) {
+func checkGlobalFlags(o map[string]string) map[string]string {
 	opts := o
 	if fSortOrder != "" {
 		opts["sort"] = fSortOrder
@@ -70,51 +79,62 @@ func validateFormat(fmt string) bool {
 	return false
 }
 
+func displayOptions(opts map[string]string) {
+	log.Println("Options:")
+	for key, val := range opts {
+		log.Printf("  %s: %s", key, val)
+	}
+}
+
 // main is the starting point (and everything)
 func main() {
 	app := cli.NewApp()
 	app.Name = "atlas"
-	app.Usage = "RIPE Atlas cli interface"
+	app.Usage = "RIPE Atlas CLI interface"
 	app.Author = "Ollivier Robert <roberto@keltia.net>"
-	app.Version = "0.1.0"
-	app.HideVersion = true
+	app.Version = atlasVersion
+	//app.HideVersion = true
 
 	// General flags
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name: "format,f",
-			Usage: "specify output format",
+			Name:        "format,f",
+			Usage:       "specify output format",
 			Destination: &fFormat,
 		},
 		cli.BoolFlag{
-			Name: "verbose,v",
-			Usage: "verbose mode",
+			Name:        "verbose,v",
+			Usage:       "verbose mode",
 			Destination: &fVerbose,
 		},
 		cli.StringFlag{
-			Name: "fields,F",
-			Usage: "specify which fields are wanted",
+			Name:        "fields,F",
+			Usage:       "specify which fields are wanted",
 			Destination: &fFieldList,
 		},
 		cli.StringFlag{
-			Name: "opt-fields,O",
-			Usage: "specify which optional fields are wanted",
+			Name:        "opt-fields,O",
+			Usage:       "specify which optional fields are wanted",
 			Destination: &fOptFields,
 		},
 		cli.StringFlag{
 			Name:        "sort,S",
 			Usage:       "sort results",
-			Value:       "id",
 			Destination: &fSortOrder,
 		},
 	}
 
-	conf, err := atlas.LoadConfig("ripe-atlas")
-	if conf.APIKey != "" && err == nil {
-		atlas.SetAuth(conf.APIKey)
+	var err error
+
+	mycnf, err = atlas.LoadConfig("ripe-atlas")
+	if mycnf.APIKey != "" && err == nil {
+		atlas.SetAuth(mycnf.APIKey)
 		log.Printf("Found API key!")
 	} else {
 		log.Printf("No API key!")
+	}
+	if mycnf.DefaultProbe != 0 && err == nil {
+		log.Printf("Found default probe: %d\n", mycnf.DefaultProbe)
 	}
 	sort.Sort(ByAlphabet(cliCommands))
 	app.Commands = cliCommands
