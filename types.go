@@ -6,12 +6,12 @@ package atlas
 
 // APIError is for errors returned by the RIPE API.
 type APIError struct {
-    Error struct {
-        Status int    `json:"status"`
-        Code   int    `json:"code"`
-        Detail string `json:"detail"`
-        Title  string `json:"title"`
-    } `json:"error"`
+	Error struct {
+		Status int    `json:"status"`
+		Code   int    `json:"code"`
+		Detail string `json:"detail"`
+		Title  string `json:"title"`
+	} `json:"error"`
 }
 
 // Key is holding the API key parameters
@@ -186,8 +186,10 @@ type Definition struct {
 	// Default depends on type
 	Interval int `json:"interval,omitempty"`
 
+	// dns & traceroute parameters
+	Protocol string `json:"protocol"`
+
 	// dns parameters
-	Protocol         string `json:"protocol"`
 	QueryClass       string `json:"query_class,omitempty"`
 	QueryType        string `json:"query_type,omitempty"`
 	QueryArgument    string `json:"query_argument,omitempty"`
@@ -203,7 +205,13 @@ type Definition struct {
 	//   none (see target)
 
 	// traceroute parameters
-	//   none (see target)
+	DestinationOptionSize int  `json:"destination_option_size"`
+	DontFragment          bool `json:"dont_fragment"`
+	DuplicateTimeout      int  `json:"duplicate_timeout"`
+	FirstHop              int  `json:"first_hop"`
+	HopByHopOptionSize    int  `json:"hop_by_hop_option_size"`
+	MaxHops               int  `json:"max_hops"`
+	Paris                 int  `json:"paris"`
 
 	// ntp parameters
 	//   none (see target)
@@ -213,6 +221,12 @@ type Definition struct {
 
 	// sslcert parameters
 	//   none (see target)
+
+	// sslcert & traceroute parameters
+	Port int `json:"port"`
+
+	// ping & traceroute parameters
+	Size int `json:"size"`
 
 	// wifi parameters
 	AnonymousIdentity string `json:"anonymous_identity,omitempty"`
