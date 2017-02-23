@@ -81,7 +81,7 @@ func fetchOneMeasurementPage(opts map[string]string) (raw *measurementList, err 
 // GetMeasurement gets info for a single one
 func GetMeasurement(id int) (m *Measurement, err error) {
 
-	req := prepareRequest(fmt.Sprintf("/measurements/%d", id))
+	req := prepareRequest(fmt.Sprintf("measurements/%d", id))
 	req.Method = rest.Get
 
 	//log.Printf("req: %#v", req)
@@ -100,7 +100,7 @@ func GetMeasurement(id int) (m *Measurement, err error) {
 // DeleteMeasurement stops (not really deletes) a given measurement
 func DeleteMeasurement(id int) (err error) {
 
-	req := prepareRequest(fmt.Sprintf("/measurements/%d", id))
+	req := prepareRequest(fmt.Sprintf("measurements/%d", id))
 	req.Method = rest.Delete
 
 	//log.Printf("req: %#v", req)
@@ -144,4 +144,9 @@ func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 // Start is for starting a given measurement
 func (m *Measurement) Start(id int) (err error) {
 	return nil
+}
+
+// Stop is an alias for delete
+func (m *Measurement) Stop() (err error) {
+	return DeleteMeasurement(m.ID)
 }
