@@ -8,6 +8,10 @@ import (
 	"os"
 )
 
+const (
+	defMaxHops = 30
+)
+
 // init injects our "traceroute" related commands/options.
 func init() {
 	// Fill-in the various commands
@@ -27,6 +31,11 @@ func init() {
 				Usage:       "Sends packets this size",
 				Destination: &fPacketSize,
 			},
+			cli.StringFlag{
+				Name:        "p, protocol",
+				Usage:       "Select UDP or TCP",
+				Destination: &fProtocol,
+			},
 			cli.BoolFlag{
 				Name:        "6, ipv6",
 				Usage:       "displays only IPv6",
@@ -43,6 +52,12 @@ func init() {
 }
 
 func cmdTraceroute(c *cli.Context) error {
+	var (
+		maxHops    int
+		packetSize int
+		proto      string
+	)
+
 	// By default do both
 	if !fWant4 && !fWant6 {
 		fWant6, fWant4 = true, true
@@ -56,18 +71,25 @@ func cmdTraceroute(c *cli.Context) error {
 	target := args[0]
 	var defs []atlas.Definition
 
+	proto = defProtocol
+	maxHops = defMaxHops
+
+	if fPacketSize != 0 {
+		packetSize = fPacketSize
+	}
+	if fMaxHops != 0 {
+		maxHops = fMaxHops
+	}
+
 	if fWant4 {
 		def := atlas.Definition{
 			AF:          4,
 			Description: fmt.Sprintf("Traceroute - %s", target),
 			Type:        "traceroute",
 			Target:      target,
-		}
-		if fPacketSize != 0 {
-			def.Size = fPacketSize
-		}
-		if fMaxHops != 0 {
-			def.MaxHops = fMaxHops
+			Protocol:    proto,
+			MaxHops:     maxHops,
+			Size:        packetSize,
 		}
 		defs = append(defs, def)
 	}
@@ -78,12 +100,9 @@ func cmdTraceroute(c *cli.Context) error {
 			Description: fmt.Sprintf("Traceroute6 - %s", target),
 			Type:        "traceroute",
 			Target:      target,
-		}
-		if fPacketSize != 0 {
-			def.Size = fPacketSize
-		}
-		if fMaxHops != 0 {
-			def.MaxHops = fMaxHops
+			Protocol:    proto,
+			MaxHops:     maxHops,
+			Size:        packetSize,
 		}
 		defs = append(defs, def)
 	}
