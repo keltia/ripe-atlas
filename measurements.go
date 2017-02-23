@@ -116,7 +116,7 @@ func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 
 	// Empty answer
 	if rawlist.Count == 0 {
-		return nil, fmt.Errorf("empty measurement list")
+		return []Measurement{}, nil
 	}
 
 	var res []Measurement
