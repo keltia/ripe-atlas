@@ -33,6 +33,9 @@ var (
 	fVerbose    bool
 	fWantAnchor bool
 
+	fMaxHops    int
+	fPacketSize int
+
 	mycnf *atlas.Config
 
 	cliCommands []cli.Command
