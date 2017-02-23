@@ -205,13 +205,13 @@ type Definition struct {
 	//   none (see target)
 
 	// traceroute parameters
-	DestinationOptionSize int  `json:"destination_option_size"`
-	DontFragment          bool `json:"dont_fragment"`
-	DuplicateTimeout      int  `json:"duplicate_timeout"`
-	FirstHop              int  `json:"first_hop"`
-	HopByHopOptionSize    int  `json:"hop_by_hop_option_size"`
-	MaxHops               int  `json:"max_hops"`
-	Paris                 int  `json:"paris"`
+	DestinationOptionSize int  `json:"destination_option_size,omitempty"`
+	DontFragment          bool `json:"dont_fragment,omitempty"`
+	DuplicateTimeout      int  `json:"duplicate_timeout,omitempty"`
+	FirstHop              int  `json:"first_hop,omitempty"`
+	HopByHopOptionSize    int  `json:"hop_by_hop_option_size,omitempty"`
+	MaxHops               int  `json:"max_hops,omitempty"`
+	Paris                 int  `json:"paris,omitempty"`
 
 	// ntp parameters
 	//   none (see target)
@@ -223,10 +223,10 @@ type Definition struct {
 	//   none (see target)
 
 	// sslcert & traceroute parameters
-	Port int `json:"port"`
+	Port int `json:"port,omitempty"`
 
 	// ping & traceroute parameters
-	Size int `json:"size"`
+	Size int `json:"size,omitempty"`
 
 	// wifi parameters
 	AnonymousIdentity string `json:"anonymous_identity,omitempty"`
