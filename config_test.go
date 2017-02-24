@@ -31,22 +31,40 @@ func TestCheckName(t *testing.T) {
 	if res != "" {
 		t.Errorf("Error: should end with .toml: %s", res)
 	}
+
+	// Check plain file
+	file = "foo.toml"
+	res = checkName(file)
+	if res != file {
+		t.Errorf("Error: plein file.toml is acceptable")
+	}
 }
 
 func TestLoadConfig(t *testing.T) {
-	file := "config.toml"
+	file := "newconfig.toml"
 	conf, err := LoadConfig(file)
+	if err != nil {
+		t.Error("%s does not exist, it should not be an error", file)
+	}
+
+	file = "config.toml"
+	conf, err = LoadConfig(file)
 	if err != nil {
 		t.Errorf("Malformed file %s: %v", file, err)
 	}
 
 	defaultProbe := 666
 	if conf.DefaultProbe != defaultProbe {
-		t.Errorf("Malformed default %d: %d", conf.DefaultProbe, defaultProbe)
+		t.Errorf("Malformed default %d: %d\nconf: %#v", conf.DefaultProbe, defaultProbe, conf)
 	}
 
 	key := "<INSERT-API-KEY>"
 	if conf.APIKey != key {
 		t.Errorf("Malformed default %s: %s", conf.APIKey, key)
+	}
+
+	pool_size := 10
+	if conf.PoolSize != pool_size {
+		t.Errorf("Malformed default %s: %s", conf.PoolSize, pool_size)
 	}
 }
