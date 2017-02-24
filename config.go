@@ -24,6 +24,11 @@ type Config struct {
 
 // Check the parameter for either tag or filename
 func checkName(file string) string {
+	// If ending with .toml, take it litterally
+	if strings.HasSuffix(file, ".toml") {
+		return file
+	}
+
 	// Full path, MUST have .toml
 	if bfile := []byte(file); bfile[0] == '/' {
 		if !strings.HasSuffix(file, ".toml") {
@@ -43,10 +48,21 @@ func checkName(file string) string {
 
 // LoadConfig reads a file as a TOML document and return the structure
 func LoadConfig(file string) (c *Config, err error) {
+	c = new(Config)
+
 	// Check for tag
 	sFile := checkName(file)
+	if sFile == "" {
+		return c, fmt.Errorf("Wrong format for %s", file)
+	}
 
-	c = new(Config)
+	// Check if there is any config file
+	if _, err := os.Stat(sFile); err != nil {
+		// No config file is no error
+		return c, nil
+	}
+
+	// Read it
 	buf, err := ioutil.ReadFile(sFile)
 	if err != nil {
 		return c, fmt.Errorf("Can not read %s", sFile)
