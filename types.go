@@ -217,12 +217,19 @@ type Definition struct {
 	//   none (see target)
 
 	// http parameters
-	//   none (see target)
+	ExtendedTiming     bool   `json:"extended_timing,omitempty"`
+	HeaderBytes        int    `json:"header_bytes,omitempty"`
+	Method             string `json:"method"`
+	MoreExtendedTiming bool   `json:"more_extended_timing,omitempty"`
+	Path               string `json:"path,omitempty"`
+	QueryOptions       string `json:"query_options,omitempty"`
+	UserAgent          string `json:"user_agent,omitempty"`
+	Version            string `json:"version,omitempty"`
 
 	// sslcert parameters
 	//   none (see target)
 
-	// sslcert & traceroute parameters
+	// sslcert & traceroute & http parameters
 	Port int `json:"port,omitempty"`
 
 	// ping & traceroute parameters
