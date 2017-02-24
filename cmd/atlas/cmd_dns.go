@@ -81,7 +81,7 @@ func cmdDNS(c *cli.Context) error {
 	}
 	args := c.Args()
 	if args == nil || len(args) == 0 {
-		log.Fatalf("Error: you must specify at least a name")
+		log.Fatal("Error: you must specify at least a name")
 	}
 
 	qtype = defQueryType
