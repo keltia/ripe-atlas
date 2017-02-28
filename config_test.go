@@ -63,8 +63,8 @@ func TestLoadConfig(t *testing.T) {
 		t.Errorf("Malformed default %s: %s", conf.APIKey, key)
 	}
 
-	pool_size := 10
-	if conf.PoolSize != pool_size {
-		t.Errorf("Malformed default %s: %s", conf.PoolSize, pool_size)
+	poolSize := 10
+	if conf.PoolSize != poolSize {
+		t.Errorf("Malformed default %s: %s", conf.PoolSize, poolSize)
 	}
 }
