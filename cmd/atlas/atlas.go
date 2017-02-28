@@ -32,7 +32,7 @@ var (
 
 	fHTTPMethod	 string
 	fUserAgent   string
-	fVersion     string
+	fHTTPVersion string
 
 	fBitCD         bool
 	fDisableDNSSEC bool

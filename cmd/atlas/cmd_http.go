@@ -29,8 +29,8 @@ func init() {
 			},
 			cli.StringFlag{
 				Name:        "V, version",
-				Usage:       "Set a specific version.",
-				Destination: &fVersion,
+				Usage:       "Set a specific HTTP version.",
+				Destination: &fHTTPVersion,
 			},
 			cli.BoolFlag{
 				Name:        "6, ipv6",
