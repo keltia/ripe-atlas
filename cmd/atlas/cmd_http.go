@@ -80,6 +80,11 @@ func cmdHTTP(c *cli.Context) error {
 		if fUserAgent != "" {
 			def.UserAgent = fUserAgent
 		}
+		if fVersion != "" {
+			def.Version = fVersion
+		} else {
+			def.Version = atlasVersion
+		}
 
 		defs = append(defs, def)
 	}
