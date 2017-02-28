@@ -29,6 +29,12 @@ var (
 	fSortOrder   string
 	fMeasureType string
 
+	fHTTPMethod	 string
+	fUserAgent   string
+
+	fBitCD         bool
+	fDisableDNSSEC bool
+
 	fVerbose    bool
 	fWantAnchor bool
 
