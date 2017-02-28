@@ -13,9 +13,9 @@ func TestCheckName(t *testing.T) {
 	// Check tag usage
 	file := "mytag"
 	res := checkName(file)
-	real := path.Join(os.Getenv("HOME"), fmt.Sprintf(".%s", file), "config.toml")
-	if res != real {
-		t.Errorf("Error: badly formed fullname %s—%s", res, real)
+	realPath := path.Join(os.Getenv("HOME"), fmt.Sprintf(".%s", file), "config.toml")
+	if res != realPath {
+		t.Errorf("Error: badly formed fullname %s—%s", res, realPath)
 	}
 
 	// Check fullname usage
@@ -44,7 +44,7 @@ func TestLoadConfig(t *testing.T) {
 	file := "newconfig.toml"
 	conf, err := LoadConfig(file)
 	if err != nil {
-		t.Error("%s does not exist, it should not be an error", file)
+		t.Errorf("%s does not exist, it should not be an error", file)
 	}
 
 	file = "config.toml"
@@ -65,6 +65,6 @@ func TestLoadConfig(t *testing.T) {
 
 	poolSize := 10
 	if conf.PoolSize != poolSize {
-		t.Errorf("Malformed default %s: %s", conf.PoolSize, poolSize)
+		t.Errorf("Malformed default %d: %d", conf.PoolSize, poolSize)
 	}
 }
