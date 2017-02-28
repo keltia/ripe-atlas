@@ -1,5 +1,6 @@
 /*
-This package is just a collection of test cases
+This package is just a collection of use-case for the various aspects of the RIPE API.
+Consider this both as an example on how to use the API and a testing tool for the API wrapper.
 */
 package main
 
