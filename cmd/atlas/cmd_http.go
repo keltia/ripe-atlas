@@ -47,6 +47,24 @@ func init() {
 	})
 }
 
+func makeDefinition(ip int) (def *atlas.Definition){
+	def = &atlas.Definition{
+		AF:          ip,
+		Type:        "http",
+		Method:      "GET",
+	}
+	if fHTTPMethod != "" {
+		def.Method = fHTTPMethod
+	}
+	if fUserAgent != "" {
+		def.UserAgent = fUserAgent
+	}
+	if fHTTPVersion != "" {
+		def.Version = fHTTPVersion
+	}
+	return
+}
+
 func cmdHTTP(c *cli.Context) error {
 	// By default we want both
 	if !fWant4 && !fWant6 {
@@ -60,58 +78,31 @@ func cmdHTTP(c *cli.Context) error {
 
 	// We expect target to be using [http|https]://<site>[:port]/path
 	target := args[0]
-	var defs []atlas.Definition
+
+	var (
+		defs []atlas.Definition
+	)
 
 	_, site, path, port := analyzeTarget(target)
 
 	if fWant4 {
-		def := atlas.Definition{
-			AF:          4,
-			Description: fmt.Sprintf("HTTP v4 - %s", target),
-			Type:        "http",
-			Method:      "GET",
-			Target:      site,
-			Port:        port,
-			Path:        path,
-		}
-		if fHTTPMethod != "" {
-			def.Method = fHTTPMethod
-		}
-		if fUserAgent != "" {
-			def.UserAgent = fUserAgent
-		}
-		if fVersion != "" {
-			def.Version = fVersion
-		} else {
-			def.Version = atlasVersion
-		}
+		def := makeDefinition(4)
+		def.Description = fmt.Sprintf("HTTP v4 - %s", target)
+		def.Target      = site
+		def.Port        = port
+		def.Path        = path
 
-		defs = append(defs, def)
+		defs = append(defs, *def)
 	}
 
 	if fWant6 {
-		def := atlas.Definition{
-			AF:          6,
-			Description: fmt.Sprintf("HTTP v6 - %s", target),
-			Type:        "http",
-			Method:      "GET",
-			Target:      site,
-			Port:        port,
-			Path:        path,
-		}
-		if fHTTPMethod != "" {
-			def.Method = fHTTPMethod
-		}
-		if fUserAgent != "" {
-			def.UserAgent = fUserAgent
-		}
-		if fVersion != "" {
-			def.Version = fVersion
-		} else {
-			def.Version = atlasVersion
-		}
+		def := makeDefinition(6)
+		def.Description = fmt.Sprintf("HTTP v6 - %s", target)
+		def.Target      = site
+		def.Port        = port
+		def.Path        = path
 
-		defs = append(defs, def)
+		defs = append(defs, *def)
 	}
 
 	req := atlas.MeasurementRequest{
