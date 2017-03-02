@@ -5,11 +5,49 @@ import (
 	"fmt"
 	"github.com/sendgrid/rest"
 	"log"
+	"reflect"
 )
 
 // MeasurementResp contains all the results of the measurements
 type MeasurementResp struct {
 	Measurements []int
+}
+
+// NewMeasurement create a new MeasurementRequest and fills some fields
+func NewMeasurement(t string, fields map[string]string) (req *MeasurementRequest) {
+	var defs []Definition
+
+	def := NewDefinition(t, fields)
+	probes := ProbeSet{
+		{
+			Requested: 10,
+			Type:      "area",
+			Value:     "WW",
+			Tags:      nil,
+		},
+	}
+	defs = append(defs, *def)
+	req = &MeasurementRequest{
+		Definitions: defs,
+		IsOneoff:    true,
+		Probes:      probes,
+	}
+	return
+}
+
+// NewDefinition create a new MeasuremenrRequest and fills some fields
+func NewDefinition(t string, fields map[string]string) (def *Definition) {
+	def = &Definition{
+		Type: t,
+	}
+	sdef := reflect.ValueOf(&def).Elem()
+	typeOfDef := sdef.Type()
+	for k, v := range fields {
+		if _, ok := typeOfDef.FieldByName(k); ok {
+			sdef.FieldByName(k).SetString(v)
+		}
+	}
+	return
 }
 
 // createMeasurement creates a measurement for all types
