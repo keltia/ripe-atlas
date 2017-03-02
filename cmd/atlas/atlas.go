@@ -30,7 +30,7 @@ var (
 	fSortOrder   string
 	fMeasureType string
 
-	fHTTPMethod	 string
+	fHTTPMethod  string
 	fUserAgent   string
 	fHTTPVersion string
 

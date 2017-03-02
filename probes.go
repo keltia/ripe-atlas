@@ -12,16 +12,16 @@ import (
 
 // GetProbe returns data for a single probe
 func GetProbe(id int) (p *Probe, err error) {
-    req := prepareRequest(fmt.Sprintf("probes/%d", id))
-    req.Method = rest.Get
+	req := prepareRequest(fmt.Sprintf("probes/%d", id))
+	req.Method = rest.Get
 
 	//log.Printf("req: %#v", req)
 	r, err := rest.API(req)
-    //log.Printf("r: %#v - err: %#v", r, err)
-    err = handleAPIResponse(r)
-    if err != nil {
-        return
-    }
+	//log.Printf("r: %#v - err: %#v", r, err)
+	err = handleAPIResponse(r)
+	if err != nil {
+		return
+	}
 	p = &Probe{}
 	err = json.Unmarshal([]byte(r.Body), p)
 	//log.Printf("json: %#v\n", p)
@@ -39,25 +39,25 @@ type probeList struct {
 // fetch the given resource
 func fetchOneProbePage(opts map[string]string) (raw *probeList, err error) {
 
-    req := prepareRequest("probes")
-    req.Method = rest.Get
+	req := prepareRequest("probes")
+	req.Method = rest.Get
 
-    // Do not forget to copy our options
-    for qp, val := range opts {
-        req.QueryParams[qp] = val
-    }
+	// Do not forget to copy our options
+	for qp, val := range opts {
+		req.QueryParams[qp] = val
+	}
 
-    r, err := rest.API(req)
-    err = handleAPIResponse(r)
-    if err != nil {
-        return
-    }
+	r, err := rest.API(req)
+	err = handleAPIResponse(r)
+	if err != nil {
+		return
+	}
 
-    raw = &probeList{}
-    err = json.Unmarshal([]byte(r.Body), raw)
-    //log.Printf("Count=%d raw=%v", raw.Count, r)
-    //log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
-    return
+	raw = &probeList{}
+	err = json.Unmarshal([]byte(r.Body), raw)
+	//log.Printf("Count=%d raw=%v", raw.Count, r)
+	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
+	return
 }
 
 // GetProbes returns data for a collection of probes

@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
-	"fmt"
 	"log"
 	"os"
 )
@@ -47,11 +47,11 @@ func init() {
 	})
 }
 
-func makeDefinition(ip int) (def *atlas.Definition){
+func makeDefinition(ip int) (def *atlas.Definition) {
 	def = &atlas.Definition{
-		AF:          ip,
-		Type:        "http",
-		Method:      "GET",
+		AF:     ip,
+		Type:   "http",
+		Method: "GET",
 	}
 	if fHTTPMethod != "" {
 		def.Method = fHTTPMethod
@@ -88,9 +88,9 @@ func cmdHTTP(c *cli.Context) error {
 	if fWant4 {
 		def := makeDefinition(4)
 		def.Description = fmt.Sprintf("HTTP v4 - %s", target)
-		def.Target      = site
-		def.Port        = port
-		def.Path        = path
+		def.Target = site
+		def.Port = port
+		def.Path = path
 
 		defs = append(defs, *def)
 	}
@@ -98,9 +98,9 @@ func cmdHTTP(c *cli.Context) error {
 	if fWant6 {
 		def := makeDefinition(6)
 		def.Description = fmt.Sprintf("HTTP v6 - %s", target)
-		def.Target      = site
-		def.Port        = port
-		def.Path        = path
+		def.Target = site
+		def.Port = port
+		def.Path = path
 
 		defs = append(defs, *def)
 	}
