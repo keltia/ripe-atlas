@@ -16,27 +16,6 @@ const (
 )
 
 var (
-	dnsQueryType = map[string]bool{
-		"A":    true,
-		"AAAA": true,
-		"MX":   true,
-		"PTR":  true,
-		"SIG":  true,
-		"SOA":  true,
-		"TLSA": true,
-		"TXT":  true,
-	}
-
-	dnsQueryClass = map[string]bool{
-		"CHAOS": true,
-		"IN":    true,
-	}
-
-	dnsProtocol = map[string]bool{
-		"TCP": true,
-		"UDP": true,
-	}
-
 	eDns0 = false
 )
 
@@ -73,6 +52,16 @@ func init() {
 				Usage:       "use EDNS0",
 				Destination: &eDns0,
 			},
+			cli.BoolFlag{
+				Name:        "D, disable-dnssec",
+				Usage:       "Do not try to validate DNSSEC RR",
+				Destination: &fDisableDNSSEC,
+			},
+			cli.BoolFlag{
+				Name:        "C, disable-dnssec-checks",
+				Usage:       "Do not try to validate DNSSEC Check by probes",
+				Destination: &fBitCD,
+			},
 			/*			cli.StringFlag{
 							Name:        "t, qtype",
 							Usage:       "Select the query type",
@@ -94,7 +83,15 @@ func init() {
 }
 
 func cmdDNS(c *cli.Context) error {
-	var addr, qtype, qclass, proto string
+	var (
+		bitDO  = true
+		bitCD  = false
+		qtype  = defQueryType
+		qclass = defQueryClass
+		proto  = defProtocol
+
+		addr string
+	)
 
 	// By default we want both
 	if !fWant4 && !fWant6 {
@@ -102,7 +99,7 @@ func cmdDNS(c *cli.Context) error {
 	}
 	args := c.Args()
 	if args == nil || len(args) == 0 {
-		log.Fatalf("Error: you must specify at least a name")
+		log.Fatal("Error: you must specify at least a name")
 	}
 
 	qtype = defQueryType
@@ -125,29 +122,27 @@ func cmdDNS(c *cli.Context) error {
 		proto = fProtocol
 	}
 
-	if !checkQueryParam(qtype, dnsQueryType) {
-		log.Fatalf("Bad query type: %s", qtype)
+	if fDisableDNSSEC {
+		bitDO = false
 	}
 
-	if !checkQueryParam(qclass, dnsQueryClass) {
-		log.Fatalf("Bad query class: %s", qclass)
-	}
-
-	if !checkQueryParam(proto, dnsProtocol) {
-		log.Fatalf("Bad protocol: %s", proto)
+	if fBitCD {
+		bitCD = true
 	}
 
 	var defs []atlas.Definition
 
 	if fWant4 {
 		def := atlas.Definition{
-			AF:             4,
-			Description:    fmt.Sprintf("DNS v4 - %s %s %s", addr, qtype, qclass),
-			Type:           "dns",
-			Protocol:       proto,
-			QueryArgument:  addr,
-			QueryClass:     qclass,
-			QueryType:      qtype,
+			AF:            4,
+			Description:   fmt.Sprintf("DNS v4 - %s %s %s", addr, qtype, qclass),
+			Type:          "dns",
+			Protocol:      proto,
+			QueryArgument: addr,
+			QueryClass:    qclass,
+			QueryType:     qtype,
+			SetDOBit:      bitDO,
+			SetCDBit:      bitCD,
 		}
 		if eDns0 {
 			def.UDPPayloadSize = 4096
@@ -158,13 +153,15 @@ func cmdDNS(c *cli.Context) error {
 
 	if fWant6 {
 		def := atlas.Definition{
-			AF:             6,
-			Description:    fmt.Sprintf("DNS v6 - %s %s %s", addr, qtype, qclass),
-			Type:           "dns",
-			Protocol:       proto,
-			QueryArgument:  addr,
-			QueryClass:     qclass,
-			QueryType:      qtype,
+			AF:            6,
+			Description:   fmt.Sprintf("DNS v6 - %s %s %s", addr, qtype, qclass),
+			Type:          "dns",
+			Protocol:      proto,
+			QueryArgument: addr,
+			QueryClass:    qclass,
+			QueryType:     qtype,
+			SetDOBit:      bitDO,
+			SetCDBit:      bitCD,
 		}
 		if eDns0 {
 			def.UDPPayloadSize = 4096

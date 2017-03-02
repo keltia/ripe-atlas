@@ -6,17 +6,18 @@
 package atlas
 
 import (
-    "regexp"
-    "errors"
-	"github.com/sendgrid/rest"
-	"fmt"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/sendgrid/rest"
+	"log"
+	"regexp"
 )
 
 const (
 	apiEndpoint = "https://atlas.ripe.net/api/v2"
 
-	ourVersion = "0.9"
+	ourVersion = "0.10"
 )
 
 // APIKey is the API key
@@ -39,6 +40,11 @@ func HasAPIKey() (string, bool) {
 		return "", false
 	}
 	return APIKey, true
+}
+
+// GetVersion returns the API wrapper version
+func GetVersion() string {
+	return ourVersion
 }
 
 // getPageNum returns the value of the page= parameter
@@ -68,8 +74,8 @@ func prepareRequest(what string) (req rest.Request) {
 	}
 
 	req = rest.Request{
-		BaseURL: endPoint,
-		Headers: hdrs,
+		BaseURL:     endPoint,
+		Headers:     hdrs,
 		QueryParams: opts,
 	}
 	return
@@ -77,16 +83,35 @@ func prepareRequest(what string) (req rest.Request) {
 
 // handleAPIResponse check status code & errors from the API
 func handleAPIResponse(r *rest.Response) (err error) {
-	if r.StatusCode != 200 {
-		if r.StatusCode != 0 {
-			var aerr APIError
-
-			err = json.Unmarshal([]byte(r.Body), &aerr)
-			err = fmt.Errorf("status: %d code: %d - r:%v\n",
-				aerr.Error.Status,
-				aerr.Error.Code,
-				aerr.Error.Detail)
-		}
+	// Everything is fine
+	if r.StatusCode == 0 {
+		return nil
 	}
+
+	// Everything is fine too
+	if r.StatusCode >= 200 && r.StatusCode <= 299 {
+		return nil
+	}
+
+	// Check this condition
+	if r.StatusCode >= 300 && r.StatusCode <= 399 {
+		var aerr APIError
+
+		err = json.Unmarshal([]byte(r.Body), &aerr)
+		log.Printf("Info 3XX status: %d code: %d - r:%v\n",
+			aerr.Error.Status,
+			aerr.Error.Code,
+			aerr.Error.Detail)
+		return nil
+	}
+
+	// EVerything else is an error
+	var aerr APIError
+
+	err = json.Unmarshal([]byte(r.Body), &aerr)
+	err = fmt.Errorf("status: %d code: %d - r:%v",
+		aerr.Error.Status,
+		aerr.Error.Code,
+		aerr.Error.Detail)
 	return
 }

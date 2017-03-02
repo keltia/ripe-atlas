@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/urfave/cli"
 	"github.com/keltia/ripe-atlas"
+	"github.com/urfave/cli"
 	"log"
 	"os"
 	"strconv"
@@ -45,7 +45,7 @@ func cmdIP(c *cli.Context) error {
 	args := c.Args()
 	if len(args) == 0 {
 		if mycnf.DefaultProbe == 0 {
-			log.Fatalf("Error: you must specify a probe ID!")
+			log.Fatal("Error: you must specify a probe ID!")
 		} else {
 			probeID = fmt.Sprintf("%d", mycnf.DefaultProbe)
 		}

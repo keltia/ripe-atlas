@@ -2,7 +2,7 @@
 
 * RIPE Atlas v2 API access in Go. *
 
-[![godoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/keltia/ripe-atlas) [![license](https://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/keltia/ripe-atlas/master/LICENSE) [![build](https://img.shields.io/travis/keltia/ripe-atlas.svg?style=flat)](https://travis-ci.org/keltia/ripe-atlas)
+[![godoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/keltia/ripe-atlas) [![license](https://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/keltia/ripe-atlas/master/LICENSE) [![build](https://img.shields.io/travis/keltia/ripe-atlas.svg?style=flat)](https://travis-ci.org/keltia/ripe-atlas) [![Go Report Card](https://goreportcard.com/badge/github.com/keltia/ripe-atlas)](https://goreportcard.com/report/github.com/keltia/ripe-atlas)
 
 **ripe-atlas is a Go library to access the RIPE Atlas [REST API](https://atlas.ripe.net/docs/api/v2/manual/).
 
@@ -88,7 +88,7 @@ There are only a few parameters for now, the most important one being your API K
   
   ```
   NAME:
-     atlas - RIPE Atlas cli interface
+     atlas - RIPE Atlas CLI interface
   
   USAGE:
      atlas [global options] command [command options] [arguments...]
@@ -104,7 +104,7 @@ There are only a few parameters for now, the most important one being your API K
      measurements, measures, m	measurements-related keywords
      ntp			get time from ntp server
      ping			ping selected address
-     probes, pb		probe-related keywords
+     probes, p, pb		probe-related keywords
      sslcert, tlscert, tls	get TLS certificate from host/IP
      traceroute, trace		traceroute to given host/IP
 
@@ -119,11 +119,17 @@ There are only a few parameters for now, the most important one being your API K
   
   In addition to the main `probes` and `measurements` commands, it features fast-access to common tasks like `ping`and `traceroute`.
 
+When looking at measurement results, it is very easy to use something like [jq](https://stedolan.github.io/jq) to properly display JSON data:
+
+    atlas results <ID> | jq .
+
 ### TODO
 
-- more tests
+- more tests (and better ones!)
 - better display of results
 - implementation behind many keywords
+  dns, keys, sslcert, ping, ntp, probes, measurements: done
+  traceroute, http, https: pending
 - even more tests
 
 ### External Documentation

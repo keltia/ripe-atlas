@@ -17,7 +17,7 @@ func TestWantAuth(t *testing.T) {
 
 	var (
 		key string
-		ok bool
+		ok  bool
 	)
 
 	SetAuth("")

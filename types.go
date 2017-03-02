@@ -6,12 +6,12 @@ package atlas
 
 // APIError is for errors returned by the RIPE API.
 type APIError struct {
-    Error struct {
-        Status int    `json:"status"`
-        Code   int    `json:"code"`
-        Detail string `json:"detail"`
-        Title  string `json:"title"`
-    } `json:"error"`
+	Error struct {
+		Status int    `json:"status"`
+		Code   int    `json:"code"`
+		Detail string `json:"detail"`
+		Title  string `json:"title"`
+	} `json:"error"`
 }
 
 // Key is holding the API key parameters
@@ -186,8 +186,10 @@ type Definition struct {
 	// Default depends on type
 	Interval int `json:"interval,omitempty"`
 
+	// dns & traceroute parameters
+	Protocol string `json:"protocol"`
+
 	// dns parameters
-	Protocol         string `json:"protocol"`
 	QueryClass       string `json:"query_class,omitempty"`
 	QueryType        string `json:"query_type,omitempty"`
 	QueryArgument    string `json:"query_argument,omitempty"`
@@ -203,16 +205,35 @@ type Definition struct {
 	//   none (see target)
 
 	// traceroute parameters
-	//   none (see target)
+	DestinationOptionSize int  `json:"destination_option_size,omitempty"`
+	DontFragment          bool `json:"dont_fragment,omitempty"`
+	DuplicateTimeout      int  `json:"duplicate_timeout,omitempty"`
+	FirstHop              int  `json:"first_hop,omitempty"`
+	HopByHopOptionSize    int  `json:"hop_by_hop_option_size,omitempty"`
+	MaxHops               int  `json:"max_hops,omitempty"`
+	Paris                 int  `json:"paris,omitempty"`
 
 	// ntp parameters
 	//   none (see target)
 
 	// http parameters
-	//   none (see target)
+	ExtendedTiming     bool   `json:"extended_timing,omitempty"`
+	HeaderBytes        int    `json:"header_bytes,omitempty"`
+	Method             string `json:"method"`
+	MoreExtendedTiming bool   `json:"more_extended_timing,omitempty"`
+	Path               string `json:"path,omitempty"`
+	QueryOptions       string `json:"query_options,omitempty"`
+	UserAgent          string `json:"user_agent,omitempty"`
+	Version            string `json:"version,omitempty"`
 
 	// sslcert parameters
 	//   none (see target)
+
+	// sslcert & traceroute & http parameters
+	Port int `json:"port,omitempty"`
+
+	// ping & traceroute parameters
+	Size int `json:"size,omitempty"`
 
 	// wifi parameters
 	AnonymousIdentity string `json:"anonymous_identity,omitempty"`

@@ -83,7 +83,7 @@ func keysList(c *cli.Context) (err error) {
 func keysInfo(c *cli.Context) (err error) {
 	args := c.Args()
 	if args[0] == "" {
-		log.Fatalf("Error: you must specify a UUID!")
+		log.Fatal("Error: you must specify a UUID!")
 	}
 
 	k, err := atlas.GetKey(args[0])

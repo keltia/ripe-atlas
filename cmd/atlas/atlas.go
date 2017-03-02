@@ -1,5 +1,6 @@
 /*
-This package is just a collection of test cases
+This package is just a collection of use-case for the various aspects of the RIPE API.
+Consider this both as an example on how to use the API and a testing tool for the API wrapper.
 */
 package main
 
@@ -9,7 +10,6 @@ import (
 	"log"
 	"os"
 	"sort"
-	"strings"
 )
 
 var (
@@ -30,8 +30,18 @@ var (
 	fSortOrder   string
 	fMeasureType string
 
+	fHTTPMethod  string
+	fUserAgent   string
+	fHTTPVersion string
+
+	fBitCD         bool
+	fDisableDNSSEC bool
+
 	fVerbose    bool
 	fWantAnchor bool
+
+	fMaxHops    int
+	fPacketSize int
 
 	mycnf *atlas.Config
 
@@ -39,55 +49,17 @@ var (
 )
 
 const (
-	atlasVersion = "0.9"
+	atlasVersion = "0.10"
 )
-
-// ByAlphabet is for sorting
-type ByAlphabet []cli.Command
-
-func (a ByAlphabet) Len() int           { return len(a) }
-func (a ByAlphabet) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ByAlphabet) Less(i, j int) bool { return a[i].Name < a[j].Name }
-
-// checkGlobalFlags is the place to check global parameters
-func checkGlobalFlags(o map[string]string) map[string]string {
-	opts := o
-	if fSortOrder != "" {
-		opts["sort"] = fSortOrder
-	}
-
-	if fFieldList != "" {
-		opts["fields"] = fFieldList
-	}
-
-	if fOptFields != "" {
-		opts["optional_fields"] = fOptFields
-	}
-
-	if fFormat != "" && validateFormat(fFormat) {
-		opts["format"] = fFormat
-	}
-	return opts
-}
-
-// validateFormat allows only supported formats
-func validateFormat(fmt string) bool {
-	f := strings.ToLower(fmt)
-	if f == "json" || f == "xml" || f == "api" || f == "txt" || f == "jsonp" {
-		return true
-	}
-	return false
-}
-
-func displayOptions(opts map[string]string) {
-	log.Println("Options:")
-	for key, val := range opts {
-		log.Printf("  %s: %s", key, val)
-	}
-}
 
 // main is the starting point (and everything)
 func main() {
+	cli.VersionFlag = cli.BoolFlag{Name: "version, V"}
+
+	cli.VersionPrinter = func(c *cli.Context) {
+		log.Printf("API wrapper: %s Atlas CLI: %s\n", c.App.Version, atlas.GetVersion())
+	}
+
 	app := cli.NewApp()
 	app.Name = "atlas"
 	app.Usage = "RIPE Atlas CLI interface"

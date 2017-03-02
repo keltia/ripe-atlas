@@ -161,8 +161,8 @@ func measurementsList(c *cli.Context) error {
 // measurementInfo is for one measurement only
 func measurementInfo(c *cli.Context) error {
 	args := c.Args()
-	if args[0] == "" {
-		log.Fatalf("Error: you must specify a measurement ID!")
+	if len(args) == 0 {
+		log.Fatal("Error: you must specify a measurement ID!")
 	}
 
 	id, _ := strconv.ParseInt(args[0], 10, 32)
@@ -180,8 +180,8 @@ func measurementInfo(c *cli.Context) error {
 // measurementResults returns the result part of the measurement
 func measurementResults(c *cli.Context) error {
 	args := c.Args()
-	if args[0] == "" {
-		log.Fatalf("Error: you must specify a measurement ID!")
+	if len(args) == 0 {
+		log.Fatal("Error: you must specify a measurement ID!")
 	}
 
 	id, _ := strconv.ParseInt(args[0], 10, 32)
@@ -237,12 +237,12 @@ func measurementDelete(c *cli.Context) (err error) {
 					err = fmt.Errorf("Error: can not delete measurement %d", m.ID)
 				}
 			}
-			fmt.Printf("All measurements stopped.")
+			fmt.Println("All measurements stopped.")
 		}
 	} else {
 		args := c.Args()
 		if args[0] == "" {
-			log.Fatalf("Error: you must specify a measurement ID!")
+			log.Fatal("Error: you must specify a measurement ID!")
 		}
 
 		id, _ = strconv.ParseInt(args[0], 10, 32)
