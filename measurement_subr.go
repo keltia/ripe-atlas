@@ -6,6 +6,7 @@ import (
 	"github.com/sendgrid/rest"
 	"log"
 	"reflect"
+	"strconv"
 )
 
 // MeasurementResp contains all the results of the measurements
@@ -43,8 +44,19 @@ func NewDefinition(t string, fields map[string]string) (def *Definition) {
 	sdef := reflect.ValueOf(&def).Elem()
 	typeOfDef := sdef.Type()
 	for k, v := range fields {
-		if _, ok := typeOfDef.FieldByName(k); ok {
-			sdef.FieldByName(k).SetString(v)
+		// Check the field is present
+		if f, ok := typeOfDef.FieldByName(k); ok {
+			// Use the right type
+			switch f.Name {
+			case "float":
+				vf, _ := strconv.ParseFloat(v, 32)
+				sdef.FieldByName(k).SetFloat(vf)
+			case "int":
+				vi, _ := strconv.ParseInt(v, 10, 32)
+				sdef.FieldByName(k).SetInt(vi)
+			case "string":
+				sdef.FieldByName(k).SetString(v)
+			}
 		}
 	}
 	return
