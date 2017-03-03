@@ -82,7 +82,7 @@ func keysList(c *cli.Context) (err error) {
 
 func keysInfo(c *cli.Context) (err error) {
 	args := c.Args()
-	if args[0] == "" {
+	if len(args) == 0 {
 		log.Fatal("Error: you must specify a UUID!")
 	}
 
