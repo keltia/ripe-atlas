@@ -17,7 +17,7 @@ import (
 const (
 	apiEndpoint = "https://atlas.ripe.net/api/v2"
 
-	ourVersion = "0.9"
+	ourVersion = "0.10"
 )
 
 // APIKey is the API key

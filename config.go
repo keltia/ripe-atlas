@@ -17,7 +17,7 @@ import (
 
 // Config holds our parameters
 type Config struct {
-	APIKey    	 string
+	APIKey       string
 	DefaultProbe int
 	PoolSize     int
 }

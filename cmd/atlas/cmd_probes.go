@@ -4,8 +4,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/urfave/cli"
 	"github.com/keltia/ripe-atlas"
+	"github.com/urfave/cli"
 	"log"
 	"os"
 	"strconv"

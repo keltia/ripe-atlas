@@ -44,18 +44,18 @@ func TestCheckAllTypesAs(t *testing.T) {
 	}
 
 	dl = []Definition{
-			{Type: "dns"},
-			{Type: "ping"},
-		}
+		{Type: "dns"},
+		{Type: "ping"},
+	}
 	valid = checkAllTypesAs(dl, "ping")
 	if valid != false {
 		t.Errorf("valid should be false")
 	}
 
 	dl = []Definition{
-			{Type: "ping"},
-			{Type: "ping"},
-		}
+		{Type: "ping"},
+		{Type: "ping"},
+	}
 	valid = checkAllTypesAs(dl, "ping")
 	if valid != true {
 		t.Errorf("valid should be true")
@@ -64,7 +64,7 @@ func TestCheckAllTypesAs(t *testing.T) {
 
 func TestDNS(t *testing.T) {
 	d := []Definition{{Type: "foo"}}
-	r := MeasurementRequest{Definitions:d}
+	r := MeasurementRequest{Definitions: d}
 
 	_, err := DNS(r)
 	if err != ErrInvalidMeasurementType {
@@ -74,7 +74,7 @@ func TestDNS(t *testing.T) {
 
 func TestNTP(t *testing.T) {
 	d := []Definition{{Type: "foo"}}
-	r := MeasurementRequest{Definitions:d}
+	r := MeasurementRequest{Definitions: d}
 
 	_, err := NTP(r)
 	if err != ErrInvalidMeasurementType {
@@ -84,7 +84,7 @@ func TestNTP(t *testing.T) {
 
 func TestPing(t *testing.T) {
 	d := []Definition{{Type: "foo"}}
-	r := MeasurementRequest{Definitions:d}
+	r := MeasurementRequest{Definitions: d}
 
 	_, err := Ping(r)
 	if err != ErrInvalidMeasurementType {
@@ -94,7 +94,7 @@ func TestPing(t *testing.T) {
 
 func TestSSLCert(t *testing.T) {
 	d := []Definition{{Type: "foo"}}
-	r := MeasurementRequest{Definitions:d}
+	r := MeasurementRequest{Definitions: d}
 
 	_, err := SSLCert(r)
 	if err != ErrInvalidMeasurementType {
@@ -104,7 +104,7 @@ func TestSSLCert(t *testing.T) {
 
 func TestTraceroute(t *testing.T) {
 	d := []Definition{{Type: "foo"}}
-	r := MeasurementRequest{Definitions:d}
+	r := MeasurementRequest{Definitions: d}
 
 	_, err := Traceroute(r)
 	if err != ErrInvalidMeasurementType {

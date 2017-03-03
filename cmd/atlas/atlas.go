@@ -30,7 +30,7 @@ var (
 	fSortOrder   string
 	fMeasureType string
 
-	fHTTPMethod	 string
+	fHTTPMethod  string
 	fUserAgent   string
 	fHTTPVersion string
 
@@ -49,7 +49,7 @@ var (
 )
 
 const (
-	atlasVersion = "0.9"
+	atlasVersion = "0.10"
 )
 
 // main is the starting point (and everything)
