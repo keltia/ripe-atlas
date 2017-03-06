@@ -187,18 +187,18 @@ type Definition struct {
 	Interval int `json:"interval,omitempty"`
 
 	// dns & traceroute parameters
-	Protocol string `json:"protocol"`
+	Protocol string `json:"protocol,omitempty"`
 
 	// dns parameters
 	QueryClass       string `json:"query_class,omitempty"`
 	QueryType        string `json:"query_type,omitempty"`
 	QueryArgument    string `json:"query_argument,omitempty"`
-	Retry            int    `json:"retry"`
-	SetCDBit         bool   `json:"set_cd_bit"`
-	SetDOBit         bool   `json:"set_do_bit"`
-	SetNSIDBit       bool   `json:"set_nsid_bit"`
-	SetRDBit         bool   `json:"set_rd_bit"`
-	UDPPayloadSize   int    `json:"udp_payload_size"`
+	Retry            int    `json:"retry,omitempty"`
+	SetCDBit         bool   `json:"set_cd_bit,omitempty"`
+	SetDOBit         bool   `json:"set_do_bit,omitempty"`
+	SetNSIDBit       bool   `json:"set_nsid_bit,omitempty"`
+	SetRDBit         bool   `json:"set_rd_bit,omitempty"`
+	UDPPayloadSize   int    `json:"udp_payload_size,omitempty"`
 	UseProbeResolver bool   `json:"use_probe_resolver"`
 
 	// ping parameters
@@ -219,7 +219,7 @@ type Definition struct {
 	// http parameters
 	ExtendedTiming     bool   `json:"extended_timing,omitempty"`
 	HeaderBytes        int    `json:"header_bytes,omitempty"`
-	Method             string `json:"method"`
+	Method             string `json:"method,omitempty"`
 	MoreExtendedTiming bool   `json:"more_extended_timing,omitempty"`
 	Path               string `json:"path,omitempty"`
 	QueryOptions       string `json:"query_options,omitempty"`
