@@ -20,6 +20,7 @@ func init() {
 			cli.StringFlag{
 				Name:        "X, method",
 				Usage:       "Use this method instead of default GET",
+				Value:       "GET",
 				Destination: &fHTTPMethod,
 			},
 			cli.StringFlag{
@@ -37,30 +38,35 @@ func init() {
 	})
 }
 
-func makeDefinition(ip int) (def *atlas.Definition) {
-	def = &atlas.Definition{
-		AF:     ip,
-		Type:   "http",
-		Method: "GET",
+func prepareHTTP(target, path string, port int) (req *atlas.MeasurementRequest) {
+	opts := map[string]string{
+		"Type":        "http",
+		"Method":      fHTTPMethod,
+		"UserAgent":   fUserAgent,
+		"Version":     fHTTPVersion,
+		"Description": fmt.Sprintf("HTTP - %s", target),
+		"Target":      target,
+		"Path":        path,
+		"Port":        fmt.Sprintf("%d", port),
 	}
-	if fHTTPMethod != "" {
-		def.Method = fHTTPMethod
+
+	req = atlas.NewMeasurement()
+	if mycnf.WantAF == WantBoth {
+
+		opts["AF"] = "4"
+		req.AddDefinition(opts)
+
+		opts["AF"] = "6"
+		req.AddDefinition(opts)
+	} else {
+		opts["AF"] = mycnf.WantAF
+		req.AddDefinition(opts)
 	}
-	if fUserAgent != "" {
-		def.UserAgent = fUserAgent
-	}
-	if fHTTPVersion != "" {
-		def.Version = fHTTPVersion
-	}
+
 	return
 }
 
 func cmdHTTP(c *cli.Context) error {
-	// By default we want both
-	if !fWant4 && !fWant6 {
-		fWant6, fWant4 = true, true
-	}
-
 	args := c.Args()
 	if len(args) == 0 {
 		log.Fatal("Error: you must specify a hostname/site!")
@@ -69,47 +75,15 @@ func cmdHTTP(c *cli.Context) error {
 	// We expect target to be using [http|https]://<site>[:port]/path
 	target := args[0]
 
-	var (
-		defs []atlas.Definition
-	)
-
-	_, site, path, port := analyzeTarget(target)
-
-	if fWant4 {
-		def := makeDefinition(4)
-		def.Description = fmt.Sprintf("HTTP v4 - %s", target)
-		def.Target = site
-		def.Port = port
-		def.Path = path
-
-		defs = append(defs, *def)
+	proto, site, path, port := analyzeTarget(target)
+	if proto == "" || site == "" {
+		return fmt.Errorf("Invalid URL: %s", target)
 	}
 
-	if fWant6 {
-		def := makeDefinition(6)
-		def.Description = fmt.Sprintf("HTTP v6 - %s", target)
-		def.Target = site
-		def.Port = port
-		def.Path = path
+	log.Printf("Target: %s://%s:%d%s", proto, site, port, path)
 
-		defs = append(defs, *def)
-	}
+	req := prepareHTTP(site, path, port)
 
-	req := atlas.MeasurementRequest{
-		Definitions: defs,
-		IsOneoff:    true,
-	}
-	// Default set of probes
-	probes := atlas.ProbeSet{
-		{
-			Requested: mycnf.PoolSize,
-			Type:      "area",
-			Value:     "WW",
-			Tags:      nil,
-		},
-	}
-
-	req.Probes = probes
 	log.Printf("req=%#v", req)
 	//str := res.Result.Display()
 
