@@ -14,8 +14,11 @@ import (
 
 var (
 	// flags
-	fWant4    bool
-	fWant6    bool
+	fWant4 bool
+	fWant6 bool
+	WantAF int
+
+	// True by default
 	fWantMine bool
 
 	fAllProbes       bool
@@ -50,7 +53,35 @@ var (
 
 const (
 	atlasVersion = "0.10"
+
+	WantBoth = "64"
+	Want4    = "4"
+	Want6    = "6"
+
 )
+
+// -4 & -6 are special, if neither is specified, then we turn both as true
+func finalcheck(c *cli.Context) error {
+	if fWant4 {
+		mycnf.WantAF = Want4
+	}
+
+	if fWant6 {
+		mycnf.WantAF = Want6
+	}
+
+	// Both are fine
+	if fWant4 && fWant6 {
+		mycnf.WantAF = WantBoth
+	}
+
+	// So is neither — common case
+	if !fWant4 && !fWant6 {
+		mycnf.WantAF = WantBoth
+	}
+
+	return nil
+}
 
 // main is the starting point (and everything)
 func main() {
@@ -106,6 +137,9 @@ func main() {
 		},
 	}
 
+	// Ensure -4 & -6 are treated properly
+	app.Before = finalcheck
+
 	var err error
 
 	mycnf, err = atlas.LoadConfig("ripe-atlas")
@@ -117,11 +151,6 @@ func main() {
 	}
 	if mycnf.DefaultProbe != 0 && err == nil {
 		log.Printf("Found default probe: %d\n", mycnf.DefaultProbe)
-	}
-
-	// By default we want both
-	if !fWant4 && !fWant6 {
-		fWant6, fWant4 = true, true
 	}
 
 	sort.Sort(ByAlphabet(cliCommands))
