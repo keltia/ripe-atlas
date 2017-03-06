@@ -118,6 +118,12 @@ func main() {
 	if mycnf.DefaultProbe != 0 && err == nil {
 		log.Printf("Found default probe: %d\n", mycnf.DefaultProbe)
 	}
+
+	// By default we want both
+	if !fWant4 && !fWant6 {
+		fWant6, fWant4 = true, true
+	}
+
 	sort.Sort(ByAlphabet(cliCommands))
 	app.Commands = cliCommands
 	app.Run(os.Args)
