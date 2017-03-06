@@ -94,6 +94,16 @@ func main() {
 			Usage:       "sort results",
 			Destination: &fSortOrder,
 		},
+		cli.BoolFlag{
+			Name:        "6, ipv6",
+			Usage:       "Only IPv6",
+			Destination: &fWant6,
+		},
+		cli.BoolFlag{
+			Name:        "4, ipv4",
+			Usage:       "Only IPv4",
+			Destination: &fWant4,
+		},
 	}
 
 	var err error

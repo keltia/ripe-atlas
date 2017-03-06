@@ -15,18 +15,6 @@ func init() {
 		Name:        "ping",
 		Usage:       "ping selected address",
 		Description: "send echo/reply to an IP",
-		Flags: []cli.Flag{
-			cli.BoolFlag{
-				Name:        "6, ipv6",
-				Usage:       "displays only IPv6",
-				Destination: &fWant6,
-			},
-			cli.BoolFlag{
-				Name:        "4, ipv4",
-				Usage:       "displays only IPv4",
-				Destination: &fWant4,
-			},
-		},
 		Action: cmdPing,
 	})
 }

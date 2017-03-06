@@ -38,16 +38,6 @@ func init() {
 		},
 		Flags: []cli.Flag{
 			cli.BoolFlag{
-				Name:        "6, ipv6",
-				Usage:       "displays only IPv6",
-				Destination: &fWant6,
-			},
-			cli.BoolFlag{
-				Name:        "4, ipv4",
-				Usage:       "displays only IPv4",
-				Destination: &fWant4,
-			},
-			cli.BoolFlag{
 				Name:        "E, edns0",
 				Usage:       "use EDNS0",
 				Destination: &eDns0,

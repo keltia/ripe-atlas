@@ -36,16 +36,6 @@ func init() {
 				Usage:       "Select UDP or TCP",
 				Destination: &fProtocol,
 			},
-			cli.BoolFlag{
-				Name:        "6, ipv6",
-				Usage:       "displays only IPv6",
-				Destination: &fWant6,
-			},
-			cli.BoolFlag{
-				Name:        "4, ipv4",
-				Usage:       "displays only IPv4",
-				Destination: &fWant4,
-			},
 		},
 		Action: cmdTraceroute,
 	})
