@@ -21,12 +21,33 @@ func init() {
 
 // shortcuts
 
+func preparePing(target string) (req *atlas.MeasurementRequest) {
+	opts := map[string]string{
+		"Type":        "ping",
+		"Description": fmt.Sprintf("Ping - %s", target),
+		"Target":      target,
+	}
+
+	req = atlas.NewMeasurement()
+	if mycnf.WantAF == WantBoth {
+
+		opts["AF"] = "4"
+		req.AddDefinition(opts)
+
+		opts["AF"] = "6"
+		req.AddDefinition(opts)
+	} else {
+		opts["AF"] = mycnf.WantAF
+		req.AddDefinition(opts)
+	}
+
+	return
+}
+
+
+
 // cmdIP is a short for displaying the IPs for one probe
 func cmdPing(c *cli.Context) error {
-	// By default we want both
-	if !fWant4 && !fWant6 {
-		fWant6, fWant4 = true, true
-	}
 	args := c.Args()
 	if args == nil || len(args) != 1 {
 		log.Fatal("Error: you must specify a hostname/IP")
@@ -34,43 +55,7 @@ func cmdPing(c *cli.Context) error {
 
 	addr := args[0]
 
-	var defs []atlas.Definition
-
-	if fWant4 {
-		def := atlas.Definition{
-			Description: "My ping",
-			Type:        "ping",
-			Target:      addr,
-			AF:          4,
-		}
-		defs = append(defs, def)
-	}
-
-	if fWant6 {
-		def := atlas.Definition{
-			Description: "My ping",
-			Type:        "ping",
-			Target:      addr,
-			AF:          6,
-		}
-		defs = append(defs, def)
-	}
-
-	req := atlas.MeasurementRequest{
-		Definitions: defs,
-		IsOneoff:    true,
-	}
-	// Default set of probes
-	probes := atlas.ProbeSet{
-		{
-			Requested: 10,
-			Type:      "area",
-			Value:     "WW",
-			Tags:      nil,
-		},
-	}
-
-	req.Probes = probes
+	req := preparePing(addr)
 	log.Printf("req=%#v", req)
 	m, err := atlas.Ping(req)
 	if err != nil {
