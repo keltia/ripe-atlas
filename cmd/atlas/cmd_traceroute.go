@@ -97,7 +97,7 @@ func cmdTraceroute(c *cli.Context) error {
 		defs = append(defs, def)
 	}
 
-	req := atlas.MeasurementRequest{
+	req := &atlas.MeasurementRequest{
 		Definitions: defs,
 		IsOneoff:    true,
 	}

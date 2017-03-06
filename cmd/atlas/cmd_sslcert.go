@@ -57,7 +57,7 @@ func cmdTLSCert(c *cli.Context) (err error) {
 		defs = append(defs, def)
 	}
 
-	req := atlas.MeasurementRequest{
+	req := &atlas.MeasurementRequest{
 		Definitions: defs,
 		IsOneoff:    true,
 	}
