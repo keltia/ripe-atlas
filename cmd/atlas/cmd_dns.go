@@ -72,6 +72,41 @@ func init() {
 	})
 }
 
+func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRequest) {
+	opts := map[string]string{
+		"Type":        "dns",
+		"Description": fmt.Sprintf("DNS - %s", qa),
+		"Protocol":      proto,
+		"QueryArgument": qa,
+		"QueryClass":    qc,
+		"QueryType":     qt,
+		"SetDOBit":      fmt.Sprintf("%b", do),
+		"SetCDBit":      fmt.Sprintf("%b", cd),
+	}
+
+	if eDns0 {
+		opts["UDPPayloadSize"] = "4096"
+		opts["Protocol"] = "UDP"
+	} else {
+		opts["UDPPayloadSize"] = "512"
+	}
+
+	req = atlas.NewMeasurement()
+	if mycnf.WantAF == WantBoth {
+
+		opts["AF"] = "4"
+		req.AddDefinition(opts)
+
+		opts["AF"] = "6"
+		req.AddDefinition(opts)
+	} else {
+		opts["AF"] = mycnf.WantAF
+		req.AddDefinition(opts)
+	}
+
+	return
+}
+
 func cmdDNS(c *cli.Context) error {
 	var (
 		bitDO  = true
@@ -83,10 +118,6 @@ func cmdDNS(c *cli.Context) error {
 		addr string
 	)
 
-	// By default we want both
-	if !fWant4 && !fWant6 {
-		fWant6, fWant4 = true, true
-	}
 	args := c.Args()
 	if args == nil || len(args) == 0 {
 		log.Fatal("Error: you must specify at least a name")
@@ -120,61 +151,8 @@ func cmdDNS(c *cli.Context) error {
 		bitCD = true
 	}
 
-	var defs []atlas.Definition
+	req := prepareDNS(proto, addr, qclass, qtype, bitDO, bitCD)
 
-	if fWant4 {
-		def := atlas.Definition{
-			AF:            4,
-			Description:   fmt.Sprintf("DNS v4 - %s %s %s", addr, qtype, qclass),
-			Type:          "dns",
-			Protocol:      proto,
-			QueryArgument: addr,
-			QueryClass:    qclass,
-			QueryType:     qtype,
-			SetDOBit:      bitDO,
-			SetCDBit:      bitCD,
-		}
-		if eDns0 {
-			def.UDPPayloadSize = 4096
-			def.Protocol = "UDP"
-		}
-		defs = append(defs, def)
-	}
-
-	if fWant6 {
-		def := atlas.Definition{
-			AF:            6,
-			Description:   fmt.Sprintf("DNS v6 - %s %s %s", addr, qtype, qclass),
-			Type:          "dns",
-			Protocol:      proto,
-			QueryArgument: addr,
-			QueryClass:    qclass,
-			QueryType:     qtype,
-			SetDOBit:      bitDO,
-			SetCDBit:      bitCD,
-		}
-		if eDns0 {
-			def.UDPPayloadSize = 4096
-			def.Protocol = "UDP"
-		}
-		defs = append(defs, def)
-	}
-
-	req := atlas.MeasurementRequest{
-		Definitions: defs,
-		IsOneoff:    true,
-	}
-	// Default set of probes
-	probes := atlas.ProbeSet{
-		{
-			Requested: mycnf.PoolSize,
-			Type:      "area",
-			Value:     "WW",
-			Tags:      nil,
-		},
-	}
-
-	req.Probes = probes
 	log.Printf("req=%#v", req)
 	m, err := atlas.DNS(req)
 	if err != nil {
