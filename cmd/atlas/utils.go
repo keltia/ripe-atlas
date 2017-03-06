@@ -76,6 +76,10 @@ func analyzeTarget(target string) (proto, site, path string, port int) {
 			site = uri.Host
 		}
 
+		// Path can't be null
+		if uri.Path == "" {
+			uri.Path = "/"
+		}
 		path = uri.Path
 	}
 	return
