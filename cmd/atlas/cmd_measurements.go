@@ -51,7 +51,7 @@ func init() {
 						Usage:       "select anchor measurements",
 						Destination: &fWantAnchor,
 					},
-					cli.BoolFlag{
+					cli.BoolTFlag{
 						Name:        "mine",
 						Usage:       "limit to my own measurements",
 						Destination: &fWantMine,
