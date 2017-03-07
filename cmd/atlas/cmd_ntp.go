@@ -19,65 +19,47 @@ func init() {
 	})
 }
 
-func cmdNTP(c *cli.Context) error {
-	// By default we want both
-	if !fWant4 && !fWant6 {
-		fWant6, fWant4 = true, true
+// prepareTraceroute build the request with our parameters
+func prepareNTP(target string) (req *atlas.MeasurementRequest) {
+	opts := map[string]string{
+		"Type":        "ntp",
+		"Description": fmt.Sprintf("NTP - %s", target),
+		"Target":      target,
 	}
 
+	req = atlas.NewMeasurement()
+	if mycnf.WantAF == WantBoth {
+
+		opts["AF"] = "4"
+		req.AddDefinition(opts)
+
+		opts["AF"] = "6"
+		req.AddDefinition(opts)
+	} else {
+		opts["AF"] = mycnf.WantAF
+		req.AddDefinition(opts)
+	}
+	return
+}
+
+func cmdNTP(c *cli.Context) error {
 	args := c.Args()
 	if len(args) == 0 {
 		log.Fatal("Error: you must specify a hostname/site!")
 	}
 
 	target := args[0]
-	var defs []atlas.Definition
 
-	if fWant4 {
-		def := atlas.Definition{
-			AF:          4,
-			Description: fmt.Sprintf("NTP v4 - %s", target),
-			Type:        "ntp",
-			Target:      target,
-		}
-		defs = append(defs, def)
-	}
-
-	if fWant6 {
-		def := atlas.Definition{
-			AF:          6,
-			Description: fmt.Sprintf("NTP v6 - %s", target),
-			Type:        "ntp",
-			Target:      target,
-		}
-		defs = append(defs, def)
-	}
-
-	req := &atlas.MeasurementRequest{
-		Definitions: defs,
-		IsOneoff:    true,
-	}
-
-	// Default set of probes
-	probes := atlas.ProbeSet{
-		{
-			Requested: mycnf.PoolSize,
-			Type:      "area",
-			Value:     "WW",
-			Tags:      nil,
-		},
-	}
-
-	req.Probes = probes
+	req := prepareNTP(target)
 	log.Printf("req=%#v", req)
 	//str := res.Result.Display()
 
-	tls, err := atlas.NTP(req)
+	ntp, err := atlas.NTP(req)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("NTP: %#v", tls)
+	fmt.Printf("NTP: %#v", ntp)
 
 	return nil
 }
