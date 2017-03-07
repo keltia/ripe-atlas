@@ -53,9 +53,13 @@ var (
 const (
 	atlasVersion = "0.10"
 
+	// WantBoth is the way to ask for both IPv4 & IPv6.
 	WantBoth = "64"
-	Want4    = "4"
-	Want6    = "6"
+
+	// Want4 only 4
+	Want4 = "4"
+	// Want6 only 6
+	Want6 = "6"
 )
 
 // -4 & -6 are special, if neither is specified, then we turn both as true
