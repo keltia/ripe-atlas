@@ -45,16 +45,6 @@ func cmdIP(c *cli.Context) error {
 		os.Exit(1)
 	}
 
-	var str string
-
-	if fWant4 {
-		str = fmt.Sprintf("%sIPv4: %s ", str, p.AddressV4)
-	}
-
-	if fWant6 {
-		str = fmt.Sprintf("%sIPv6: %s ", str, p.AddressV6)
-	}
-
-	fmt.Println(str)
+	fmt.Printf("IPv4: %s IPv6: %s\n", p.AddressV4, p.AddressV6)
 	return nil
 }
