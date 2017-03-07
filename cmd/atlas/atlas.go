@@ -16,7 +16,6 @@ var (
 	// flags
 	fWant4 bool
 	fWant6 bool
-	WantAF int
 
 	// True by default
 	fWantMine bool
@@ -57,7 +56,6 @@ const (
 	WantBoth = "64"
 	Want4    = "4"
 	Want6    = "6"
-
 )
 
 // -4 & -6 are special, if neither is specified, then we turn both as true
