@@ -129,7 +129,8 @@ When looking at measurement results, it is very easy to use something like [jq](
 - better display of results
 - implementation behind many keywords
   dns, keys, sslcert, ping, ntp, probes, measurements: done
-  traceroute, http, https: pending
+  traceroute, http, https: done
+- refactoring to reduce code duplication: done
 - even more tests
 
 ### External Documentation
