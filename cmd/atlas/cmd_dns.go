@@ -52,16 +52,6 @@ func init() {
 				Usage:       "Do not try to validate DNSSEC Check by probes",
 				Destination: &fBitCD,
 			},
-			/*			cli.StringFlag{
-							Name:        "t, qtype",
-							Usage:       "Select the query type",
-							Destination: &defQueryType,
-						},
-						cli.StringFlag{
-							Name:        "c, qclass",
-							Usage:       "Select the query class",
-							Destination: &defQueryClass,
-						},*/
 			cli.StringFlag{
 				Name:        "p, protocol",
 				Usage:       "Select UDP or TCP",
