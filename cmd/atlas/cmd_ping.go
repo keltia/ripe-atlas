@@ -15,7 +15,7 @@ func init() {
 		Name:        "ping",
 		Usage:       "ping selected address",
 		Description: "send echo/reply to an IP",
-		Action: cmdPing,
+		Action:      cmdPing,
 	})
 }
 
@@ -43,8 +43,6 @@ func preparePing(target string) (req *atlas.MeasurementRequest) {
 
 	return
 }
-
-
 
 // cmdIP is a short for displaying the IPs for one probe
 func cmdPing(c *cli.Context) error {

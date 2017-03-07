@@ -15,7 +15,7 @@ func init() {
 		Name:        "ntp",
 		Usage:       "get time from ntp server",
 		Description: "send NTP queries to an host/IP",
-		Action: cmdNTP,
+		Action:      cmdNTP,
 	})
 }
 
