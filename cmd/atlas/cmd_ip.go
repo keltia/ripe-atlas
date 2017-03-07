@@ -16,7 +16,7 @@ func init() {
 		Name:        "ip",
 		Usage:       "returns current ip",
 		Description: "shorthand for getting current ip",
-		Action: cmdIP,
+		Action:      cmdIP,
 	})
 }
 

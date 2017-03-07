@@ -47,7 +47,6 @@ func prepareTLSCert(target string, port int) (req *atlas.MeasurementRequest) {
 	return
 }
 
-
 func cmdTLSCert(c *cli.Context) (err error) {
 	args := c.Args()
 	if len(args) == 0 {

@@ -45,7 +45,6 @@ func TestAnalyzeTarget(t *testing.T) {
 		t.Errorf("Error: path=%s should be /api/", path)
 	}
 
-
 	proto, site, path, port = analyzeTarget("https://www.keltia.net")
 	if proto != "https" {
 		t.Errorf("Error: proto should be https")
