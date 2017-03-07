@@ -41,6 +41,33 @@ func init() {
 	})
 }
 
+// prepareTraceroute build the request with our parameters
+func prepareTraceroute(target, protocol string, maxhops, size int) (req *atlas.MeasurementRequest) {
+	opts := map[string]string{
+		"Type":        "traceeroute",
+		"Description": fmt.Sprintf("Traceroute - %s", target),
+		"Target":      target,
+		"MaxHops":     fmt.Sprintf("%d", maxhops),
+		"Size":        fmt.Sprintf("%d", size),
+		"Protocol":    protocol,
+	}
+
+	req = atlas.NewMeasurement()
+	if mycnf.WantAF == WantBoth {
+
+		opts["AF"] = "4"
+		req.AddDefinition(opts)
+
+		opts["AF"] = "6"
+		req.AddDefinition(opts)
+	} else {
+		opts["AF"] = mycnf.WantAF
+		req.AddDefinition(opts)
+	}
+
+	return
+}
+
 func cmdTraceroute(c *cli.Context) error {
 	var (
 		maxHops    int
@@ -48,18 +75,12 @@ func cmdTraceroute(c *cli.Context) error {
 		proto      string
 	)
 
-	// By default do both
-	if !fWant4 && !fWant6 {
-		fWant6, fWant4 = true, true
-	}
-
 	args := c.Args()
 	if len(args) == 0 {
 		log.Fatal("Error: you must specify a hostname/site!")
 	}
 
 	target := args[0]
-	var defs []atlas.Definition
 
 	proto = defProtocol
 	maxHops = defMaxHops
@@ -71,48 +92,8 @@ func cmdTraceroute(c *cli.Context) error {
 		maxHops = fMaxHops
 	}
 
-	if fWant4 {
-		def := atlas.Definition{
-			AF:          4,
-			Description: fmt.Sprintf("Traceroute - %s", target),
-			Type:        "traceroute",
-			Target:      target,
-			Protocol:    proto,
-			MaxHops:     maxHops,
-			Size:        packetSize,
-		}
-		defs = append(defs, def)
-	}
+	req := prepareTraceroute(target, proto, maxHops, packetSize)
 
-	if fWant6 {
-		def := atlas.Definition{
-			AF:          6,
-			Description: fmt.Sprintf("Traceroute6 - %s", target),
-			Type:        "traceroute",
-			Target:      target,
-			Protocol:    proto,
-			MaxHops:     maxHops,
-			Size:        packetSize,
-		}
-		defs = append(defs, def)
-	}
-
-	req := &atlas.MeasurementRequest{
-		Definitions: defs,
-		IsOneoff:    true,
-	}
-
-	// Default set of probes
-	probes := atlas.ProbeSet{
-		{
-			Requested: mycnf.PoolSize,
-			Type:      "area",
-			Value:     "WW",
-			Tags:      nil,
-		},
-	}
-
-	req.Probes = probes
 	log.Printf("req=%#v", req)
 	//str := res.Result.Display()
 
@@ -121,7 +102,7 @@ func cmdTraceroute(c *cli.Context) error {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("NTP: %#v", trc)
+	fmt.Printf("Traceroute: %#v", trc)
 
 	return nil
 }
