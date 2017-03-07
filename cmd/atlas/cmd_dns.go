@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	eDns0 = false
+	eDNS0 = false
 )
 
 // checkQueryParam checks against possible list of parameters
@@ -40,7 +40,7 @@ func init() {
 			cli.BoolFlag{
 				Name:        "E, edns0",
 				Usage:       "use EDNS0",
-				Destination: &eDns0,
+				Destination: &eDNS0,
 			},
 			cli.BoolFlag{
 				Name:        "D, disable-dnssec",
@@ -74,8 +74,8 @@ func init() {
 
 func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRequest) {
 	opts := map[string]string{
-		"Type":        "dns",
-		"Description": fmt.Sprintf("DNS - %s", qa),
+		"Type":          "dns",
+		"Description":   fmt.Sprintf("DNS - %s", qa),
 		"Protocol":      proto,
 		"QueryArgument": qa,
 		"QueryClass":    qc,
@@ -84,7 +84,7 @@ func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRe
 		"SetCDBit":      fmt.Sprintf("%b", cd),
 	}
 
-	if eDns0 {
+	if eDNS0 {
 		opts["UDPPayloadSize"] = "4096"
 		opts["Protocol"] = "UDP"
 	} else {
