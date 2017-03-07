@@ -26,10 +26,6 @@ func init() {
 func cmdIP(c *cli.Context) error {
 	var probeID string
 
-	// By default we want both
-	if !fWant4 && !fWant6 {
-		fWant6, fWant4 = true, true
-	}
 	args := c.Args()
 	if len(args) == 0 {
 		if mycnf.DefaultProbe == 0 {
@@ -41,9 +37,9 @@ func cmdIP(c *cli.Context) error {
 		probeID = args[0]
 	}
 
-	id, _ := strconv.ParseInt(probeID, 10, 32)
+	id, _ := strconv.Atoi(probeID)
 
-	p, err := atlas.GetProbe(int(id))
+	p, err := atlas.GetProbe(id)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
