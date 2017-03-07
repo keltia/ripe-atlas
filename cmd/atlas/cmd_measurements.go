@@ -165,9 +165,9 @@ func measurementInfo(c *cli.Context) error {
 		log.Fatal("Error: you must specify a measurement ID!")
 	}
 
-	id, _ := strconv.ParseInt(args[0], 10, 32)
+	id, _ := strconv.Atoi(args[0])
 
-	p, err := atlas.GetMeasurement(int(id))
+	p, err := atlas.GetMeasurement(id)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
@@ -184,9 +184,9 @@ func measurementResults(c *cli.Context) error {
 		log.Fatal("Error: you must specify a measurement ID!")
 	}
 
-	id, _ := strconv.ParseInt(args[0], 10, 32)
+	id, _ := strconv.Atoi(args[0])
 
-	m, err := atlas.GetMeasurement(int(id))
+	m, err := atlas.GetMeasurement(id)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
@@ -219,7 +219,6 @@ func measurementCreate(c *cli.Context) error {
 }
 
 func measurementDelete(c *cli.Context) (err error) {
-	var id int64
 
 	if fAllMeasurements {
 		opts := make(map[string]string)
@@ -245,8 +244,8 @@ func measurementDelete(c *cli.Context) (err error) {
 			log.Fatal("Error: you must specify a measurement ID!")
 		}
 
-		id, _ = strconv.ParseInt(args[0], 10, 32)
-		err = atlas.DeleteMeasurement(int(id))
+		id, _ := strconv.Atoi(args[0])
+		err = atlas.DeleteMeasurement(id)
 	}
 
 	return
