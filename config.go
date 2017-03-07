@@ -25,7 +25,7 @@ type Config struct {
 
 // Check the parameter for either tag or filename
 func checkName(file string) string {
-	// If ending with .toml, take it litterally
+	// If ending with .toml, take it literally
 	if strings.HasSuffix(file, ".toml") {
 		return file
 	}
