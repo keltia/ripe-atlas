@@ -14,8 +14,10 @@ import (
 
 var (
 	// flags
-	fWant4    bool
-	fWant6    bool
+	fWant4 bool
+	fWant6 bool
+
+	// True by default
 	fWantMine bool
 
 	fAllProbes       bool
@@ -49,8 +51,39 @@ var (
 )
 
 const (
-	atlasVersion = "0.10"
+	atlasVersion = "0.11"
+
+	// WantBoth is the way to ask for both IPv4 & IPv6.
+	WantBoth = "64"
+
+	// Want4 only 4
+	Want4 = "4"
+	// Want6 only 6
+	Want6 = "6"
 )
+
+// -4 & -6 are special, if neither is specified, then we turn both as true
+func finalcheck(c *cli.Context) error {
+	if fWant4 {
+		mycnf.WantAF = Want4
+	}
+
+	if fWant6 {
+		mycnf.WantAF = Want6
+	}
+
+	// Both are fine
+	if fWant4 && fWant6 {
+		mycnf.WantAF = WantBoth
+	}
+
+	// So is neither — common case
+	if !fWant4 && !fWant6 {
+		mycnf.WantAF = WantBoth
+	}
+
+	return nil
+}
 
 // main is the starting point (and everything)
 func main() {
@@ -94,7 +127,20 @@ func main() {
 			Usage:       "sort results",
 			Destination: &fSortOrder,
 		},
+		cli.BoolFlag{
+			Name:        "6, ipv6",
+			Usage:       "Only IPv6",
+			Destination: &fWant6,
+		},
+		cli.BoolFlag{
+			Name:        "4, ipv4",
+			Usage:       "Only IPv4",
+			Destination: &fWant4,
+		},
 	}
+
+	// Ensure -4 & -6 are treated properly
+	app.Before = finalcheck
 
 	var err error
 
@@ -108,6 +154,7 @@ func main() {
 	if mycnf.DefaultProbe != 0 && err == nil {
 		log.Printf("Found default probe: %d\n", mycnf.DefaultProbe)
 	}
+
 	sort.Sort(ByAlphabet(cliCommands))
 	app.Commands = cliCommands
 	app.Run(os.Args)

@@ -23,55 +23,41 @@ func init() {
 	})
 }
 
-func cmdTLSCert(c *cli.Context) (err error) {
-	// By default we want both
-	if !fWant4 && !fWant6 {
-		fWant6, fWant4 = true, true
+// prepareTraceroute build the request with our parameters
+func prepareTLSCert(target string, port int) (req *atlas.MeasurementRequest) {
+	opts := map[string]string{
+		"Type":        "sslcert",
+		"Description": fmt.Sprintf("SSLCert - %s", target),
+		"Target":      target,
+		"Port":        fmt.Sprintf("%d", port),
 	}
 
+	req = atlas.NewMeasurement()
+	if mycnf.WantAF == WantBoth {
+
+		opts["AF"] = "4"
+		req.AddDefinition(opts)
+
+		opts["AF"] = "6"
+		req.AddDefinition(opts)
+	} else {
+		opts["AF"] = mycnf.WantAF
+		req.AddDefinition(opts)
+	}
+	return
+}
+
+func cmdTLSCert(c *cli.Context) (err error) {
 	args := c.Args()
 	if len(args) == 0 {
 		log.Fatal("Error: you must specify a hostname/site!")
 	}
 
+	// We expect target to be using [http|https]://<site>[:port]/path
 	target := args[0]
-	var defs []atlas.Definition
+	_, site, _, port := analyzeTarget(target)
 
-	if fWant4 {
-		def := atlas.Definition{
-			AF:          4,
-			Description: fmt.Sprintf("TLS v4 - %s", target),
-			Type:        "sslcert",
-			Target:      target,
-		}
-		defs = append(defs, def)
-	}
-
-	if fWant6 {
-		def := atlas.Definition{
-			AF:          6,
-			Description: fmt.Sprintf("TLS v6 - %s", target),
-			Type:        "sslcert",
-			Target:      target,
-		}
-		defs = append(defs, def)
-	}
-
-	req := atlas.MeasurementRequest{
-		Definitions: defs,
-		IsOneoff:    true,
-	}
-	// Default set of probes
-	probes := atlas.ProbeSet{
-		{
-			Requested: mycnf.PoolSize,
-			Type:      "area",
-			Value:     "WW",
-			Tags:      nil,
-		},
-	}
-
-	req.Probes = probes
+	req := prepareTLSCert(site, port)
 	log.Printf("req=%#v", req)
 	//str := res.Result.Display()
 

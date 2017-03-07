@@ -20,6 +20,7 @@ type Config struct {
 	APIKey       string
 	DefaultProbe int
 	PoolSize     int
+	WantAF       string
 }
 
 // Check the parameter for either tag or filename

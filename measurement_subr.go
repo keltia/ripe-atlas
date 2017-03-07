@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/sendgrid/rest"
 	"log"
+	"reflect"
+	"strconv"
 )
 
 // MeasurementResp contains all the results of the measurements
@@ -12,8 +14,78 @@ type MeasurementResp struct {
 	Measurements []int
 }
 
+var (
+	// If nothing is specified, use this
+	defProbeSet = ProbeSet{
+		{
+			Requested: 10,
+			Type:      "area",
+			Value:     "WW",
+			Tags:      nil,
+		},
+	}
+)
+
+// NewMeasurement create a new MeasurementRequest and fills some fields
+func NewMeasurement() (req *MeasurementRequest) {
+	var defs []Definition
+
+	req = &MeasurementRequest{
+		Definitions: defs,
+		IsOneoff:    true,
+		Probes:      defProbeSet,
+	}
+	return
+}
+
+// NewProbeSet create a set of probes for later requests
+func NewProbeSet(howmany int) (ps *ProbeSet) {
+	ps = &ProbeSet{
+		{
+			Requested: howmany,
+			Type:      "area",
+			Value:     "WW",
+			Tags:      nil,
+		},
+	}
+	return
+}
+
+// SetParams set a few parameters in a definition list
+func (d *Definition) setParams(fields map[string]string) {
+	sdef := reflect.ValueOf(d).Elem()
+	typeOfDef := sdef.Type()
+	for k, v := range fields {
+		// Check the field is present
+		if f, ok := typeOfDef.FieldByName(k); ok {
+			// Use the right type
+			switch f.Type.Name() {
+			case "float":
+				vf, _ := strconv.ParseFloat(v, 32)
+				sdef.FieldByName(k).SetFloat(vf)
+			case "int":
+				vi, _ := strconv.ParseInt(v, 10, 32)
+				sdef.FieldByName(k).SetInt(vi)
+			case "string":
+				sdef.FieldByName(k).SetString(v)
+			default:
+				log.Printf("Unsupported type: %s", f.Type.Name())
+			}
+		}
+	}
+}
+
+// AddDefinition create a new MeasurementRequest and fills some fields
+func (m *MeasurementRequest) AddDefinition(fields map[string]string) *MeasurementRequest {
+	def := new(Definition)
+	def.setParams(fields)
+	m.Definitions = append(m.Definitions, *def)
+
+	return m
+}
+
 // createMeasurement creates a measurement for all types
-func createMeasurement(t string, d MeasurementRequest) (m *MeasurementResp, err error) {
+func createMeasurement(t string, d *MeasurementRequest) (m *MeasurementResp, err error) {
 	req := prepareRequest(fmt.Sprintf("measurements/%s", t))
 
 	body, err := json.Marshal(d)
@@ -44,31 +116,31 @@ func createMeasurement(t string, d MeasurementRequest) (m *MeasurementResp, err 
 }
 
 // DNS creates a measurement
-func DNS(d MeasurementRequest) (m *MeasurementResp, err error) {
+func DNS(d *MeasurementRequest) (m *MeasurementResp, err error) {
 	return createMeasurement("dns", d)
 }
 
 // HTTP creates a measurement
-func HTTP(d MeasurementRequest) (m *MeasurementResp, err error) {
+func HTTP(d *MeasurementRequest) (m *MeasurementResp, err error) {
 	return createMeasurement("http", d)
 }
 
 // NTP creates a measurement
-func NTP(d MeasurementRequest) (m *MeasurementResp, err error) {
+func NTP(d *MeasurementRequest) (m *MeasurementResp, err error) {
 	return createMeasurement("ntp", d)
 }
 
 // Ping creates a measurement
-func Ping(d MeasurementRequest) (m *MeasurementResp, err error) {
+func Ping(d *MeasurementRequest) (m *MeasurementResp, err error) {
 	return createMeasurement("ping", d)
 }
 
 // SSLCert creates a measurement
-func SSLCert(d MeasurementRequest) (m *MeasurementResp, err error) {
+func SSLCert(d *MeasurementRequest) (m *MeasurementResp, err error) {
 	return createMeasurement("sslcert", d)
 }
 
 // Traceroute creates a measurement
-func Traceroute(d MeasurementRequest) (m *MeasurementResp, err error) {
+func Traceroute(d *MeasurementRequest) (m *MeasurementResp, err error) {
 	return createMeasurement("traceroute", d)
 }

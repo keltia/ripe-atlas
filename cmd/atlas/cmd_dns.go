@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	eDns0 = false
+	eDNS0 = false
 )
 
 // checkQueryParam checks against possible list of parameters
@@ -38,19 +38,9 @@ func init() {
 		},
 		Flags: []cli.Flag{
 			cli.BoolFlag{
-				Name:        "6, ipv6",
-				Usage:       "displays only IPv6",
-				Destination: &fWant6,
-			},
-			cli.BoolFlag{
-				Name:        "4, ipv4",
-				Usage:       "displays only IPv4",
-				Destination: &fWant4,
-			},
-			cli.BoolFlag{
 				Name:        "E, edns0",
 				Usage:       "use EDNS0",
-				Destination: &eDns0,
+				Destination: &eDNS0,
 			},
 			cli.BoolFlag{
 				Name:        "D, disable-dnssec",
@@ -62,16 +52,6 @@ func init() {
 				Usage:       "Do not try to validate DNSSEC Check by probes",
 				Destination: &fBitCD,
 			},
-			/*			cli.StringFlag{
-							Name:        "t, qtype",
-							Usage:       "Select the query type",
-							Destination: &defQueryType,
-						},
-						cli.StringFlag{
-							Name:        "c, qclass",
-							Usage:       "Select the query class",
-							Destination: &defQueryClass,
-						},*/
 			cli.StringFlag{
 				Name:        "p, protocol",
 				Usage:       "Select UDP or TCP",
@@ -80,6 +60,41 @@ func init() {
 		},
 		Action: cmdDNS,
 	})
+}
+
+func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRequest) {
+	opts := map[string]string{
+		"Type":          "dns",
+		"Description":   fmt.Sprintf("DNS - %s", qa),
+		"Protocol":      proto,
+		"QueryArgument": qa,
+		"QueryClass":    qc,
+		"QueryType":     qt,
+		"SetDOBit":      fmt.Sprintf("%v", do),
+		"SetCDBit":      fmt.Sprintf("%v", cd),
+	}
+
+	if eDNS0 {
+		opts["UDPPayloadSize"] = "4096"
+		opts["Protocol"] = "UDP"
+	} else {
+		opts["UDPPayloadSize"] = "512"
+	}
+
+	req = atlas.NewMeasurement()
+	if mycnf.WantAF == WantBoth {
+
+		opts["AF"] = "4"
+		req.AddDefinition(opts)
+
+		opts["AF"] = "6"
+		req.AddDefinition(opts)
+	} else {
+		opts["AF"] = mycnf.WantAF
+		req.AddDefinition(opts)
+	}
+
+	return
 }
 
 func cmdDNS(c *cli.Context) error {
@@ -93,10 +108,6 @@ func cmdDNS(c *cli.Context) error {
 		addr string
 	)
 
-	// By default we want both
-	if !fWant4 && !fWant6 {
-		fWant6, fWant4 = true, true
-	}
 	args := c.Args()
 	if args == nil || len(args) == 0 {
 		log.Fatal("Error: you must specify at least a name")
@@ -130,61 +141,8 @@ func cmdDNS(c *cli.Context) error {
 		bitCD = true
 	}
 
-	var defs []atlas.Definition
+	req := prepareDNS(proto, addr, qclass, qtype, bitDO, bitCD)
 
-	if fWant4 {
-		def := atlas.Definition{
-			AF:            4,
-			Description:   fmt.Sprintf("DNS v4 - %s %s %s", addr, qtype, qclass),
-			Type:          "dns",
-			Protocol:      proto,
-			QueryArgument: addr,
-			QueryClass:    qclass,
-			QueryType:     qtype,
-			SetDOBit:      bitDO,
-			SetCDBit:      bitCD,
-		}
-		if eDns0 {
-			def.UDPPayloadSize = 4096
-			def.Protocol = "UDP"
-		}
-		defs = append(defs, def)
-	}
-
-	if fWant6 {
-		def := atlas.Definition{
-			AF:            6,
-			Description:   fmt.Sprintf("DNS v6 - %s %s %s", addr, qtype, qclass),
-			Type:          "dns",
-			Protocol:      proto,
-			QueryArgument: addr,
-			QueryClass:    qclass,
-			QueryType:     qtype,
-			SetDOBit:      bitDO,
-			SetCDBit:      bitCD,
-		}
-		if eDns0 {
-			def.UDPPayloadSize = 4096
-			def.Protocol = "UDP"
-		}
-		defs = append(defs, def)
-	}
-
-	req := atlas.MeasurementRequest{
-		Definitions: defs,
-		IsOneoff:    true,
-	}
-	// Default set of probes
-	probes := atlas.ProbeSet{
-		{
-			Requested: mycnf.PoolSize,
-			Type:      "area",
-			Value:     "WW",
-			Tags:      nil,
-		},
-	}
-
-	req.Probes = probes
 	log.Printf("req=%#v", req)
 	m, err := atlas.DNS(req)
 	if err != nil {

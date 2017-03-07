@@ -127,7 +127,7 @@ func probesList(c *cli.Context) error {
 // probeInfo is information about one probe
 func probeInfo(c *cli.Context) error {
 	args := c.Args()
-	if args[0] == "" {
+	if len(args) == 0 {
 		log.Fatal("Error: you must specify a probe ID!")
 	}
 

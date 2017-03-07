@@ -16,19 +16,7 @@ func init() {
 		Name:        "ip",
 		Usage:       "returns current ip",
 		Description: "shorthand for getting current ip",
-		Flags: []cli.Flag{
-			cli.BoolFlag{
-				Name:        "6, ipv6",
-				Usage:       "displays only IPv6",
-				Destination: &fWant6,
-			},
-			cli.BoolFlag{
-				Name:        "4, ipv4",
-				Usage:       "displays only IPv4",
-				Destination: &fWant4,
-			},
-		},
-		Action: cmdIP,
+		Action:      cmdIP,
 	})
 }
 
@@ -38,10 +26,6 @@ func init() {
 func cmdIP(c *cli.Context) error {
 	var probeID string
 
-	// By default we want both
-	if !fWant4 && !fWant6 {
-		fWant6, fWant4 = true, true
-	}
 	args := c.Args()
 	if len(args) == 0 {
 		if mycnf.DefaultProbe == 0 {
@@ -53,24 +37,14 @@ func cmdIP(c *cli.Context) error {
 		probeID = args[0]
 	}
 
-	id, _ := strconv.ParseInt(probeID, 10, 32)
+	id, _ := strconv.Atoi(probeID)
 
-	p, err := atlas.GetProbe(int(id))
+	p, err := atlas.GetProbe(id)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
 
-	var str string
-
-	if fWant4 {
-		str = fmt.Sprintf("%sIPv4: %s ", str, p.AddressV4)
-	}
-
-	if fWant6 {
-		str = fmt.Sprintf("%sIPv6: %s ", str, p.AddressV6)
-	}
-
-	fmt.Println(str)
+	fmt.Printf("IPv4: %s IPv6: %s\n", p.AddressV4, p.AddressV6)
 	return nil
 }
