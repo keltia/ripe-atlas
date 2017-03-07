@@ -38,6 +38,7 @@ func NewMeasurement() (req *MeasurementRequest) {
 	return
 }
 
+// NewProbeSet create a set of probes for later requests
 func NewProbeSet(howmany int) (ps *ProbeSet) {
 	ps = &ProbeSet{
 		{
@@ -75,7 +76,7 @@ func (d *Definition) setParams(fields map[string]string) {
 }
 
 // AddDefinition create a new MeasurementRequest and fills some fields
-func (m *MeasurementRequest) AddDefinition(fields map[string]string) (*MeasurementRequest) {
+func (m *MeasurementRequest) AddDefinition(fields map[string]string) *MeasurementRequest {
 	def := new(Definition)
 	def.setParams(fields)
 	m.Definitions = append(m.Definitions, *def)
