@@ -226,6 +226,10 @@ func measurementDelete(c *cli.Context) (err error) {
 		// Check global parameters
 		opts = checkGlobalFlags(opts)
 
+		if fVerbose {
+			displayOptions(opts)
+		}
+
 		list, err := atlas.GetMeasurements(opts)
 		if err != nil {
 			err = fmt.Errorf("Delete all failed: %v", err)

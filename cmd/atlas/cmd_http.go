@@ -63,6 +63,13 @@ func prepareHTTP(target, path string, port int) (req *atlas.MeasurementRequest) 
 		req.AddDefinition(opts)
 	}
 
+	// Check global parameters
+	opts = checkGlobalFlags(opts)
+
+	if fVerbose {
+		displayOptions(opts)
+	}
+
 	return
 }
 
