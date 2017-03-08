@@ -69,8 +69,7 @@ func analyzeTarget(target string) (proto, site, path string, port int) {
 		// might be host:port
 		sp := strings.Split(uri.Host, ":")
 		if len(sp) == 2 {
-			port64, _ := strconv.ParseInt(sp[1], 10, 32)
-			port = int(port64)
+			port, _ = strconv.Atoi(sp[1])
 			site = sp[0]
 		} else {
 			site = uri.Host

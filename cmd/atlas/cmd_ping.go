@@ -41,6 +41,13 @@ func preparePing(target string) (req *atlas.MeasurementRequest) {
 		req.AddDefinition(opts)
 	}
 
+	// Check global parameters
+	opts = checkGlobalFlags(opts)
+
+	if fVerbose {
+		displayOptions(opts)
+	}
+
 	return
 }
 
