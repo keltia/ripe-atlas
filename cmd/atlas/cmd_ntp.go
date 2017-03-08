@@ -27,6 +27,13 @@ func prepareNTP(target string) (req *atlas.MeasurementRequest) {
 		"Target":      target,
 	}
 
+	// Check global parameters
+	opts = checkGlobalFlags(opts)
+
+	if fVerbose {
+		displayOptions(opts)
+	}
+
 	req = atlas.NewMeasurement()
 	if mycnf.WantAF == WantBoth {
 
