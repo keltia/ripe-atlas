@@ -131,9 +131,8 @@ func probeInfo(c *cli.Context) error {
 		log.Fatal("Error: you must specify a probe ID!")
 	}
 
-	id, _ := strconv.ParseInt(args[0], 10, 32)
-
-	p, err := atlas.GetProbe(int(id))
+	id, _ := strconv.Atoi(args[0])
+	p, err := atlas.GetProbe(id)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
