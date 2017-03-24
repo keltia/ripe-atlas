@@ -20,7 +20,7 @@ func TestCheckName(t *testing.T) {
 	// Check fullname usage
 	file = "/nonexistent/foobar.toml"
 	res = checkName(file)
-	assert.EqualValues(t, realPath, res, "should be equal")
+	assert.EqualValues(t, file, res, "should be equal")
 
 	// Check bad usage
 	file = "/toto.yaml"
