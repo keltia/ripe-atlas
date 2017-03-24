@@ -2,6 +2,7 @@ package atlas
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"path"
 	"testing"
@@ -14,57 +15,39 @@ func TestCheckName(t *testing.T) {
 	file := "mytag"
 	res := checkName(file)
 	realPath := path.Join(os.Getenv("HOME"), fmt.Sprintf(".%s", file), "config.toml")
-	if res != realPath {
-		t.Errorf("Error: badly formed fullname %s—%s", res, realPath)
-	}
+	assert.EqualValues(t, realPath, res, "should be equal")
 
 	// Check fullname usage
 	file = "/nonexistent/foobar.toml"
 	res = checkName(file)
-	if res != file {
-		t.Errorf("Error: badly formed fullname %s", res)
-	}
+	assert.EqualValues(t, realPath, res, "should be equal")
 
 	// Check bad usage
 	file = "/toto.yaml"
 	res = checkName(file)
-	if res != "" {
-		t.Errorf("Error: should end with .toml: %s", res)
-	}
+	assert.EqualValues(t, "", res, "should be equal")
 
 	// Check plain file
 	file = "foo.toml"
 	res = checkName(file)
-	if res != file {
-		t.Errorf("Error: plein file.toml is acceptable")
-	}
+	assert.EqualValues(t, file, res, "should be equal")
 }
 
 func TestLoadConfig(t *testing.T) {
 	file := "newconfig.toml"
 	conf, err := LoadConfig(file)
-	if err != nil {
-		t.Errorf("%s does not exist, it should not be an error", file)
-	}
+	assert.NoError(t, err, "no file is no error")
 
 	file = "config.toml"
 	conf, err = LoadConfig(file)
-	if err != nil {
-		t.Errorf("Malformed file %s: %v", file, err)
-	}
+	assert.NoError(t, err, "no error")
 
 	defaultProbe := 666
-	if conf.DefaultProbe != defaultProbe {
-		t.Errorf("Malformed default %d: %d\nconf: %#v", conf.DefaultProbe, defaultProbe, conf)
-	}
+	assert.EqualValues(t, defaultProbe, conf.DefaultProbe, "should be equal")
 
 	key := "<INSERT-API-KEY>"
-	if conf.APIKey != key {
-		t.Errorf("Malformed default %s: %s", conf.APIKey, key)
-	}
+	assert.EqualValues(t, key, conf.APIKey, "should be equal")
 
 	poolSize := 10
-	if conf.PoolSize != poolSize {
-		t.Errorf("Malformed default %d: %d", conf.PoolSize, poolSize)
-	}
+	assert.EqualValues(t, poolSize, conf.PoolSize, "should be equal")
 }
