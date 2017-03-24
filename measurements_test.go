@@ -1,35 +1,28 @@
 package atlas
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestCheckType(t *testing.T) {
 	d := Definition{Type: "foo"}
 
-	test := checkType(d)
-	if test != false {
-		t.Errorf("type is invalid: %s", d.Type)
-	}
+	valid := checkType(d)
+	assert.EqualValues(t, false, valid, "should be false")
 
 	d = Definition{Type: "dns"}
-	test = checkType(d)
-	if test != true {
-		t.Errorf("type is invalid: %s", d.Type)
-	}
+	valid = checkType(d)
+	assert.EqualValues(t, true, valid, "should be true")
 }
 
 func TestCheckTypeAs(t *testing.T) {
 	d := Definition{Type: "dns"}
-	test := checkTypeAs(d, "foo")
-	if test == true {
-		t.Errorf("test should be false")
-	}
+	valid := checkTypeAs(d, "foo")
+	assert.EqualValues(t, false, valid, "should be false")
 
-	test = checkTypeAs(d, "dns")
-	if test != true {
-		t.Errorf("test should be true: %s", d.Type)
-	}
+	valid = checkTypeAs(d, "dns")
+	assert.EqualValues(t, true, valid, "should be true")
 }
 
 func TestCheckAllTypesAs(t *testing.T) {
@@ -39,27 +32,21 @@ func TestCheckAllTypesAs(t *testing.T) {
 	}
 
 	valid := checkAllTypesAs(dl, "ping")
-	if valid != false {
-		t.Errorf("valid should be false")
-	}
+	assert.EqualValues(t, false, valid, "should be false")
 
 	dl = []Definition{
 		{Type: "dns"},
 		{Type: "ping"},
 	}
 	valid = checkAllTypesAs(dl, "ping")
-	if valid != false {
-		t.Errorf("valid should be false")
-	}
+	assert.EqualValues(t, false, valid, "should be false")
 
 	dl = []Definition{
 		{Type: "ping"},
 		{Type: "ping"},
 	}
 	valid = checkAllTypesAs(dl, "ping")
-	if valid != true {
-		t.Errorf("valid should be true")
-	}
+	assert.EqualValues(t, true, valid, "should be true")
 }
 
 func TestDNS(t *testing.T) {
@@ -67,9 +54,8 @@ func TestDNS(t *testing.T) {
 	r := &MeasurementRequest{Definitions: d}
 
 	_, err := DNS(r)
-	if err != ErrInvalidMeasurementType {
-		t.Errorf("error %v should be %v", err, ErrInvalidMeasurementType)
-	}
+	assert.Error(t, err, "should be an error")
+	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
 }
 
 func TestNTP(t *testing.T) {
@@ -77,9 +63,8 @@ func TestNTP(t *testing.T) {
 	r := &MeasurementRequest{Definitions: d}
 
 	_, err := NTP(r)
-	if err != ErrInvalidMeasurementType {
-		t.Errorf("error %v should be %v", err, ErrInvalidMeasurementType)
-	}
+	assert.Error(t, err, "should be an error")
+	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
 }
 
 func TestPing(t *testing.T) {
@@ -87,9 +72,8 @@ func TestPing(t *testing.T) {
 	r := &MeasurementRequest{Definitions: d}
 
 	_, err := Ping(r)
-	if err != ErrInvalidMeasurementType {
-		t.Errorf("error %v should be %v", err, ErrInvalidMeasurementType)
-	}
+	assert.Error(t, err, "should be an error")
+	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
 }
 
 func TestSSLCert(t *testing.T) {
@@ -97,9 +81,8 @@ func TestSSLCert(t *testing.T) {
 	r := &MeasurementRequest{Definitions: d}
 
 	_, err := SSLCert(r)
-	if err != ErrInvalidMeasurementType {
-		t.Errorf("error %v should be %v", err, ErrInvalidMeasurementType)
-	}
+	assert.Error(t, err, "should be an error")
+	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
 }
 
 func TestTraceroute(t *testing.T) {
@@ -107,7 +90,6 @@ func TestTraceroute(t *testing.T) {
 	r := &MeasurementRequest{Definitions: d}
 
 	_, err := Traceroute(r)
-	if err != ErrInvalidMeasurementType {
-		t.Errorf("error %v should be %v", err, ErrInvalidMeasurementType)
-	}
+	assert.Error(t, err, "should be an error")
+	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
 }
