@@ -2,7 +2,13 @@ package atlas
 
 import (
 	"github.com/stretchr/testify/assert"
+	"github.com/jarcoal/httpmock"
 	"testing"
+	"net/http"
+	"encoding/json"
+	"github.com/sendgrid/rest"
+	"bytes"
+	"log"
 )
 
 func TestCheckType(t *testing.T) {
@@ -50,14 +56,69 @@ func TestCheckAllTypesAs(t *testing.T) {
 }
 
 func TestDNS(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	// mock to add a new measurement
+	httpmock.RegisterResponder("POST", apiEndpoint+"/measurements/dns/",
+		func(req *http.Request) (*http.Response, error) {
+			var reqData MeasurementRequest
+			var ap APIError
+			var body bytes.Buffer
+			var badType rest.Response
+			var myerr error
+
+			//respData := new(MeasurementResp)
+
+			if err := json.NewDecoder(req.Body).Decode(&reqData); err != nil {
+				return httpmock.NewStringResponse(400, ""), nil
+			}
+
+			log.Printf("test.req=%#v", reqData)
+			if reqData.Definitions[0].Type != "dns" {
+
+				ap.Error.Status = 500
+				ap.Error.Code = 501
+				ap.Error.Title = "Bad Type"
+				ap.Error.Detail = "Type is not dns"
+				badType.StatusCode = 500
+				myerr = ErrInvalidMeasurementType
+				if err := json.NewEncoder(&body).Encode(ap); err != nil {
+					resp, _ := httpmock.NewJsonResponse(500, "argh")
+					return resp, myerr
+				}
+			} else {
+				ap.Error.Status = 200
+				ap.Error.Code = 200
+				ap.Error.Title = "Good Type"
+				ap.Error.Detail = "Type is dns"
+				badType.StatusCode = 200
+				myerr = nil
+			}
+
+			if err := json.NewEncoder(&body).Encode(ap); err != nil {
+				resp, _ := httpmock.NewJsonResponse(500, "argh")
+				return resp, myerr
+			}
+
+			resp, err := httpmock.NewJsonResponse(200, body.String())
+			if err != nil {
+				return httpmock.NewStringResponse(500, ""), myerr
+			}
+			return resp, myerr
+		},
+	)
+
+
 	d := []Definition{{Type: "foo"}}
 	r := &MeasurementRequest{Definitions: d}
 
-	_, err := DNS(r)
-	assert.Error(t, err, "should be an error")
+	rp, err := DNS(r)
+	assert.NoError(t, err, "should be no error")
+	assert.EqualValues(t, "", rp, "should be equal")
 	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
 }
-
+/*
 func TestNTP(t *testing.T) {
 	d := []Definition{{Type: "foo"}}
 	r := &MeasurementRequest{Definitions: d}
@@ -93,3 +154,4 @@ func TestTraceroute(t *testing.T) {
 	assert.Error(t, err, "should be an error")
 	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
 }
+*/
