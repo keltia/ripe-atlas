@@ -98,6 +98,12 @@ func createMeasurement(t string, d *MeasurementRequest) (m *MeasurementResp, err
 
 	log.Printf("body: %s", body)
 	resp, err := rest.API(req)
+	log.Printf("resp: %v", resp)
+	if err != nil {
+		log.Printf("err: %v", err)
+		//return
+	}
+
 	err = handleAPIResponse(resp)
 	if err != nil {
 		return
