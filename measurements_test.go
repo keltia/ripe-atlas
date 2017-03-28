@@ -112,10 +112,11 @@ func TestDNS(t *testing.T) {
 
 	d := []Definition{{Type: "foo"}}
 	r := &MeasurementRequest{Definitions: d}
+	myrp := MeasurementResp{}
 
 	rp, err := DNS(r)
-	assert.NoError(t, err, "should be no error")
-	assert.EqualValues(t, "", rp, "should be equal")
+	assert.Error(t, err, "should be in error")
+	assert.EqualValues(t, myrp, rp, "should be equal")
 	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
 }
 /*
