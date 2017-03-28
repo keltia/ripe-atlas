@@ -59,6 +59,10 @@ func TestLoadConfig(t *testing.T) {
 	_, err = LoadConfig(file)
 	assert.Error(t, err, "no error")
 
+	file = "./config.toml"
+	conf, err = LoadConfig(file)
+	assert.NoError(t, err, "no error")
+
 	file = "config.toml"
 	conf, err = LoadConfig(file)
 	assert.NoError(t, err, "no error")
