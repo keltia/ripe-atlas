@@ -24,27 +24,31 @@ type Config struct {
 }
 
 // Check the parameter for either tag or filename
-func checkName(file string) string {
-	// If ending with .toml, take it literally
-	if strings.HasSuffix(file, ".toml") {
-		return file
-	}
-
+func checkName(file string) (str string) {
 	// Full path, MUST have .toml
 	if bfile := []byte(file); bfile[0] == '/' {
 		if !strings.HasSuffix(file, ".toml") {
-			return ""
+			str = ""
+		} else {
+			str = file
 		}
-		return file
+		return
 	}
+
+	// If ending with .toml, take it literally
+	if strings.HasSuffix(file, ".toml") {
+		str = file
+		return
+	}
+
 	// Check for tag
 	if !strings.HasSuffix(file, ".toml") {
 		// file must be a tag so add a "."
-		return filepath.Join(os.Getenv("HOME"),
+		str = filepath.Join(os.Getenv("HOME"),
 			fmt.Sprintf(".%s", file),
 			"config.toml")
 	}
-	return file
+	return
 }
 
 // LoadConfig reads a file as a TOML document and return the structure
