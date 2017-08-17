@@ -9,9 +9,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path/filepath"
-	"strings"
-
 	"github.com/naoina/toml"
 )
 
@@ -21,34 +18,6 @@ type Config struct {
 	DefaultProbe int
 	PoolSize     int
 	WantAF       string
-}
-
-// Check the parameter for either tag or filename
-func checkName(file string) (str string) {
-	// Full path, MUST have .toml
-	if bfile := []byte(file); bfile[0] == '/' {
-		if !strings.HasSuffix(file, ".toml") {
-			str = ""
-		} else {
-			str = file
-		}
-		return
-	}
-
-	// If ending with .toml, take it literally
-	if strings.HasSuffix(file, ".toml") {
-		str = file
-		return
-	}
-
-	// Check for tag
-	if !strings.HasSuffix(file, ".toml") {
-		// file must be a tag so add a "."
-		str = filepath.Join(os.Getenv("HOME"),
-			fmt.Sprintf(".%s", file),
-			"config.toml")
-	}
-	return
 }
 
 // LoadConfig reads a file as a TOML document and return the structure
