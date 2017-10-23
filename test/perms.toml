@@ -1,0 +1,3 @@
+API_key = "<INSERT-API-KEY>"
+default_probe = 666
+pool_size = 10
