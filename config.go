@@ -12,7 +12,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/naoina/toml"
+	"github.com/BurntSushi/toml"
+)
+
+var (
+	// Default location is now $HOME/.config/<tag>/ on UNIX
+	basedir = filepath.Join(os.Getenv("HOME"),	".config")
 )
 
 // Config holds our parameters
@@ -43,10 +48,7 @@ func checkName(file string) (str string) {
 
 	// Check for tag
 	if !strings.HasSuffix(file, ".toml") {
-		// file must be a tag so add a "."
-		str = filepath.Join(os.Getenv("HOME"),
-			fmt.Sprintf(".%s", file),
-			"config.toml")
+		str = filepath.Join(basedir, file, "config.toml")
 	}
 	return
 }
