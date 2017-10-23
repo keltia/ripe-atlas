@@ -6,8 +6,6 @@
 package atlas
 
 import (
-	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 )
