@@ -1,20 +1,18 @@
 package atlas
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"path"
 	"testing"
 )
 
 func TestCheckName(t *testing.T) {
-	os.Setenv("HOME", "/home/foo")
+	basedir = "/home/foo"
 
 	// Check tag usage
 	file := "mytag"
 	res := checkName(file)
-	realPath := path.Join(os.Getenv("HOME"), fmt.Sprintf(".%s", file), "config.toml")
+	realPath := path.Join(basedir, file, "config.toml")
 	assert.EqualValues(t, realPath, res, "should be equal")
 
 	// Check fullname usage
@@ -33,7 +31,7 @@ func TestCheckName(t *testing.T) {
 
 	file = "toto.yaml"
 	res = checkName(file)
-	assert.EqualValues(t, "/home/foo/.toto.yaml/config.toml", res, "should be equal")
+	assert.EqualValues(t, "/home/foo/toto.yaml/config.toml", res, "should be equal")
 
 	// Check plain file
 	file = "foo.toml"
@@ -51,19 +49,15 @@ func TestLoadConfig(t *testing.T) {
 	assert.Error(t, err, "error")
 	assert.EqualValues(t, &Config{}, conf, "empty")
 
-	file = "perms.toml"
+	file = "test/perms.toml"
 	_, err = LoadConfig(file)
-	assert.Error(t, err, "no error")
+	assert.Error(t, err, "error")
 
-	file = "invalid.toml"
+	file = "test/invalid.toml"
 	_, err = LoadConfig(file)
-	assert.Error(t, err, "no error")
+	assert.Error(t, err, "error")
 
-	file = "./config.toml"
-	conf, err = LoadConfig(file)
-	assert.NoError(t, err, "no error")
-
-	file = "config.toml"
+	file = "test/config.toml"
 	conf, err = LoadConfig(file)
 	assert.NoError(t, err, "no error")
 
