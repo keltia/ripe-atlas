@@ -7,7 +7,6 @@ package atlas
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/sendgrid/rest"
 	"log"
@@ -17,29 +16,15 @@ import (
 const (
 	apiEndpoint = "https://atlas.ripe.net/api/v2"
 
-	ourVersion = "0.11"
+	ourVersion = "0.12"
 )
-
-// APIKey is the API key
-var APIKey string
-
-// ErrInvalidMeasurementType is a new error
-var ErrInvalidMeasurementType = errors.New("invalid measurement type")
-
-// ErrInvalidAPIKey is returned when the key is invalid
-var ErrInvalidAPIKey = errors.New("invalid API key")
-
-// SetAuth stores the credentials for later use
-func SetAuth(key string) {
-	APIKey = key
-}
 
 // HasAPIKey returns whether an API key is stored
 func HasAPIKey() (string, bool) {
-	if APIKey == "" {
+	if ctx.config.APIKey == "" {
 		return "", false
 	}
-	return APIKey, true
+	return ctx.config.APIKey, true
 }
 
 // GetVersion returns the API wrapper version
