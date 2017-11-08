@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
 	"log"
 	"os"
@@ -24,22 +23,25 @@ func init() {
 
 // cmdIP is a short for displaying the IPs for one probe
 func cmdIP(c *cli.Context) error {
-	var probeID string
+
+	var (
+		probeID int
+	)
 
 	args := c.Args()
-	if len(args) == 0 {
+	if len(args) == 1 {
+		probeID, _ = strconv.Atoi(args[0])
+	}
+
+	if probeID == 0 {
 		if mycnf.DefaultProbe == 0 {
 			log.Fatal("Error: you must specify a probe ID!")
 		} else {
-			probeID = fmt.Sprintf("%d", mycnf.DefaultProbe)
+			probeID = mycnf.DefaultProbe
 		}
-	} else {
-		probeID = args[0]
 	}
 
-	id, _ := strconv.Atoi(probeID)
-
-	p, err := atlas.GetProbe(id)
+	p, err := client.GetProbe(probeID)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
