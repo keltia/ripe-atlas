@@ -14,22 +14,31 @@ SRCS= common.go keys.go measurements.go probes.go types.go \
 	cmd/atlas/cmd_traceroute.go cmd/atlas/cmd_keys.go cmd/atlas/cmd_results.go \
 	cmd/atlas/config.go
 
+USRC=	 cmd/atlas/config_unix.go
+WSRC=	cmd/atlas/config_windows.go
+
+BIN=	atlas
+EXE=	${BIN}.exe
+
 OPTS=	-ldflags="-s -w" -v
 
-all: atlas
+all: ${BIN} ${EXE}
 
-atlas: ${SRCS}
+${BIN}: ${SRCS} ${USRC}
 	go build ${OPTS} ./cmd/...
+
+${EXE}: ${SRCS} ${WSRC}
+	GOOS=windows go build ${OPTS} ./cmd/...
 
 test:
 	go test -v ./...
 
-install:
+install: ${BIN}
 	go install -v ./cmd/...
 
 clean:
 	go clean -v ./...
-	rm -f atlas
+	rm -f ${BIN} ${EXE}
 
 push:
 	git push --all
