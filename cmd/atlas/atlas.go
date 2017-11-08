@@ -52,6 +52,7 @@ var (
 
 const (
 	atlasVersion = "0.11"
+	MyName = "ripe-atlas"
 
 	// WantBoth is the way to ask for both IPv4 & IPv6.
 	WantBoth = "64"
@@ -151,6 +152,14 @@ func main() {
 	} else {
 		log.Printf("No API key!")
 	}
+
+	// Check whether we have proxy authentication
+	mycnf.ProxyAuth, err = setupProxyAuth()
+	if err != nil {
+		log.Printf("invalid proxy auth credentials")
+		mycnf.ProxyAuth = ""
+	}
+
 	if mycnf.DefaultProbe != 0 && err == nil {
 		log.Printf("Found default probe: %d\n", mycnf.DefaultProbe)
 	}
