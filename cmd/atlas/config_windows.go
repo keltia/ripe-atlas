@@ -11,6 +11,14 @@ import (
 	"strings"
 )
 
+var (
+	basedir = filepath.Join(os.Getenv("%LOCALAPPDATA%"),
+		"RIPE-ATLAS",
+	)
+
+	dbrcFile = filepath.Join(basedir, "dbrc")
+)
+
 // Check the parameter for either tag or filename
 func checkName(file string) (str string) {
 	// Full path, begin by \\ or N: MUST have .toml
@@ -33,9 +41,7 @@ func checkName(file string) (str string) {
 	// Check for tag
 	if !strings.HasSuffix(file, ".toml") {
 		// file must be a tag so add a "."
-		str = filepath.Join(os.Getenv("%LOCALAPPDATA%"),
-			"RIPE-Atlas",
-			"config.toml")
+		str = filepath.Join(basedir, "config.toml")
 	}
 	return
 }
