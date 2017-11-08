@@ -116,7 +116,7 @@ func prepareProbes(country, asn string, anchor bool) (map[string]string) {
 // probeList displays all probes
 func probesList(c *cli.Context) error {
 	opts := prepareProbes(fCountry, fAsn, fWantAnchor)
-	q, err := atlas.GetProbes(opts)
+	q, err := client.GetProbes(opts)
 	if err != nil {
 		log.Printf("GetProbes err: %v - q:%v", err, q)
 		os.Exit(1)
@@ -135,7 +135,7 @@ func probeInfo(c *cli.Context) error {
 	}
 
 	id, _ := strconv.Atoi(args[0])
-	p, err := atlas.GetProbe(id)
+	p, err := client.GetProbe(id)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
