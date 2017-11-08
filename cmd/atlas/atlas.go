@@ -45,7 +45,7 @@ var (
 	fMaxHops    int
 	fPacketSize int
 
-	mycnf *atlas.Config
+	mycnf *Config
 
 	cliCommands []cli.Command
 )
@@ -144,7 +144,7 @@ func main() {
 
 	var err error
 
-	mycnf, err = atlas.LoadConfig("ripe-atlas")
+	mycnf, err = LoadConfig("ripe-atlas")
 	if mycnf.APIKey != "" && err == nil {
 		atlas.SetAuth(mycnf.APIKey)
 		log.Printf("Found API key!")
