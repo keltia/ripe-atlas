@@ -6,12 +6,13 @@
 .PATH= cmd/atlas:.
 GOBIN=   ${GOPATH}/bin
 
-SRCS= common.go config.go keys.go measurements.go probes.go types.go \
+SRCS= common.go keys.go measurements.go probes.go types.go \
     measurement_subr.go \
 	cmd/atlas/atlas.go cmd/atlas/cmd_probes.go cmd/atlas/cmd_measurements.go \
 	cmd/atlas/cmd_dns.go cmd/atlas/cmd_http.go cmd/atlas/cmd_ip.go \
 	cmd/atlas/cmd_ntp.go cmd/atlas/cmd_ping.go cmd/atlas/cmd_sslcert.go \
-	cmd/atlas/cmd_traceroute.go cmd/atlas/cmd_keys.go cmd/atlas/cmd_results.go
+	cmd/atlas/cmd_traceroute.go cmd/atlas/cmd_keys.go cmd/atlas/cmd_results.go \
+	cmd/atlas/config.go
 
 OPTS=	-ldflags="-s -w" -v
 
