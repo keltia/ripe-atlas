@@ -4,6 +4,19 @@
 
 package atlas
 
+type Client struct {
+	config       Config
+}
+
+type Config struct {
+	APIKey       string
+	DefaultProbe int
+	PoolSize     int
+	WantAF       string
+	ProxyAuth    string
+	Verbose      bool
+}
+
 // APIError is for errors returned by the RIPE API.
 type APIError struct {
 	Error struct {
