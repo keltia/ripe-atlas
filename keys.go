@@ -7,7 +7,7 @@ package atlas
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sendgrid/rest"
+	"io/ioutil"
 )
 
 type keyList struct {
@@ -20,22 +20,19 @@ type keyList struct {
 // fetch the given resource
 func fetchOneKeyPage(opts map[string]string) (raw *keyList, err error) {
 
-	req := prepareRequest("keys")
-	req.Method = rest.Get
+	req := prepareRequest("GET", "keys", opts)
 
-	// Do not forget to copy our options
-	for qp, val := range opts {
-		req.QueryParams[qp] = val
-	}
-
-	r, err := rest.API(req)
+	r, err := ctx.client.Do(req)
 	err = handleAPIResponse(r)
 	if err != nil {
 		return
 	}
 
 	raw = &keyList{}
-	err = json.Unmarshal([]byte(r.Body), raw)
+	body, _ := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+
+	err = json.Unmarshal(body, raw)
 	//log.Printf("Count=%d raw=%v", raw.Count, r)
 	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
 	return
@@ -43,19 +40,22 @@ func fetchOneKeyPage(opts map[string]string) (raw *keyList, err error) {
 
 // GetKey returns a given API key
 func GetKey(uuid string) (k Key, err error) {
+	opts := make(map[string]string)
 
-	req := prepareRequest(fmt.Sprintf("keys/%s", uuid))
-	req.Method = rest.Get
+	req := prepareRequest("GET", fmt.Sprintf("keys/%s", uuid), opts)
 
 	//log.Printf("req: %#v", req)
-	r, err := rest.API(req)
+	r, err := ctx.client.Do(req)
 	err = handleAPIResponse(r)
 	if err != nil {
 		return
 	}
 
 	k = Key{}
-	err = json.Unmarshal([]byte(r.Body), &k)
+	body, _ := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+
+	err = json.Unmarshal(body, k)
 	//log.Printf("json: %#v\n", p)
 	return
 }
