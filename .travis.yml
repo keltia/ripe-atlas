@@ -13,5 +13,4 @@ branches:
 install:
 - go get github.com/urfave/cli
 - go get github.com/naoina/toml
-- go get github.com/sendgrid/rest
 - go get github.com/keltia/ripe-atlas
