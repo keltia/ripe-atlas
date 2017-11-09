@@ -8,11 +8,11 @@ package atlas
 import (
 	"encoding/json"
 	"fmt"
-	"log"
-	"regexp"
-	"net/url"
-	"net/http"
 	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
+	"regexp"
 )
 
 const (
@@ -71,19 +71,10 @@ func prepareRequest(method, what string, opts map[string]string) (req *http.Requ
 		return &http.Request{}
 	}
 
-	// It is better to re-use than creating a new one each time
-	if ctx.client == nil {
-		ctx.client = addHTTPClient(ctx)
-	}
-
 	myurl, err := url.Parse(baseURL)
 
 	req.Header.Set("Host", myurl.Host)
-	req.Header.Add("User-Agent", fmt.Sprintf("ripe-atlas/%s", ourVersion))
-
-	if ctx.config.ProxyAuth != "" {
-		req.Header.Add("Proxy-Authorization", ctx.config.ProxyAuth)
-	}
+	req.Header.Set("User-Agent", fmt.Sprintf("ripe-atlas/%s", ourVersion))
 
 	return
 }
