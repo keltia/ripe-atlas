@@ -67,6 +67,9 @@ func LoadConfig(file string) (c *Config, err error) {
 }
 
 func setupProxyAuth() (auth string, err error) {
+	if fDebug {
+		log.Printf("Looking for proxy credentials in %s:", dbrcFile)
+	}
 	err = loadDbrc(dbrcFile)
 	if err != nil {
 		if fVerbose {
