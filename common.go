@@ -8,9 +8,11 @@ package atlas
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sendgrid/rest"
 	"log"
 	"regexp"
+	"net/url"
+	"net/http"
+	"io/ioutil"
 )
 
 const (
@@ -41,33 +43,53 @@ func getPageNum(url string) (page string) {
 	return ""
 }
 
+// AddQueryParameters adds query parameters to the URL.
+func AddQueryParameters(baseURL string, queryParams map[string]string) string {
+	baseURL += "?"
+	params := url.Values{}
+	for key, value := range queryParams {
+		params.Add(key, value)
+	}
+	return baseURL + params.Encode()
+}
+
 // prepareRequest insert all pre-defined stuff
-func prepareRequest(what string) (req rest.Request) {
+func prepareRequest(method, what string, opts map[string]string) (req *http.Request) {
 	endPoint := apiEndpoint + fmt.Sprintf("/%s/", what)
 	key, ok := HasAPIKey()
-
-	// Add at least one option, the APIkey if present
-	hdrs := make(map[string]string)
-	opts := make(map[string]string)
-
-	// Insert our sig
-	hdrs["User-Agent"] = fmt.Sprintf("ripe-atlas/%s", ourVersion)
 
 	// Insert key
 	if ok {
 		opts["key"] = key
 	}
 
-	req = rest.Request{
-		BaseURL:     endPoint,
-		Headers:     hdrs,
-		QueryParams: opts,
+	baseURL := AddQueryParameters(endPoint, opts)
+
+	req, err := http.NewRequest(method, baseURL, nil)
+	if err != nil {
+		log.Printf("error parsing %s: %v", baseURL, err)
+		return &http.Request{}
 	}
+
+	// It is better to re-use than creating a new one each time
+	if ctx.client == nil {
+		ctx.client = addHTTPClient(ctx)
+	}
+
+	myurl, err := url.Parse(baseURL)
+
+	req.Header.Set("Host", myurl.Host)
+	req.Header.Add("User-Agent", fmt.Sprintf("ripe-atlas/%s", ourVersion))
+
+	if ctx.config.ProxyAuth != "" {
+		req.Header.Add("Proxy-Authorization", ctx.config.ProxyAuth)
+	}
+
 	return
 }
 
 // handleAPIResponse check status code & errors from the API
-func handleAPIResponse(r *rest.Response) (err error) {
+func handleAPIResponse(r *http.Response) (err error) {
 	if r == nil {
 		return fmt.Errorf("Error: r is nil!")
 	}
@@ -86,7 +108,10 @@ func handleAPIResponse(r *rest.Response) (err error) {
 	if r.StatusCode >= 300 && r.StatusCode <= 399 {
 		var aerr APIError
 
-		err = json.Unmarshal([]byte(r.Body), &aerr)
+		body, _ := ioutil.ReadAll(r.Body)
+		defer r.Body.Close()
+
+		err = json.Unmarshal(body, &aerr)
 		if err != nil {
 			log.Printf("Error handling error: %s - %v", r.Body, err)
 		}
@@ -101,7 +126,10 @@ func handleAPIResponse(r *rest.Response) (err error) {
 	// EVerything else is an error
 	var aerr APIError
 
-	err = json.Unmarshal([]byte(r.Body), &aerr)
+	body, _ := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+
+	err = json.Unmarshal(body, &aerr)
 	if err != nil {
 		log.Printf("Error handling error: %s - %v", r.Body, err)
 	}
