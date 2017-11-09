@@ -1,9 +1,10 @@
 package atlas
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/sendgrid/rest"
+	"io/ioutil"
 	"log"
 	"reflect"
 	"strconv"
@@ -86,18 +87,19 @@ func (m *MeasurementRequest) AddDefinition(fields map[string]string) *Measuremen
 
 // createMeasurement creates a measurement for all types
 func createMeasurement(t string, d *MeasurementRequest) (m *MeasurementResp, err error) {
-	req := prepareRequest(fmt.Sprintf("measurements/%s", t))
+	opts := make(map[string]string)
+	req := prepareRequest("POST", fmt.Sprintf("measurements/%s", t), opts)
 
 	body, err := json.Marshal(d)
 	if err != nil {
 		return
 	}
 
-	req.Method = rest.Post
-	req.Body = body
+	buf := bytes.NewReader(body)
+	req.Body = ioutil.NopCloser(buf)
 
 	log.Printf("body: %s", body)
-	resp, err := rest.API(req)
+	resp, err := ctx.client.Do(req)
 	log.Printf("resp: %v", resp)
 	if err != nil {
 		log.Printf("err: %v", err)
@@ -110,9 +112,12 @@ func createMeasurement(t string, d *MeasurementRequest) (m *MeasurementResp, err
 	}
 
 	m = &MeasurementResp{}
-	err = json.Unmarshal([]byte(resp.Body), m)
+	rbody, _ := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+
+	err = json.Unmarshal(rbody, m)
 	//r, err := api.Res(base, &resp).Post(d)
-	fmt.Printf("m: %v\nresp: %#v\nd: %v\n", m, string(resp.Body), d)
+	fmt.Printf("m: %v\nresp: %#v\nd: %v\n", m, string(rbody), d)
 	if err != nil {
 		err = fmt.Errorf("err: %v - m:%v", err, m)
 		return

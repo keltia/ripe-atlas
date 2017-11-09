@@ -3,7 +3,7 @@ package atlas
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sendgrid/rest"
+	"io/ioutil"
 )
 
 var (
@@ -54,23 +54,20 @@ type measurementList struct {
 
 // fetch the given resource
 func fetchOneMeasurementPage(opts map[string]string) (raw *measurementList, err error) {
-	req := prepareRequest("measurements")
-	req.Method = rest.Get
-
-	// Do not forget to copy our options
-	for qp, val := range opts {
-		req.QueryParams[qp] = val
-	}
+	req := prepareRequest("GET", "measurements", opts)
 
 	//log.Printf("req=%s qp=%#v", MeasurementEP, opts)
-	r, err := rest.API(req)
+	r, err := ctx.client.Do(req)
 	err = handleAPIResponse(r)
 	if err != nil {
 		return
 	}
 
 	raw = &measurementList{}
-	err = json.Unmarshal([]byte(r.Body), raw)
+	body, _ := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+
+	err = json.Unmarshal(body, raw)
 	//log.Printf("Count=%d raw=%v", raw.Count, r)
 	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
 	return
@@ -80,31 +77,34 @@ func fetchOneMeasurementPage(opts map[string]string) (raw *measurementList, err 
 
 // GetMeasurement gets info for a single one
 func GetMeasurement(id int) (m *Measurement, err error) {
+	opts := make(map[string]string)
 
-	req := prepareRequest(fmt.Sprintf("measurements/%d", id))
-	req.Method = rest.Get
+	req := prepareRequest("GET", fmt.Sprintf("measurements/%d", id), opts)
 
 	//log.Printf("req: %#v", req)
-	r, err := rest.API(req)
+	r, err := ctx.client.Do(req)
 	err = handleAPIResponse(r)
 	if err != nil {
 		return
 	}
 
 	m = &Measurement{}
-	err = json.Unmarshal([]byte(r.Body), m)
+	body, _ := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+
+	err = json.Unmarshal(body, m)
 	//log.Printf("json: %#v\n", m)
 	return
 }
 
 // DeleteMeasurement stops (not really deletes) a given measurement
 func DeleteMeasurement(id int) (err error) {
+	opts := make(map[string]string)
 
-	req := prepareRequest(fmt.Sprintf("measurements/%d", id))
-	req.Method = rest.Delete
+	req := prepareRequest("DELETE", fmt.Sprintf("measurements/%d", id), opts)
 
 	//log.Printf("req: %#v", req)
-	r, err := rest.API(req)
+	r, err := ctx.client.Do(req)
 	err = handleAPIResponse(r)
 	return
 }
