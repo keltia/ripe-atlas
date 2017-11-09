@@ -14,16 +14,12 @@ import (
 	"os"
 	"strings"
 
+	"errors"
 	"github.com/naoina/toml"
 )
 
 const (
 	proxyTag = "proxy"
-)
-
-var (
-	// Credential for optional Proxy authentication
-	user, password string
 )
 
 // Config holds our parameters
@@ -70,7 +66,8 @@ func setupProxyAuth() (auth string, err error) {
 	if fDebug {
 		log.Printf("Looking for proxy credentials in %s:", dbrcFile)
 	}
-	err = loadDbrc(dbrcFile)
+
+	user, password, err := loadDbrc(dbrcFile)
 	if err != nil {
 		if fVerbose {
 			log.Printf("No dbrc file: %v", err)
@@ -78,22 +75,24 @@ func setupProxyAuth() (auth string, err error) {
 	} else {
 		// Do we have a proxy user/password?
 		if user != "" && password != "" {
-			auth := fmt.Sprintf("%s:%s", user, password)
+			auth = fmt.Sprintf("%s:%s", user, password)
 			auth = "Basic " + base64.StdEncoding.EncodeToString([]byte(auth))
 
 			if fVerbose {
 				log.Printf("Proxy user %s found.", user)
 			}
-
+		} else {
+			auth = "nothing"
+			err = errors.New("invalid proxy creds")
 		}
 	}
 	return
 }
 
-func loadDbrc(file string) (err error) {
+func loadDbrc(file string) (user, password string, err error) {
 	fh, err := os.Open(file)
 	if err != nil {
-		return fmt.Errorf("error: can not find %s: %v", file, err)
+		return "", "", fmt.Errorf("error: can not find %s: %v", file, err)
 	}
 	defer fh.Close()
 
@@ -120,11 +119,11 @@ func loadDbrc(file string) (err error) {
 		}
 	}
 	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("reading dbrc %s", dbrcFile)
+		return "", "", fmt.Errorf("reading dbrc %s", dbrcFile)
 	}
 
 	if user == "" {
-		return fmt.Errorf("no user/password for %s in %s", proxyTag, dbrcFile)
+		return "", "", fmt.Errorf("no user/password for %s in %s", proxyTag, dbrcFile)
 	}
 
 	return
