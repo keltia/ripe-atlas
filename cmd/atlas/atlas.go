@@ -69,22 +69,14 @@ const (
 // -4 & -6 are special, if neither is specified, then we turn both as true
 // Check a few other things while we are here
 func finalcheck(c *cli.Context) error {
-	if fWant4 {
-		mycnf.WantAF = Want4
-	}
+	var err error
 
-	if fWant6 {
-		mycnf.WantAF = Want6
-	}
-
-	// Both are fine
-	if fWant4 && fWant6 {
-		mycnf.WantAF = WantBoth
-	}
-
-	// So is neither — common case
-	if !fWant4 && !fWant6 {
-		mycnf.WantAF = WantBoth
+	// Load main configuration
+	mycnf, err = LoadConfig("")
+	if err != nil {
+		if fVerbose {
+			log.Printf("No configuration file found.")
+		}
 	}
 
 	// Logical
@@ -104,6 +96,47 @@ func finalcheck(c *cli.Context) error {
 		if mycnf.DefaultProbe != 0 {
 			log.Printf("Found default probe: %d\n", mycnf.DefaultProbe)
 		}
+	}
+
+	// Check whether we have proxy authentication (from a separate config file)
+	auth, err := setupProxyAuth()
+	if err != nil {
+		if fVerbose {
+			log.Printf("Invalid or no proxy auth credentials")
+		}
+	}
+
+	// Wondering whether to move to the Functional options pattern
+	// cf. https://dave.cheney.net/2016/11/13/do-not-fear-first-class-functions
+	client, err = atlas.NewClient(atlas.Config{
+		APIKey:       mycnf.APIKey,
+		DefaultProbe: mycnf.DefaultProbe,
+		PoolSize:     mycnf.PoolSize,
+		ProxyAuth:    auth,
+		Verbose:      fVerbose,
+	})
+
+	// No need to continue if this fails
+	if err != nil {
+		log.Fatalf("Error creating the Atlas client: %v", err)
+	}
+
+	if fWant4 {
+		mycnf.WantAF = Want4
+	}
+
+	if fWant6 {
+		mycnf.WantAF = Want6
+	}
+
+	// Both are fine
+	if fWant4 && fWant6 {
+		mycnf.WantAF = WantBoth
+	}
+
+	// So is neither — common case
+	if !fWant4 && !fWant6 {
+		mycnf.WantAF = WantBoth
 	}
 
 	return nil
@@ -168,41 +201,8 @@ func main() {
 		},
 	}
 
-	// Ensure -4 & -6 are treated properly
+	// Ensure -4 & -6 are treated properly & initialization is done
 	app.Before = finalcheck
-
-	var err error
-
-	// Load main configuration
-	mycnf, err = LoadConfig("")
-	if err != nil {
-		if fVerbose {
-			log.Printf("No configuration file found.")
-		}
-	}
-
-	// Check whether we have proxy authentication (from a separate config file)
-	auth, err := setupProxyAuth()
-	if err != nil {
-		if fVerbose {
-			log.Printf("Invalid or no proxy auth credentials")
-		}
-	}
-
-	// Wondering whether to move to the Functional options pattern
-	// cf. https://dave.cheney.net/2016/11/13/do-not-fear-first-class-functions
-	client, err = atlas.NewClient(atlas.Config{
-		APIKey:       mycnf.APIKey,
-		DefaultProbe: mycnf.DefaultProbe,
-		PoolSize:     mycnf.PoolSize,
-		ProxyAuth:    auth,
-		Verbose:      fVerbose,
-	})
-
-	// No need to continue if this fails
-	if err != nil {
-		log.Fatalf("Error creating the Atlas client: %v", err)
-	}
 
 	sort.Sort(ByAlphabet(cliCommands))
 	app.Commands = cliCommands
