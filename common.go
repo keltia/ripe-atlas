@@ -87,6 +87,10 @@ func handleAPIResponse(r *rest.Response) (err error) {
 		var aerr APIError
 
 		err = json.Unmarshal([]byte(r.Body), &aerr)
+		if err != nil {
+			log.Printf("Error handling error: %s - %v", r.Body, err)
+		}
+
 		log.Printf("Info 3XX status: %d code: %d - r:%v\n",
 			aerr.Error.Status,
 			aerr.Error.Code,
@@ -98,6 +102,10 @@ func handleAPIResponse(r *rest.Response) (err error) {
 	var aerr APIError
 
 	err = json.Unmarshal([]byte(r.Body), &aerr)
+	if err != nil {
+		log.Printf("Error handling error: %s - %v", r.Body, err)
+	}
+
 	err = fmt.Errorf("status: %d code: %d - r:%v",
 		aerr.Error.Status,
 		aerr.Error.Code,
