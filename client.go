@@ -1,18 +1,16 @@
 package atlas
 
 import (
-	"net/http"
 	"crypto/tls"
 	"log"
+	"net/http"
 	"net/url"
-	"fmt"
 	"time"
 )
 
 type context struct {
-	config   Config
-	client   *http.Client
-
+	config Config
+	client *http.Client
 }
 
 var (
@@ -46,8 +44,8 @@ func getProxy(req *http.Request) (uri *url.URL, err error) {
 
 func setupTransport(ctx *context) (*http.Transport, error) {
 	/*
-    Proxy code taken from https://github.com/LeoCBS/poc-proxy-https/blob/master/main.go
-    Analyse endPoint to check proxy stuff
+	   Proxy code taken from https://github.com/LeoCBS/poc-proxy-https/blob/master/main.go
+	   Analyse endPoint to check proxy stuff
 	*/
 	req, err := http.NewRequest("HEAD", apiEndpoint, nil)
 	if err != nil {
@@ -63,13 +61,8 @@ func setupTransport(ctx *context) (*http.Transport, error) {
 		}
 	}
 
-	myurl, err := url.Parse(apiEndpoint)
-
-	req.Header.Set("Host", myurl.Host)
-	req.Header.Add("User-Agent", fmt.Sprintf("ripe-atlas/%s", ourVersion))
-
 	if ctx.config.ProxyAuth != "" {
-		req.Header.Add("Proxy-Authorization", ctx.config.ProxyAuth)
+		req.Header.Set("Proxy-Authorization", ctx.config.ProxyAuth)
 	}
 
 	transport := &http.Transport{
