@@ -140,6 +140,11 @@ func finalcheck(c *cli.Context) error {
 		mycnf.WantAF = WantBoth
 	}
 
+	// Set global options
+	client.SetFormat(fFormat)
+	client.SetAF(mycnf.WantAF)
+	client.SetInclude(fInclude)
+
 	return nil
 }
 
