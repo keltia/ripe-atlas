@@ -44,15 +44,16 @@ func AddQueryParameters(baseURL string, queryParams map[string]string) string {
 }
 
 // prepareRequest insert all pre-defined stuff
-func prepareRequest(method, what string, opts map[string]string) (req *http.Request) {
+func (client *Client) prepareRequest(method, what string, opts map[string]string) (req *http.Request) {
 	endPoint := apiEndpoint + fmt.Sprintf("/%s/", what)
-	key, ok := HasAPIKey()
+	key, ok := client.HasAPIKey()
 
 	// Insert key
 	if ok {
 		opts["key"] = key
 	}
 
+	client.mergeGlobalOptions(opts)
 	baseURL := AddQueryParameters(endPoint, opts)
 
 	req, err := http.NewRequest(method, baseURL, nil)
