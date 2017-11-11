@@ -33,6 +33,10 @@ func (client *Client) HasAPIKey() (string, bool) {
 
 // call is s shortcut
 func (client *Client) call(req *http.Request) (*http.Response, error) {
+	if client.config.Verbose {
+		log.Printf("Full URL:\n%v", req.URL)
+	}
+
 	return client.client.Do(req)
 }
 

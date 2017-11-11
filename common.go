@@ -54,6 +54,9 @@ func (client *Client) prepareRequest(method, what string, opts map[string]string
 	}
 
 	client.mergeGlobalOptions(opts)
+	if client.config.Verbose {
+		log.Printf("Options:\n%v", opts)
+	}
 	baseURL := AddQueryParameters(endPoint, opts)
 
 	req, err := http.NewRequest(method, baseURL, nil)
