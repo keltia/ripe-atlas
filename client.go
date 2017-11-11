@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"log"
 	"net/http"
-	"net/url"
 	"time"
 )
 
@@ -37,17 +36,6 @@ func (client *Client) call(req *http.Request) (*http.Response, error) {
 	return client.client.Do(req)
 }
 
-func getProxy(req *http.Request) (uri *url.URL, err error) {
-	uri, err = http.ProxyFromEnvironment(req)
-	if err != nil {
-		log.Printf("no proxy in environment")
-		uri = &url.URL{}
-	} else if uri == nil {
-		log.Println("No proxy configured or url excluded")
-	}
-	return
-}
-
 func (client *Client) setupTransport() (*http.Transport, error) {
 	/*
 	   Proxy code taken from https://github.com/LeoCBS/poc-proxy-https/blob/master/main.go
@@ -60,7 +48,7 @@ func (client *Client) setupTransport() (*http.Transport, error) {
 	}
 
 	// Get proxy URL
-	proxyURL, err := getProxy(req)
+	proxyURL, err := http.ProxyFromEnvironment(req)
 	if err != nil {
 		if client.config.Verbose {
 			log.Println("no proxy defined")
