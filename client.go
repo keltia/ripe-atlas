@@ -8,24 +8,13 @@ import (
 	"time"
 )
 
-type context struct {
-	config Config
-	client *http.Client
-}
-
-var (
-	// ctx is out internal context
-	ctx *context
-)
-
 // NewClient is the first function to call.
 // Yes, it does take multiple config
 // and the last one wins.
 func NewClient(cfgs ...Config) (*Client, error) {
 	client := &Client{}
-	ctx = &context{}
 	for _, cfg := range cfgs {
-		ctx.config = cfg
+		client.config = cfg
 	}
 	ctx.client = addHTTPClient(ctx)
 	return client, nil
@@ -56,13 +45,13 @@ func setupTransport(ctx *context) (*http.Transport, error) {
 	// Get proxy URL
 	proxyURL, err := getProxy(req)
 	if err != nil {
-		if ctx.config.Verbose {
+		if client.config.Verbose {
 			log.Println("no proxy defined")
 		}
 	}
 
-	if ctx.config.ProxyAuth != "" {
-		req.Header.Set("Proxy-Authorization", ctx.config.ProxyAuth)
+	if client.config.ProxyAuth != "" {
+		req.Header.Set("Proxy-Authorization", client.config.ProxyAuth)
 	}
 
 	transport := &http.Transport{
@@ -74,8 +63,8 @@ func setupTransport(ctx *context) (*http.Transport, error) {
 	return transport, nil
 }
 
-func addHTTPClient(ctx *context) *http.Client {
-	transport, err := setupTransport(ctx)
+func (client *Client) addHTTPClient() (*Client, error) {
+	transport, err := client.setupTransport()
 	if err != nil {
 		log.Fatalf("unable to create httpclient: %v", err)
 	}
