@@ -85,7 +85,7 @@ func (client *Client) GetMeasurement(id int) (m *Measurement, err error) {
 
 	//log.Printf("req: %#v", req)
 	resp, err := client.call(req)
-	err = handleAPIResponse(r)
+	err = handleAPIResponse(resp)
 	if err != nil {
 		return
 	}
