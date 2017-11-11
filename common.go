@@ -19,14 +19,6 @@ const (
 	apiEndpoint = "https://atlas.ripe.net/api/v2"
 )
 
-// HasAPIKey returns whether an API key is stored
-func HasAPIKey() (string, bool) {
-	if ctx.config.APIKey == "" {
-		return "", false
-	}
-	return ctx.config.APIKey, true
-}
-
 // GetVersion returns the API wrapper version
 func GetVersion() string {
 	return ourVersion

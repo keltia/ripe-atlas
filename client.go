@@ -24,6 +24,14 @@ func NewClient(cfgs ...Config) (*Client, error) {
 	return client.addHTTPClient()
 }
 
+// HasAPIKey returns whether an API key is stored
+func (client *Client) HasAPIKey() (string, bool) {
+	if client.config.APIKey == "" {
+		return "", false
+	}
+	return client.config.APIKey, true
+}
+
 // call is s shortcut
 func (client *Client) call(req *http.Request) (*http.Response, error) {
 	return client.client.Do(req)
