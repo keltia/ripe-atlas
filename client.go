@@ -77,15 +77,15 @@ func (client *Client) addHTTPClient() (*Client, error) {
 	return client, err
 }
 
-func (client *Client) SetAF(family string) (*Client) {
+func (client *Client) SetAF(family string) *Client {
 	return client.SetOption("wantAF", family)
 }
 
-func (client *Client) SetFormat(format string) (*Client) {
+func (client *Client) SetFormat(format string) *Client {
 	return client.SetOption("format", format)
 }
 
-func (client *Client) SetInclude(include string) (*Client) {
+func (client *Client) SetInclude(include string) *Client {
 	return client.SetOption("include", include)
 }
 
