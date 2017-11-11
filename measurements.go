@@ -139,14 +139,3 @@ func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 	return
 }
 
-// Measurement-related methods
-
-// Start is for starting a given measurement
-func (m *Measurement) Start(id int) (err error) {
-	return nil
-}
-
-// Stop is an alias for delete
-func (m *Measurement) Stop() (err error) {
-	return DeleteMeasurement(m.ID)
-}
