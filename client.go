@@ -16,8 +16,17 @@ func NewClient(cfgs ...Config) (*Client, error) {
 	for _, cfg := range cfgs {
 		client.config = cfg
 	}
-	ctx.client = addHTTPClient(ctx)
-	return client, nil
+
+	// This holds the global options
+	client.opts = make(map[string]string)
+
+	// Create and save the http.Client
+	return client.addHTTPClient()
+}
+
+// call is s shortcut
+func (client *Client) call(req *http.Request) (*http.Response, error) {
+	return client.client.Do(req)
 }
 
 func getProxy(req *http.Request) (uri *url.URL, err error) {
@@ -31,7 +40,7 @@ func getProxy(req *http.Request) (uri *url.URL, err error) {
 	return
 }
 
-func setupTransport(ctx *context) (*http.Transport, error) {
+func (client *Client) setupTransport() (*http.Transport, error) {
 	/*
 	   Proxy code taken from https://github.com/LeoCBS/poc-proxy-https/blob/master/main.go
 	   Analyse endPoint to check proxy stuff
@@ -68,5 +77,29 @@ func (client *Client) addHTTPClient() (*Client, error) {
 	if err != nil {
 		log.Fatalf("unable to create httpclient: %v", err)
 	}
-	return &http.Client{Transport: transport, Timeout: 20 * time.Second}
+	client.client = &http.Client{Transport: transport, Timeout: 20 * time.Second}
+	return client, err
+}
+
+func (client *Client) SetAF(family string) (*Client) {
+	return client.SetOption("wantAF", family)
+}
+
+func (client *Client) SetFormat(format string) (*Client) {
+	return client.SetOption("format", format)
+}
+
+func (client *Client) SetInclude(include string) (*Client) {
+	return client.SetOption("include", include)
+}
+
+func (client *Client) SetOption(name, value string) (*Client) {
+	client.opts[name] = value
+	return client
+}
+
+func (client *Client) mergeGlobalOptions(opts map[string]string) {
+	for k, v := range client.opts {
+		opts[k] = v
+	}
 }
