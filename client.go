@@ -89,8 +89,10 @@ func (client *Client) SetInclude(include string) (*Client) {
 	return client.SetOption("include", include)
 }
 
-func (client *Client) SetOption(name, value string) (*Client) {
-	client.opts[name] = value
+func (client *Client) SetOption(name, value string) *Client {
+	if value != "" {
+		client.opts[name] = value
+	}
 	return client
 }
 
