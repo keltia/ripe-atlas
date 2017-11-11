@@ -4,8 +4,12 @@
 
 package atlas
 
+import "net/http"
+
 type Client struct {
-	config       Config
+	config Config
+	client *http.Client
+	opts   map[string]string // Default, optional options
 }
 
 type Config struct {
