@@ -18,42 +18,42 @@ type keyList struct {
 }
 
 // fetch the given resource
-func fetchOneKeyPage(opts map[string]string) (raw *keyList, err error) {
+func (client *Client) fetchOneKeyPage(opts map[string]string) (raw *keyList, err error) {
 
-	req := prepareRequest("GET", "keys", opts)
+	req := client.prepareRequest("GET", "keys", opts)
 
-	r, err := ctx.client.Do(req)
-	err = handleAPIResponse(r)
+	resp, err := client.call(req)
+	err = handleAPIResponse(resp)
 	if err != nil {
 		return
 	}
 
 	raw = &keyList{}
-	body, _ := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
 
 	err = json.Unmarshal(body, raw)
-	//log.Printf("Count=%d raw=%v", raw.Count, r)
-	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
+	//log.Printf("Count=%d raw=%v", raw.Count, resp)
+	//log.Printf(">> rawlist=%+v resp=%+v Next=|%s|", rawlist, resp, rawlist.Next)
 	return
 }
 
 // GetKey returns a given API key
-func GetKey(uuid string) (k Key, err error) {
+func (client *Client) GetKey(uuid string) (k Key, err error) {
 	opts := make(map[string]string)
 
-	req := prepareRequest("GET", fmt.Sprintf("keys/%s", uuid), opts)
+	req := client.prepareRequest("GET", fmt.Sprintf("keys/%s", uuid), opts)
 
 	//log.Printf("req: %#v", req)
-	r, err := ctx.client.Do(req)
-	err = handleAPIResponse(r)
+	resp, err := client.call(req)
+	err = handleAPIResponse(resp)
 	if err != nil {
 		return
 	}
 
 	k = Key{}
-	body, _ := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
 
 	err = json.Unmarshal(body, k)
 	//log.Printf("json: %#v\n", p)
@@ -61,10 +61,10 @@ func GetKey(uuid string) (k Key, err error) {
 }
 
 // GetKeys returns all your API keys
-func GetKeys(opts map[string]string) (kl []Key, err error) {
+func (client *Client) GetKeys(opts map[string]string) (kl []Key, err error) {
 
 	// First call
-	rawlist, err := fetchOneKeyPage(opts)
+	rawlist, err := client.fetchOneKeyPage(opts)
 
 	// Empty answer
 	if rawlist.Count == 0 {
@@ -79,7 +79,7 @@ func GetKeys(opts map[string]string) (kl []Key, err error) {
 		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
 			opts["page"] = pn
 
-			rawlist, err = fetchOneKeyPage(opts)
+			rawlist, err = client.fetchOneKeyPage(opts)
 			if err != nil {
 				return
 			}

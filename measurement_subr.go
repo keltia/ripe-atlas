@@ -28,7 +28,7 @@ var (
 )
 
 // NewMeasurement create a new MeasurementRequest and fills some fields
-func NewMeasurement() (req *MeasurementRequest) {
+func (client *Client) NewMeasurement() (req *MeasurementRequest) {
 	var defs []Definition
 
 	req = &MeasurementRequest{
@@ -86,9 +86,9 @@ func (m *MeasurementRequest) AddDefinition(fields map[string]string) *Measuremen
 }
 
 // createMeasurement creates a measurement for all types
-func createMeasurement(t string, d *MeasurementRequest) (m *MeasurementResp, err error) {
+func (client *Client) createMeasurement(t string, d *MeasurementRequest) (m *MeasurementResp, err error) {
 	opts := make(map[string]string)
-	req := prepareRequest("POST", fmt.Sprintf("measurements/%s", t), opts)
+	req := client.prepareRequest("POST", fmt.Sprintf("measurements/%s", t), opts)
 
 	body, err := json.Marshal(d)
 	if err != nil {
@@ -99,7 +99,7 @@ func createMeasurement(t string, d *MeasurementRequest) (m *MeasurementResp, err
 	req.Body = ioutil.NopCloser(buf)
 
 	log.Printf("body: %s", body)
-	resp, err := ctx.client.Do(req)
+	resp, err := client.call(req)
 	log.Printf("resp: %v", resp)
 	if err != nil {
 		log.Printf("err: %v", err)
@@ -127,31 +127,31 @@ func createMeasurement(t string, d *MeasurementRequest) (m *MeasurementResp, err
 }
 
 // DNS creates a measurement
-func DNS(d *MeasurementRequest) (m *MeasurementResp, err error) {
-	return createMeasurement("dns", d)
+func (client *Client) DNS(d *MeasurementRequest) (m *MeasurementResp, err error) {
+	return client.createMeasurement("dns", d)
 }
 
 // HTTP creates a measurement
-func HTTP(d *MeasurementRequest) (m *MeasurementResp, err error) {
-	return createMeasurement("http", d)
+func (client *Client) HTTP(d *MeasurementRequest) (m *MeasurementResp, err error) {
+	return client.createMeasurement("http", d)
 }
 
 // NTP creates a measurement
-func NTP(d *MeasurementRequest) (m *MeasurementResp, err error) {
-	return createMeasurement("ntp", d)
+func (client *Client) NTP(d *MeasurementRequest) (m *MeasurementResp, err error) {
+	return client.createMeasurement("ntp", d)
 }
 
 // Ping creates a measurement
-func Ping(d *MeasurementRequest) (m *MeasurementResp, err error) {
-	return createMeasurement("ping", d)
+func (client *Client) Ping(d *MeasurementRequest) (m *MeasurementResp, err error) {
+	return client.createMeasurement("ping", d)
 }
 
 // SSLCert creates a measurement
-func SSLCert(d *MeasurementRequest) (m *MeasurementResp, err error) {
-	return createMeasurement("sslcert", d)
+func (client *Client) SSLCert(d *MeasurementRequest) (m *MeasurementResp, err error) {
+	return client.createMeasurement("sslcert", d)
 }
 
 // Traceroute creates a measurement
-func Traceroute(d *MeasurementRequest) (m *MeasurementResp, err error) {
-	return createMeasurement("traceroute", d)
+func (client *Client) Traceroute(d *MeasurementRequest) (m *MeasurementResp, err error) {
+	return client.createMeasurement("traceroute", d)
 }

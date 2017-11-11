@@ -53,44 +53,46 @@ type measurementList struct {
 }
 
 // fetch the given resource
-func fetchOneMeasurementPage(opts map[string]string) (raw *measurementList, err error) {
-	req := prepareRequest("GET", "measurements", opts)
+func (client *Client) fetchOneMeasurementPage(opts map[string]string) (raw *measurementList, err error) {
+	client.mergeGlobalOptions(opts)
+	req := client.prepareRequest("GET", "measurements", opts)
 
 	//log.Printf("req=%s qp=%#v", MeasurementEP, opts)
-	r, err := ctx.client.Do(req)
-	err = handleAPIResponse(r)
+	resp, err := client.call(req)
+	err = handleAPIResponse(resp)
 	if err != nil {
 		return
 	}
 
 	raw = &measurementList{}
-	body, _ := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
 
 	err = json.Unmarshal(body, raw)
-	//log.Printf("Count=%d raw=%v", raw.Count, r)
-	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
+	//log.Printf("Count=%d raw=%v", raw.Count, resp)
+	//log.Printf(">> rawlist=%+v resp=%+v Next=|%s|", rawlist, resp, rawlist.Next)
 	return
 }
 
 // -- public
 
 // GetMeasurement gets info for a single one
-func GetMeasurement(id int) (m *Measurement, err error) {
+func (client *Client) GetMeasurement(id int) (m *Measurement, err error) {
 	opts := make(map[string]string)
 
-	req := prepareRequest("GET", fmt.Sprintf("measurements/%d", id), opts)
+	client.mergeGlobalOptions(opts)
+	req := client.prepareRequest("GET", fmt.Sprintf("measurements/%d", id), opts)
 
 	//log.Printf("req: %#v", req)
-	r, err := ctx.client.Do(req)
+	resp, err := client.call(req)
 	err = handleAPIResponse(r)
 	if err != nil {
 		return
 	}
 
 	m = &Measurement{}
-	body, _ := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
 
 	err = json.Unmarshal(body, m)
 	//log.Printf("json: %#v\n", m)
@@ -98,21 +100,21 @@ func GetMeasurement(id int) (m *Measurement, err error) {
 }
 
 // DeleteMeasurement stops (not really deletes) a given measurement
-func DeleteMeasurement(id int) (err error) {
+func (client *Client) DeleteMeasurement(id int) (err error) {
 	opts := make(map[string]string)
 
-	req := prepareRequest("DELETE", fmt.Sprintf("measurements/%d", id), opts)
+	req := client.prepareRequest("DELETE", fmt.Sprintf("measurements/%d", id), opts)
 
 	//log.Printf("req: %#v", req)
-	r, err := ctx.client.Do(req)
-	err = handleAPIResponse(r)
+	resp, err := client.call(req)
+	err = handleAPIResponse(resp)
 	return
 }
 
 // GetMeasurements gets info for a set
-func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
+func (client *Client) GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 	// First call
-	rawlist, err := fetchOneMeasurementPage(opts)
+	rawlist, err := client.fetchOneMeasurementPage(opts)
 
 	// Empty answer
 	if rawlist.Count == 0 {
@@ -127,7 +129,7 @@ func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
 			opts["page"] = pn
 
-			rawlist, err = fetchOneMeasurementPage(opts)
+			rawlist, err = client.fetchOneMeasurementPage(opts)
 			if err != nil {
 				return
 			}
