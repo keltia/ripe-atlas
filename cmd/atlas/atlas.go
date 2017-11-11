@@ -27,6 +27,7 @@ var (
 	fCountry     string
 	fFieldList   string
 	fFormat      string
+	fInclude     string
 	fOptFields   string
 	fProtocol    string
 	fSortOrder   string
@@ -178,6 +179,11 @@ func main() {
 			Name:        "fields,F",
 			Usage:       "specify which fields are wanted",
 			Destination: &fFieldList,
+		},
+		cli.StringFlag{
+			Name:        "include,I",
+			Usage:       "specify whether objects should be expanded",
+			Destination: &fInclude,
 		},
 		cli.StringFlag{
 			Name:        "opt-fields,O",
