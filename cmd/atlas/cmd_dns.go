@@ -81,7 +81,7 @@ func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRe
 		opts["UDPPayloadSize"] = "512"
 	}
 
-	req = atlas.NewMeasurement()
+	req = client.NewMeasurement()
 	if mycnf.WantAF == WantBoth {
 
 		opts["AF"] = "4"
@@ -151,7 +151,7 @@ func cmdDNS(c *cli.Context) error {
 	req := prepareDNS(proto, addr, qclass, qtype, bitDO, bitCD)
 
 	log.Printf("req=%#v", req)
-	m, err := atlas.DNS(req)
+	m, err := client.DNS(req)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)

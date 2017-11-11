@@ -50,7 +50,7 @@ func prepareHTTP(target, path string, port int) (req *atlas.MeasurementRequest) 
 		"Port":        fmt.Sprintf("%d", port),
 	}
 
-	req = atlas.NewMeasurement()
+	req = client.NewMeasurement()
 	if mycnf.WantAF == WantBoth {
 
 		opts["AF"] = "4"
@@ -94,7 +94,7 @@ func cmdHTTP(c *cli.Context) error {
 	log.Printf("req=%#v", req)
 	//str := res.Result.Display()
 
-	http, err := atlas.HTTP(req)
+	http, err := client.HTTP(req)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)

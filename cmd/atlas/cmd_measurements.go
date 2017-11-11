@@ -4,13 +4,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
+	"github.com/keltia/ripe-atlas"
 )
 
 // init injects our measurement-related commands
@@ -147,7 +147,7 @@ func measurementsList(c *cli.Context) error {
 		displayOptions(opts)
 	}
 
-	q, err := atlas.GetMeasurements(opts)
+	q, err := client.GetMeasurements(opts)
 	if err != nil {
 		log.Printf("GetMeasurements err: %v - q:%v", err, q)
 		os.Exit(1)
@@ -167,7 +167,7 @@ func measurementInfo(c *cli.Context) error {
 
 	id, _ := strconv.Atoi(args[0])
 
-	p, err := atlas.GetMeasurement(id)
+	p, err := client.GetMeasurement(id)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
@@ -186,7 +186,7 @@ func measurementResults(c *cli.Context) error {
 
 	id, _ := strconv.Atoi(args[0])
 
-	m, err := atlas.GetMeasurement(id)
+	m, err := client.GetMeasurement(id)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
@@ -230,12 +230,12 @@ func measurementDelete(c *cli.Context) (err error) {
 			displayOptions(opts)
 		}
 
-		list, err := atlas.GetMeasurements(opts)
+		list, err := client.GetMeasurements(opts)
 		if err != nil {
 			err = fmt.Errorf("Delete all failed: %v", err)
 		} else {
 			for _, m := range list {
-				err = atlas.DeleteMeasurement(m.ID)
+				err = client.DeleteMeasurement(m.ID)
 				if err != nil {
 					err = fmt.Errorf("Error: can not delete measurement %d", m.ID)
 				}
@@ -249,7 +249,7 @@ func measurementDelete(c *cli.Context) (err error) {
 		}
 
 		id, _ := strconv.Atoi(args[0])
-		err = atlas.DeleteMeasurement(id)
+		err = client.DeleteMeasurement(id)
 	}
 
 	return
