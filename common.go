@@ -17,8 +17,6 @@ import (
 
 const (
 	apiEndpoint = "https://atlas.ripe.net/api/v2"
-
-	ourVersion = "0.12"
 )
 
 // HasAPIKey returns whether an API key is stored
