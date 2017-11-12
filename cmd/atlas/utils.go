@@ -18,20 +18,23 @@ func (a ByAlphabet) Less(i, j int) bool { return a[i].Name < a[j].Name }
 // checkGlobalFlags is the place to check global parameters
 func checkGlobalFlags(o map[string]string) (opts map[string]string) {
 	opts = o
-	if fSortOrder != "" {
-		opts["sort"] = fSortOrder
-	}
 
-	if fFieldList != "" {
-		opts["fields"] = fFieldList
-	}
-
-	if fOptFields != "" {
-		opts["optional_fields"] = fOptFields
+	for k, v := range map[string]string{
+		"fields":          fFieldList,
+		"format":          fFormat,
+		"include":         fInclude,
+		"optional_fields": fOptFields,
+		"page":            fPageNum,
+		"page_size":       fPageSize,
+		"sort":            fSortOrder,
+	} {
+		if v != "" {
+			client.SetOption(k, v)
+		}
 	}
 
 	if fFormat != "" && validateFormat(fFormat) {
-		opts["format"] = fFormat
+		client.SetOption("format", fFormat)
 	}
 	return opts
 }
