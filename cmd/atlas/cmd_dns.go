@@ -122,10 +122,6 @@ func cmdDNS(c *cli.Context) error {
 		log.Fatal("Error: you must specify at least a name")
 	}
 
-	qtype = defQueryType
-	qclass = defQueryClass
-	proto = defProtocol
-
 	if len(args) == 1 {
 		addr = args[0]
 	} else if len(args) == 2 {
