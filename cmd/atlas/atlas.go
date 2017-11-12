@@ -17,20 +17,23 @@ var (
 	fWant4 bool
 	fWant6 bool
 
-	// True by default
-	fWantMine = true
-
 	fAllProbes       bool
 	fAllMeasurements bool
 
-	fAsn         string
-	fCountry     string
+	// Global options
 	fFieldList   string
 	fFormat      string
 	fInclude     string
 	fOptFields   string
-	fProtocol    string
+	fPageNum     string
+	fPageSize    string
 	fSortOrder   string
+	fWantMine    bool
+
+	// Measurement-specific ones
+	fAsn     string
+	fCountry string
+	fProtocol string
 	fMeasureType string
 
 	fHTTPMethod  string
@@ -122,6 +125,10 @@ func finalcheck(c *cli.Context) error {
 		log.Fatalf("Error creating the Atlas client: %v", err)
 	}
 
+	if fWantMine {
+		client.SetOption("mine", "true")
+	}
+
 	if fWant4 {
 		mycnf.WantAF = Want4
 	}
@@ -141,10 +148,7 @@ func finalcheck(c *cli.Context) error {
 	}
 
 	// Set global options
-	client.SetFormat(fFormat)
-	client.SetAF(mycnf.WantAF)
-	client.SetInclude(fInclude)
-
+	//client.SetAF(mycnf.WantAF)
 	return nil
 }
 
@@ -190,10 +194,20 @@ func main() {
 			Usage:       "specify whether objects should be expanded",
 			Destination: &fInclude,
 		},
+		cli.BoolFlag{
+			Name:        "mine,M",
+			Usage:       "limit output to my objects",
+			Destination: &fWantMine,
+		},
 		cli.StringFlag{
 			Name:        "opt-fields,O",
 			Usage:       "specify which optional fields are wanted",
 			Destination: &fOptFields,
+		},
+		cli.StringFlag{
+			Name:        "page-size,P",
+			Usage:       "page size for results",
+			Destination: &fPageSize,
 		},
 		cli.StringFlag{
 			Name:        "sort,S",
