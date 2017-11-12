@@ -96,6 +96,9 @@ func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRe
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
 
+	req = client.NewMeasurement()
+	req.AddDefinition(opts)
+
 	if fVerbose {
 		displayOptions(opts)
 	}
