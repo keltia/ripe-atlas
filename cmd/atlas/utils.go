@@ -55,6 +55,14 @@ func displayOptions(opts map[string]string) {
 	}
 }
 
+func boolToString(k bool) string {
+	if k {
+		return "true"
+	} else {
+		return "false"
+	}
+}
+
 // analyzeTarget breaks up an url into its components
 func analyzeTarget(target string) (proto, site, path string, port int) {
 	uri, err := url.Parse(target)
