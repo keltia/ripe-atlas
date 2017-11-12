@@ -123,6 +123,7 @@ AUTHOR:
    Ollivier Robert <roberto@keltia.net>
 
 COMMANDS:
+     credits, c                 credits-related keywords
      dns, dig, drill            send dns queries
      http, https                connect to host/IP through HTTP
      ip                         returns current ip
@@ -141,7 +142,10 @@ GLOBAL OPTIONS:
    --debug, -D                   debug mode
    --verbose, -v                 verbose mode
    --fields value, -F value      specify which fields are wanted
+   --include value, -I value     specify whether objects should be expanded
+   --mine, -M                    limit output to my objects
    --opt-fields value, -O value  specify which optional fields are wanted
+   --page-size value, -P value   page size for results
    --sort value, -S value        sort results
    -6, --ipv6                    Only IPv6
    -4, --ipv4                    Only IPv4
