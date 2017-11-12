@@ -53,6 +53,21 @@ type Grant struct {
 	} `json:"target"`
 }
 
+// Credits is holding credits data
+type Credits struct {
+	CurrentBalance            int    `json:"current_balance"`
+	EstimatedDailyIncome      int    `json:"estimated_daily_income"`
+	EstimatedDailyExpenditure int    `json:"estimated_daily_expenditure"`
+	EstimatedDailyBalance     int    `json:"estimated_daily_balance"`
+	CalculationTime           string `json:"calculation_time"`
+	EstimatedRunoutSeconds    int    `json:"estimated_runout_seconds"`
+	PastDayMeasurementResults int    `json:"past_day_measurement_results"`
+	PastDayCreditsSpent       int    `json:"past_day_credits_spent"`
+	IncomeItems               string `json:"income_items"`
+	ExpenseItems              string `json:"expense_items"`
+	Transactions              string `json:"transactions"`
+}
+
 // Probe is holding probe's data
 type Probe struct {
 	AddressV4      string `json:"address_v4"`
