@@ -70,8 +70,8 @@ func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRe
 		"QueryArgument": qa,
 		"QueryClass":    qc,
 		"QueryType":     qt,
-		"SetDOBit":      fmt.Sprintf("%v", do),
-		"SetCDBit":      fmt.Sprintf("%v", cd),
+		"SetDOBit":      boolToString(do),
+		"SetCDBit":      boolToString(cd),
 	}
 
 	if eDNS0 {
