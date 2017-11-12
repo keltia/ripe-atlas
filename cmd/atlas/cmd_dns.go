@@ -81,8 +81,7 @@ func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRe
 		opts["UDPPayloadSize"] = "512"
 	}
 
-	req = client.NewMeasurement()
-	if mycnf.WantAF == WantBoth {
+	/*if mycnf.WantAF == WantBoth {
 
 		opts["AF"] = "4"
 		req.AddDefinition(opts)
@@ -92,7 +91,7 @@ func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRe
 	} else {
 		opts["AF"] = mycnf.WantAF
 		req.AddDefinition(opts)
-	}
+	}*/
 
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
