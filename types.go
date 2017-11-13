@@ -31,9 +31,9 @@ type APIError struct {
 		Errors []struct {
 			Source struct {
 				Pointer string
-			} `json:"errors"`
+			} `json:"source"`
 			Detail string
-		}
+		} `json:"errors"`
 	} `json:"error"`
 }
 
