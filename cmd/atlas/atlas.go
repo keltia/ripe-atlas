@@ -58,7 +58,7 @@ var (
 )
 
 const (
-	atlasVersion = "0.20"
+	atlasVersion = "0.21"
 	MyName       = "ripe-atlas"
 
 	// WantBoth is the way to ask for both IPv4 & IPv6.
