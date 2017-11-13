@@ -69,6 +69,9 @@ func (d *Definition) setParams(fields map[string]string) {
 				sdef.FieldByName(k).SetInt(vi)
 			case "string":
 				sdef.FieldByName(k).SetString(v)
+			case "bool":
+				vb, _ := strconv.ParseBool(v)
+				sdef.FieldByName(k).SetBool(vb)
 			default:
 				log.Printf("Unsupported type: %s", f.Type.Name())
 			}
