@@ -21,19 +21,19 @@ var (
 	fAllMeasurements bool
 
 	// Global options
-	fFieldList   string
-	fFormat      string
-	fInclude     string
-	fOptFields   string
-	fPageNum     string
-	fPageSize    string
-	fSortOrder   string
-	fWantMine    bool
+	fFieldList string
+	fFormat    string
+	fInclude   string
+	fOptFields string
+	fPageNum   string
+	fPageSize  string
+	fSortOrder string
+	fWantMine  bool
 
 	// Measurement-specific ones
-	fAsn     string
-	fCountry string
-	fProtocol string
+	fAsn         string
+	fCountry     string
+	fProtocol    string
 	fMeasureType string
 
 	fHTTPMethod  string
@@ -58,7 +58,7 @@ var (
 )
 
 const (
-	atlasVersion = "0.11"
+	atlasVersion = "0.20"
 	MyName       = "ripe-atlas"
 
 	// WantBoth is the way to ask for both IPv4 & IPv6.
