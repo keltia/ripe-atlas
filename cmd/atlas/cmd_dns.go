@@ -125,11 +125,11 @@ func cmdDNS(c *cli.Context) error {
 		addr = args[0]
 	} else if len(args) == 2 {
 		addr = args[0]
-		qtype = args[1]
+		qtype = strings.ToUpper(args[1])
 	} else if len(args) == 3 {
 		addr = args[0]
-		qtype = args[1]
-		qclass = args[2]
+		qtype = strings.ToUpper(args[1])
+		qclass = strings.ToUpper(args[2])
 	}
 
 	if fProtocol != "" {
