@@ -67,15 +67,13 @@ func boolToString(k bool) string {
 func analyzeTarget(target string) (proto, site, path string, port int) {
 	uri, err := url.Parse(target)
 	if err != nil {
-		proto = ""
-		site = ""
-		path = ""
-		port = 0
+		// This is no URL, make one
+		proto = "https"
+		site = target
+		path = "/"
+		port = 443
 	} else {
 		proto = uri.Scheme
-		if proto == "https" {
-			port = 443
-		}
 
 		// might be host:port
 		sp := strings.Split(uri.Host, ":")

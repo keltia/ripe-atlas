@@ -6,6 +6,7 @@ import (
 	"github.com/urfave/cli"
 	"log"
 	"os"
+	"strings"
 )
 
 // init injects our "sslcert" related commands/options.
@@ -28,6 +29,7 @@ func prepareTLSCert(target string, port int) (req *atlas.MeasurementRequest) {
 	opts := map[string]string{
 		"Type":        "sslcert",
 		"Description": fmt.Sprintf("SSLCert - %s", target),
+		"Hostname":    target,
 		"Target":      target,
 		"Port":        fmt.Sprintf("%d", port),
 	}
@@ -53,8 +55,12 @@ func cmdTLSCert(c *cli.Context) (err error) {
 		log.Fatal("Error: you must specify a hostname/site!")
 	}
 
-	// We expect target to be using [http|https]://<site>[:port]/path
+	// We expect target to be using <site>[:port]
 	target := args[0]
+	if !strings.HasPrefix(target, "http") {
+		target = fmt.Sprintf("https://%s/", target)
+	}
+
 	_, site, _, port := analyzeTarget(target)
 
 	req := prepareTLSCert(site, port)

@@ -44,7 +44,7 @@ func init() {
 // prepareTraceroute build the request with our parameters
 func prepareTraceroute(target, protocol string, maxhops, size int) (req *atlas.MeasurementRequest) {
 	opts := map[string]string{
-		"Type":        "traceeroute",
+		"Type":        "traceroute",
 		"Description": fmt.Sprintf("Traceroute - %s", target),
 		"Target":      target,
 		"MaxHops":     fmt.Sprintf("%d", maxhops),
