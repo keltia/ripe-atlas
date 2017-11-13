@@ -100,10 +100,16 @@ func (client *Client) createMeasurement(t string, d *MeasurementRequest) (m *Mea
 
 	buf := bytes.NewReader(body)
 	req.Body = ioutil.NopCloser(buf)
+	req.ContentLength = int64(buf.Len())
 
-	log.Printf("body: %s", body)
+	if client.config.Verbose {
+		log.Printf("req: %#v", req)
+		log.Printf("body: %s", body)
+	}
 	resp, err := client.call(req)
-	log.Printf("resp: %v", resp)
+	if client.config.Verbose {
+		log.Printf("resp: %v", resp)
+	}
 	if err != nil {
 		log.Printf("err: %v", err)
 		//return
