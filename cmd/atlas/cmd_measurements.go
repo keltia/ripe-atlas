@@ -4,13 +4,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"strconv"
-	"github.com/keltia/ripe-atlas"
 )
 
 // init injects our measurement-related commands
@@ -110,11 +108,6 @@ func displayAllMeasurements(ml *[]atlas.Measurement, verbose bool) (res string) 
 	return
 }
 
-// displayResult returns a string with <obj>.Result
-func displayResult(body []byte, verbose bool) (res string) {
-	return string(body)
-}
-
 // measurementsList returns a list of measurements according to parameters
 func measurementsList(c *cli.Context) error {
 	opts := make(map[string]string)
@@ -188,20 +181,13 @@ func measurementResults(c *cli.Context) error {
 		fmt.Println("Empty result")
 	}
 
-	resp, err := http.Get(m.Result)
+	resp, err := client.FetchResult(m.Result)
 	if err != nil {
 		err = fmt.Errorf("bad net/http answer for %s: %v", m.Result, err)
 		return err
 	}
-	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		err = fmt.Errorf("error reading body for %s: %v", m.Result, err)
-		return err
-	}
-
-	fmt.Print(displayResult(body, fVerbose))
+	fmt.Print(resp)
 	return nil
 }
 
