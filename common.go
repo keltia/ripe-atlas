@@ -67,6 +67,11 @@ func (client *Client) prepareRequest(method, what string, opts map[string]string
 
 	myurl, err := url.Parse(baseURL)
 
+	// We need these when we POST
+	if method == "POST" {
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Accept", "application/json")
+	}
 	req.Header.Set("Host", myurl.Host)
 	req.Header.Set("User-Agent", fmt.Sprintf("ripe-atlas/%s", ourVersion))
 
