@@ -156,15 +156,15 @@ type Measurement struct {
 // was already created
 type ParticipationRequest struct {
 	Action        string `json:"action"`
-	CreatedAt     int    `json:"created_at"`
-	ID            int    `json:"id"`
-	Self          string `json:"self"`
-	Measurement   string `json:"measurement"`
-	MeasurementID int    `json:"measurement_id"`
-	Requested     int    `json:"requested"`
-	Type          string `json:"type"`
-	Value         string `json:"value"`
-	Logs          string `json:"logs"`
+	CreatedAt     int    `json:"created_at,omitempty"`
+	ID            int    `json:"id,omitempty"`
+	Self          string `json:"self,omitempty"`
+	Measurement   string `json:"measurement,omitempty"`
+	MeasurementID int    `json:"measurement_id,omitempty"`
+	Requested     int    `json:"requested,omitempty"`
+	Type          string `json:"type,omitempty"`
+	Value         string `json:"value,omitempty"`
+	Logs          string `json:"logs,omitempty"`
 }
 
 var (
