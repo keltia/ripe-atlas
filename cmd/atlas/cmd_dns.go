@@ -67,6 +67,7 @@ func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRe
 		"Type":          "dns",
 		"Description":   fmt.Sprintf("DNS - %s", qa),
 		"Protocol":      proto,
+		"Target":        qa,
 		"QueryArgument": qa,
 		"QueryClass":    qc,
 		"QueryType":     qt,
