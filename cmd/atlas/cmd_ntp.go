@@ -27,7 +27,14 @@ func prepareNTP(target string) (req *atlas.MeasurementRequest) {
 		"Target":      target,
 	}
 
-	req = atlas.NewMeasurement()
+	// Check global parameters
+	opts = checkGlobalFlags(opts)
+
+	if fVerbose {
+		displayOptions(opts)
+	}
+
+	req = client.NewMeasurement()
 	if mycnf.WantAF == WantBoth {
 
 		opts["AF"] = "4"
@@ -54,7 +61,7 @@ func cmdNTP(c *cli.Context) error {
 	log.Printf("req=%#v", req)
 	//str := res.Result.Display()
 
-	ntp, err := atlas.NTP(req)
+	ntp, err := client.NTP(req)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)

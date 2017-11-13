@@ -28,7 +28,7 @@ func preparePing(target string) (req *atlas.MeasurementRequest) {
 		"Target":      target,
 	}
 
-	req = atlas.NewMeasurement()
+	req = client.NewMeasurement()
 	if mycnf.WantAF == WantBoth {
 
 		opts["AF"] = "4"
@@ -39,6 +39,13 @@ func preparePing(target string) (req *atlas.MeasurementRequest) {
 	} else {
 		opts["AF"] = mycnf.WantAF
 		req.AddDefinition(opts)
+	}
+
+	// Check global parameters
+	opts = checkGlobalFlags(opts)
+
+	if fVerbose {
+		displayOptions(opts)
 	}
 
 	return
@@ -55,7 +62,7 @@ func cmdPing(c *cli.Context) error {
 
 	req := preparePing(addr)
 	log.Printf("req=%#v", req)
-	m, err := atlas.Ping(req)
+	m, err := client.Ping(req)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)

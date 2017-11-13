@@ -17,19 +17,23 @@ var (
 	fWant4 bool
 	fWant6 bool
 
-	// True by default
-	fWantMine bool
-
 	fAllProbes       bool
 	fAllMeasurements bool
 
+	// Global options
+	fFieldList string
+	fFormat    string
+	fInclude   string
+	fOptFields string
+	fPageNum   string
+	fPageSize  string
+	fSortOrder string
+	fWantMine  bool
+
+	// Measurement-specific ones
 	fAsn         string
 	fCountry     string
-	fFieldList   string
-	fFormat      string
-	fOptFields   string
 	fProtocol    string
-	fSortOrder   string
 	fMeasureType string
 
 	fHTTPMethod  string
@@ -39,19 +43,23 @@ var (
 	fBitCD         bool
 	fDisableDNSSEC bool
 
+	fDebug      bool
 	fVerbose    bool
 	fWantAnchor bool
 
 	fMaxHops    int
 	fPacketSize int
 
-	mycnf *atlas.Config
+	mycnf *Config
 
 	cliCommands []cli.Command
+
+	client *atlas.Client
 )
 
 const (
-	atlasVersion = "0.11"
+	atlasVersion = "0.20"
+	MyName       = "ripe-atlas"
 
 	// WantBoth is the way to ask for both IPv4 & IPv6.
 	WantBoth = "64"
@@ -63,7 +71,64 @@ const (
 )
 
 // -4 & -6 are special, if neither is specified, then we turn both as true
+// Check a few other things while we are here
 func finalcheck(c *cli.Context) error {
+	var err error
+
+	// Load main configuration
+	mycnf, err = LoadConfig("")
+	if err != nil {
+		if fVerbose {
+			log.Printf("No configuration file found.")
+		}
+	}
+
+	// Logical
+	if fDebug {
+		fVerbose = true
+		log.Printf("config: %#v", mycnf)
+	}
+
+	// Various messages
+	if fVerbose {
+		if mycnf.APIKey != "" {
+			log.Printf("Found API key!")
+		} else {
+			log.Printf("No API key!")
+		}
+
+		if mycnf.DefaultProbe != 0 {
+			log.Printf("Found default probe: %d\n", mycnf.DefaultProbe)
+		}
+	}
+
+	// Check whether we have proxy authentication (from a separate config file)
+	auth, err := setupProxyAuth()
+	if err != nil {
+		if fVerbose {
+			log.Printf("Invalid or no proxy auth credentials")
+		}
+	}
+
+	// Wondering whether to move to the Functional options pattern
+	// cf. https://dave.cheney.net/2016/11/13/do-not-fear-first-class-functions
+	client, err = atlas.NewClient(atlas.Config{
+		APIKey:       mycnf.APIKey,
+		DefaultProbe: mycnf.DefaultProbe,
+		PoolSize:     mycnf.PoolSize,
+		ProxyAuth:    auth,
+		Verbose:      fVerbose,
+	})
+
+	// No need to continue if this fails
+	if err != nil {
+		log.Fatalf("Error creating the Atlas client: %v", err)
+	}
+
+	if fWantMine {
+		client.SetOption("mine", "true")
+	}
+
 	if fWant4 {
 		mycnf.WantAF = Want4
 	}
@@ -90,7 +155,7 @@ func main() {
 	cli.VersionFlag = cli.BoolFlag{Name: "version, V"}
 
 	cli.VersionPrinter = func(c *cli.Context) {
-		log.Printf("API wrapper: %s Atlas CLI: %s\n", c.App.Version, atlas.GetVersion())
+		log.Printf("API wrapper: %s Atlas API: %s\n", c.App.Version, atlas.GetVersion())
 	}
 
 	app := cli.NewApp()
@@ -108,6 +173,11 @@ func main() {
 			Destination: &fFormat,
 		},
 		cli.BoolFlag{
+			Name:        "debug,D",
+			Usage:       "debug mode",
+			Destination: &fDebug,
+		},
+		cli.BoolFlag{
 			Name:        "verbose,v",
 			Usage:       "verbose mode",
 			Destination: &fVerbose,
@@ -118,9 +188,24 @@ func main() {
 			Destination: &fFieldList,
 		},
 		cli.StringFlag{
+			Name:        "include,I",
+			Usage:       "specify whether objects should be expanded",
+			Destination: &fInclude,
+		},
+		cli.BoolFlag{
+			Name:        "mine,M",
+			Usage:       "limit output to my objects",
+			Destination: &fWantMine,
+		},
+		cli.StringFlag{
 			Name:        "opt-fields,O",
 			Usage:       "specify which optional fields are wanted",
 			Destination: &fOptFields,
+		},
+		cli.StringFlag{
+			Name:        "page-size,P",
+			Usage:       "page size for results",
+			Destination: &fPageSize,
 		},
 		cli.StringFlag{
 			Name:        "sort,S",
@@ -139,21 +224,8 @@ func main() {
 		},
 	}
 
-	// Ensure -4 & -6 are treated properly
+	// Ensure -4 & -6 are treated properly & initialization is done
 	app.Before = finalcheck
-
-	var err error
-
-	mycnf, err = atlas.LoadConfig("ripe-atlas")
-	if mycnf.APIKey != "" && err == nil {
-		atlas.SetAuth(mycnf.APIKey)
-		log.Printf("Found API key!")
-	} else {
-		log.Printf("No API key!")
-	}
-	if mycnf.DefaultProbe != 0 && err == nil {
-		log.Printf("Found default probe: %d\n", mycnf.DefaultProbe)
-	}
 
 	sort.Sort(ByAlphabet(cliCommands))
 	app.Commands = cliCommands

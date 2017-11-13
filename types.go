@@ -4,6 +4,23 @@
 
 package atlas
 
+import "net/http"
+
+type Client struct {
+	config Config
+	client *http.Client
+	opts   map[string]string // Default, optional options
+}
+
+type Config struct {
+	APIKey       string
+	DefaultProbe int
+	PoolSize     int
+	WantAF       string
+	ProxyAuth    string
+	Verbose      bool
+}
+
 // APIError is for errors returned by the RIPE API.
 type APIError struct {
 	Error struct {
@@ -11,6 +28,12 @@ type APIError struct {
 		Code   int    `json:"code"`
 		Detail string `json:"detail"`
 		Title  string `json:"title"`
+		Errors []struct {
+			Source struct {
+				Pointer string
+			} `json:"source"`
+			Detail string
+		} `json:"errors"`
 	} `json:"error"`
 }
 
@@ -34,6 +57,21 @@ type Grant struct {
 		Type string `json:"type"`
 		ID   string `json:"id"`
 	} `json:"target"`
+}
+
+// Credits is holding credits data
+type Credits struct {
+	CurrentBalance            int    `json:"current_balance"`
+	EstimatedDailyIncome      int    `json:"estimated_daily_income"`
+	EstimatedDailyExpenditure int    `json:"estimated_daily_expenditure"`
+	EstimatedDailyBalance     int    `json:"estimated_daily_balance"`
+	CalculationTime           string `json:"calculation_time"`
+	EstimatedRunoutSeconds    int    `json:"estimated_runout_seconds"`
+	PastDayMeasurementResults int    `json:"past_day_measurement_results"`
+	PastDayCreditsSpent       int    `json:"past_day_credits_spent"`
+	IncomeItems               string `json:"income_items"`
+	ExpenseItems              string `json:"expense_items"`
+	Transactions              string `json:"transactions"`
 }
 
 // Probe is holding probe's data
@@ -118,15 +156,15 @@ type Measurement struct {
 // was already created
 type ParticipationRequest struct {
 	Action        string `json:"action"`
-	CreatedAt     int    `json:"created_at"`
-	ID            int    `json:"id"`
-	Self          string `json:"self"`
-	Measurement   string `json:"measurement"`
-	MeasurementID int    `json:"measurement_id"`
-	Requested     int    `json:"requested"`
-	Type          string `json:"type"`
-	Value         string `json:"value"`
-	Logs          string `json:"logs"`
+	CreatedAt     int    `json:"created_at,omitempty"`
+	ID            int    `json:"id,omitempty"`
+	Self          string `json:"self,omitempty"`
+	Measurement   string `json:"measurement,omitempty"`
+	MeasurementID int    `json:"measurement_id,omitempty"`
+	Requested     int    `json:"requested,omitempty"`
+	Type          string `json:"type,omitempty"`
+	Value         string `json:"value,omitempty"`
+	Logs          string `json:"logs,omitempty"`
 }
 
 var (

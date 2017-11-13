@@ -16,22 +16,25 @@ func (a ByAlphabet) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByAlphabet) Less(i, j int) bool { return a[i].Name < a[j].Name }
 
 // checkGlobalFlags is the place to check global parameters
-func checkGlobalFlags(o map[string]string) map[string]string {
-	opts := o
-	if fSortOrder != "" {
-		opts["sort"] = fSortOrder
-	}
+func checkGlobalFlags(o map[string]string) (opts map[string]string) {
+	opts = o
 
-	if fFieldList != "" {
-		opts["fields"] = fFieldList
-	}
-
-	if fOptFields != "" {
-		opts["optional_fields"] = fOptFields
+	for k, v := range map[string]string{
+		"fields":          fFieldList,
+		"format":          fFormat,
+		"include":         fInclude,
+		"optional_fields": fOptFields,
+		"page":            fPageNum,
+		"page_size":       fPageSize,
+		"sort":            fSortOrder,
+	} {
+		if v != "" {
+			client.SetOption(k, v)
+		}
 	}
 
 	if fFormat != "" && validateFormat(fFormat) {
-		opts["format"] = fFormat
+		client.SetOption("format", fFormat)
 	}
 	return opts
 }
@@ -52,6 +55,14 @@ func displayOptions(opts map[string]string) {
 	}
 }
 
+func boolToString(k bool) string {
+	if k {
+		return "true"
+	} else {
+		return "false"
+	}
+}
+
 // analyzeTarget breaks up an url into its components
 func analyzeTarget(target string) (proto, site, path string, port int) {
 	uri, err := url.Parse(target)
@@ -69,8 +80,7 @@ func analyzeTarget(target string) (proto, site, path string, port int) {
 		// might be host:port
 		sp := strings.Split(uri.Host, ":")
 		if len(sp) == 2 {
-			port64, _ := strconv.ParseInt(sp[1], 10, 32)
-			port = int(port64)
+			port, _ = strconv.Atoi(sp[1])
 			site = sp[0]
 		} else {
 			site = uri.Host

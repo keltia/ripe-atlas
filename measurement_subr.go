@@ -1,9 +1,10 @@
 package atlas
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/sendgrid/rest"
+	"io/ioutil"
 	"log"
 	"reflect"
 	"strconv"
@@ -27,7 +28,7 @@ var (
 )
 
 // NewMeasurement create a new MeasurementRequest and fills some fields
-func NewMeasurement() (req *MeasurementRequest) {
+func (client *Client) NewMeasurement() (req *MeasurementRequest) {
 	var defs []Definition
 
 	req = &MeasurementRequest{
@@ -68,6 +69,9 @@ func (d *Definition) setParams(fields map[string]string) {
 				sdef.FieldByName(k).SetInt(vi)
 			case "string":
 				sdef.FieldByName(k).SetString(v)
+			case "bool":
+				vb, _ := strconv.ParseBool(v)
+				sdef.FieldByName(k).SetBool(vb)
 			default:
 				log.Printf("Unsupported type: %s", f.Type.Name())
 			}
@@ -85,28 +89,44 @@ func (m *MeasurementRequest) AddDefinition(fields map[string]string) *Measuremen
 }
 
 // createMeasurement creates a measurement for all types
-func createMeasurement(t string, d *MeasurementRequest) (m *MeasurementResp, err error) {
-	req := prepareRequest(fmt.Sprintf("measurements/%s", t))
+func (client *Client) createMeasurement(t string, d *MeasurementRequest) (m *MeasurementResp, err error) {
+	opts := make(map[string]string)
+	req := client.prepareRequest("POST", fmt.Sprintf("measurements/%s", t), opts)
 
 	body, err := json.Marshal(d)
 	if err != nil {
 		return
 	}
 
-	req.Method = rest.Post
-	req.Body = body
+	buf := bytes.NewReader(body)
+	req.Body = ioutil.NopCloser(buf)
+	req.ContentLength = int64(buf.Len())
 
-	log.Printf("body: %s", body)
-	resp, err := rest.API(req)
+	if client.config.Verbose {
+		log.Printf("req: %#v", req)
+		log.Printf("body: %s", body)
+	}
+	resp, err := client.call(req)
+	if client.config.Verbose {
+		log.Printf("resp: %v", resp)
+	}
+	if err != nil {
+		log.Printf("err: %v", err)
+		//return
+	}
+
 	err = handleAPIResponse(resp)
 	if err != nil {
 		return
 	}
 
 	m = &MeasurementResp{}
-	err = json.Unmarshal([]byte(resp.Body), m)
+	rbody, _ := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+
+	err = json.Unmarshal(rbody, m)
 	//r, err := api.Res(base, &resp).Post(d)
-	fmt.Printf("m: %v\nresp: %#v\nd: %v\n", m, string(resp.Body), d)
+	fmt.Printf("m: %v\nresp: %#v\nd: %v\n", m, string(rbody), d)
 	if err != nil {
 		err = fmt.Errorf("err: %v - m:%v", err, m)
 		return
@@ -116,31 +136,31 @@ func createMeasurement(t string, d *MeasurementRequest) (m *MeasurementResp, err
 }
 
 // DNS creates a measurement
-func DNS(d *MeasurementRequest) (m *MeasurementResp, err error) {
-	return createMeasurement("dns", d)
+func (client *Client) DNS(d *MeasurementRequest) (m *MeasurementResp, err error) {
+	return client.createMeasurement("dns", d)
 }
 
 // HTTP creates a measurement
-func HTTP(d *MeasurementRequest) (m *MeasurementResp, err error) {
-	return createMeasurement("http", d)
+func (client *Client) HTTP(d *MeasurementRequest) (m *MeasurementResp, err error) {
+	return client.createMeasurement("http", d)
 }
 
 // NTP creates a measurement
-func NTP(d *MeasurementRequest) (m *MeasurementResp, err error) {
-	return createMeasurement("ntp", d)
+func (client *Client) NTP(d *MeasurementRequest) (m *MeasurementResp, err error) {
+	return client.createMeasurement("ntp", d)
 }
 
 // Ping creates a measurement
-func Ping(d *MeasurementRequest) (m *MeasurementResp, err error) {
-	return createMeasurement("ping", d)
+func (client *Client) Ping(d *MeasurementRequest) (m *MeasurementResp, err error) {
+	return client.createMeasurement("ping", d)
 }
 
 // SSLCert creates a measurement
-func SSLCert(d *MeasurementRequest) (m *MeasurementResp, err error) {
-	return createMeasurement("sslcert", d)
+func (client *Client) SSLCert(d *MeasurementRequest) (m *MeasurementResp, err error) {
+	return client.createMeasurement("sslcert", d)
 }
 
 // Traceroute creates a measurement
-func Traceroute(d *MeasurementRequest) (m *MeasurementResp, err error) {
-	return createMeasurement("traceroute", d)
+func (client *Client) Traceroute(d *MeasurementRequest) (m *MeasurementResp, err error) {
+	return client.createMeasurement("traceroute", d)
 }

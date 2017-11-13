@@ -67,11 +67,12 @@ func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRe
 		"Type":          "dns",
 		"Description":   fmt.Sprintf("DNS - %s", qa),
 		"Protocol":      proto,
+		"Target":        qa,
 		"QueryArgument": qa,
 		"QueryClass":    qc,
 		"QueryType":     qt,
-		"SetDOBit":      fmt.Sprintf("%v", do),
-		"SetCDBit":      fmt.Sprintf("%v", cd),
+		"SetDOBit":      boolToString(do),
+		"SetCDBit":      boolToString(cd),
 	}
 
 	if eDNS0 {
@@ -81,7 +82,11 @@ func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRe
 		opts["UDPPayloadSize"] = "512"
 	}
 
-	req = atlas.NewMeasurement()
+	// Check global parameters
+	opts = checkGlobalFlags(opts)
+
+	req = client.NewMeasurement()
+
 	if mycnf.WantAF == WantBoth {
 
 		opts["AF"] = "4"
@@ -92,6 +97,10 @@ func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRe
 	} else {
 		opts["AF"] = mycnf.WantAF
 		req.AddDefinition(opts)
+	}
+
+	if fVerbose {
+		displayOptions(opts)
 	}
 
 	return
@@ -113,19 +122,15 @@ func cmdDNS(c *cli.Context) error {
 		log.Fatal("Error: you must specify at least a name")
 	}
 
-	qtype = defQueryType
-	qclass = defQueryClass
-	proto = defProtocol
-
 	if len(args) == 1 {
 		addr = args[0]
 	} else if len(args) == 2 {
 		addr = args[0]
-		qtype = args[1]
+		qtype = strings.ToUpper(args[1])
 	} else if len(args) == 3 {
 		addr = args[0]
-		qtype = args[1]
-		qclass = args[2]
+		qtype = strings.ToUpper(args[1])
+		qclass = strings.ToUpper(args[2])
 	}
 
 	if fProtocol != "" {
@@ -144,7 +149,7 @@ func cmdDNS(c *cli.Context) error {
 	req := prepareDNS(proto, addr, qclass, qtype, bitDO, bitCD)
 
 	log.Printf("req=%#v", req)
-	m, err := atlas.DNS(req)
+	m, err := client.DNS(req)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)

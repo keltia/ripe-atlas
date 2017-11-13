@@ -52,7 +52,7 @@ func prepareTraceroute(target, protocol string, maxhops, size int) (req *atlas.M
 		"Protocol":    protocol,
 	}
 
-	req = atlas.NewMeasurement()
+	req = client.NewMeasurement()
 	if mycnf.WantAF == WantBoth {
 
 		opts["AF"] = "4"
@@ -97,7 +97,7 @@ func cmdTraceroute(c *cli.Context) error {
 	log.Printf("req=%#v", req)
 	//str := res.Result.Display()
 
-	trc, err := atlas.Traceroute(req)
+	trc, err := client.Traceroute(req)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)

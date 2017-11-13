@@ -7,40 +7,17 @@ package atlas
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"github.com/sendgrid/rest"
+	"io/ioutil"
 	"log"
+	"net/http"
+	"net/url"
 	"regexp"
 )
 
 const (
 	apiEndpoint = "https://atlas.ripe.net/api/v2"
-
-	ourVersion = "0.11"
 )
-
-// APIKey is the API key
-var APIKey string
-
-// ErrInvalidMeasurementType is a new error
-var ErrInvalidMeasurementType = errors.New("invalid measurement type")
-
-// ErrInvalidAPIKey is returned when the key is invalid
-var ErrInvalidAPIKey = errors.New("invalid API key")
-
-// SetAuth stores the credentials for later use
-func SetAuth(key string) {
-	APIKey = key
-}
-
-// HasAPIKey returns whether an API key is stored
-func HasAPIKey() (string, bool) {
-	if APIKey == "" {
-		return "", false
-	}
-	return APIKey, true
-}
 
 // GetVersion returns the API wrapper version
 func GetVersion() string {
@@ -56,33 +33,65 @@ func getPageNum(url string) (page string) {
 	return ""
 }
 
+// AddQueryParameters adds query parameters to the URL.
+func AddQueryParameters(baseURL string, queryParams map[string]string) string {
+	baseURL += "?"
+	params := url.Values{}
+	for key, value := range queryParams {
+		params.Add(key, value)
+	}
+	return baseURL + params.Encode()
+}
+
 // prepareRequest insert all pre-defined stuff
-func prepareRequest(what string) (req rest.Request) {
-	endPoint := apiEndpoint + fmt.Sprintf("/%s/", what)
-	key, ok := HasAPIKey()
+func (client *Client) prepareRequest(method, what string, opts map[string]string) (req *http.Request) {
+	var endPoint string
 
-	// Add at least one option, the APIkey if present
-	hdrs := make(map[string]string)
-	opts := make(map[string]string)
+	// This is a hack to fetch direct urls for results
+	if method == "FETCH" {
+		endPoint = what
+		method = "GET"
+	} else {
+		endPoint = apiEndpoint + fmt.Sprintf("/%s/", what)
+	}
 
-	// Insert our sig
-	hdrs["User-Agent"] = fmt.Sprintf("ripe-atlas/%s", ourVersion)
-
+	key, ok := client.HasAPIKey()
 	// Insert key
 	if ok {
 		opts["key"] = key
 	}
 
-	req = rest.Request{
-		BaseURL:     endPoint,
-		Headers:     hdrs,
-		QueryParams: opts,
+	client.mergeGlobalOptions(opts)
+	if client.config.Verbose {
+		log.Printf("Options:\n%v", opts)
 	}
+	baseURL := AddQueryParameters(endPoint, opts)
+
+	req, err := http.NewRequest(method, baseURL, nil)
+	if err != nil {
+		log.Printf("error parsing %s: %v", baseURL, err)
+		return &http.Request{}
+	}
+
+	myurl, err := url.Parse(baseURL)
+
+	// We need these when we POST
+	if method == "POST" {
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Accept", "application/json")
+	}
+	req.Header.Set("Host", myurl.Host)
+	req.Header.Set("User-Agent", fmt.Sprintf("ripe-atlas/%s", ourVersion))
+
 	return
 }
 
 // handleAPIResponse check status code & errors from the API
-func handleAPIResponse(r *rest.Response) (err error) {
+func handleAPIResponse(r *http.Response) (err error) {
+	if r == nil {
+		return fmt.Errorf("Error: r is nil!")
+	}
+
 	// Everything is fine
 	if r.StatusCode == 0 {
 		return nil
@@ -97,7 +106,14 @@ func handleAPIResponse(r *rest.Response) (err error) {
 	if r.StatusCode >= 300 && r.StatusCode <= 399 {
 		var aerr APIError
 
-		err = json.Unmarshal([]byte(r.Body), &aerr)
+		body, _ := ioutil.ReadAll(r.Body)
+		defer r.Body.Close()
+
+		err = json.Unmarshal(body, &aerr)
+		if err != nil {
+			log.Printf("Error handling error: %s - %v", r.Body, err)
+		}
+
 		log.Printf("Info 3XX status: %d code: %d - r:%v\n",
 			aerr.Error.Status,
 			aerr.Error.Code,
@@ -108,10 +124,18 @@ func handleAPIResponse(r *rest.Response) (err error) {
 	// EVerything else is an error
 	var aerr APIError
 
-	err = json.Unmarshal([]byte(r.Body), &aerr)
-	err = fmt.Errorf("status: %d code: %d - r:%v",
+	body, _ := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+
+	err = json.Unmarshal(body, &aerr)
+	if err != nil {
+		log.Printf("Error handling error: %s - %v", r.Body, err)
+	}
+
+	err = fmt.Errorf("status: %d code: %d - r:%s\nerrors: %v",
 		aerr.Error.Status,
 		aerr.Error.Code,
-		aerr.Error.Detail)
+		aerr.Error.Detail,
+		aerr.Error.Errors)
 	return
 }

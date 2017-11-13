@@ -70,7 +70,7 @@ func keysList(c *cli.Context) (err error) {
 		displayOptions(opts)
 	}
 
-	kl, err := atlas.GetKeys(opts)
+	kl, err := client.GetKeys(opts)
 	if err != nil {
 		log.Printf("GetKeys err: %v - kl:%v", err, kl)
 		os.Exit(1)
@@ -86,7 +86,7 @@ func keysInfo(c *cli.Context) (err error) {
 		log.Fatal("Error: you must specify a UUID!")
 	}
 
-	k, err := atlas.GetKey(args[0])
+	k, err := client.GetKey(args[0])
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)

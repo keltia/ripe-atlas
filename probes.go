@@ -7,23 +7,35 @@ package atlas
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sendgrid/rest"
+	"io/ioutil"
+	"log"
 )
 
 // GetProbe returns data for a single probe
-func GetProbe(id int) (p *Probe, err error) {
-	req := prepareRequest(fmt.Sprintf("probes/%d", id))
-	req.Method = rest.Get
+func (client *Client) GetProbe(id int) (p *Probe, err error) {
 
-	//log.Printf("req: %#v", req)
-	r, err := rest.API(req)
-	//log.Printf("r: %#v - err: %#v", r, err)
-	err = handleAPIResponse(r)
+	opts := make(map[string]string)
+	client.mergeGlobalOptions(opts)
+
+	req := client.prepareRequest("GET", fmt.Sprintf("probes/%d", id), opts)
+
+	resp, err := client.call(req)
+	//log.Printf("resp: %#v - err: %#v", resp, err)
 	if err != nil {
-		return
+		if client.config.Verbose {
+			log.Printf("API error: %v", err)
+		}
+		err = handleAPIResponse(resp)
+		if err != nil {
+			return
+		}
 	}
+
 	p = &Probe{}
-	err = json.Unmarshal([]byte(r.Body), p)
+	body, _ := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+
+	err = json.Unmarshal(body, p)
 	//log.Printf("json: %#v\n", p)
 	return
 }
@@ -37,33 +49,39 @@ type probeList struct {
 }
 
 // fetch the given resource
-func fetchOneProbePage(opts map[string]string) (raw *probeList, err error) {
+func (client *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err error) {
 
-	req := prepareRequest("probes")
-	req.Method = rest.Get
+	client.mergeGlobalOptions(opts)
+	req := client.prepareRequest("GET", "probes", opts)
 
-	// Do not forget to copy our options
-	for qp, val := range opts {
-		req.QueryParams[qp] = val
-	}
-
-	r, err := rest.API(req)
-	err = handleAPIResponse(r)
+	resp, err := client.call(req)
 	if err != nil {
-		return
+		if client.config.Verbose {
+			log.Printf("API error: %v", err)
+		}
+		err = handleAPIResponse(resp)
+		if err != nil {
+			return
+		}
 	}
 
 	raw = &probeList{}
-	err = json.Unmarshal([]byte(r.Body), raw)
-	//log.Printf("Count=%d raw=%v", raw.Count, r)
-	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
+	body, _ := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+
+	err = json.Unmarshal(body, raw)
+	log.Printf("Count=%d raw=%v", raw.Count, resp)
+	//log.Printf(">> rawlist=%+v resp=%+v Next=|%s|", raw, resp, raw.Next)
+	if client.config.Verbose {
+		fmt.Print("P")
+	}
 	return
 }
 
 // GetProbes returns data for a collection of probes
-func GetProbes(opts map[string]string) (p []Probe, err error) {
+func (client *Client) GetProbes(opts map[string]string) (p []Probe, err error) {
 	// First call
-	rawlist, err := fetchOneProbePage(opts)
+	rawlist, err := client.fetchOneProbePage(opts)
 
 	// Empty answer
 	if rawlist.Count == 0 {
@@ -78,7 +96,7 @@ func GetProbes(opts map[string]string) (p []Probe, err error) {
 		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
 			opts["page"] = pn
 
-			rawlist, err = fetchOneProbePage(opts)
+			rawlist, err = client.fetchOneProbePage(opts)
 			if err != nil {
 				return
 			}

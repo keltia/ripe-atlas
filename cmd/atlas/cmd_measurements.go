@@ -6,9 +6,7 @@ import (
 	"fmt"
 	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"strconv"
 )
@@ -50,11 +48,6 @@ func init() {
 						Name:        "is-anchor",
 						Usage:       "select anchor measurements",
 						Destination: &fWantAnchor,
-					},
-					cli.BoolTFlag{
-						Name:        "mine",
-						Usage:       "limit to my own measurements",
-						Destination: &fWantMine,
 					},
 					cli.StringFlag{
 						Name:        "t, type",
@@ -115,11 +108,6 @@ func displayAllMeasurements(ml *[]atlas.Measurement, verbose bool) (res string) 
 	return
 }
 
-// displayResult returns a string with <obj>.Result
-func displayResult(body []byte, verbose bool) (res string) {
-	return string(body)
-}
-
 // measurementsList returns a list of measurements according to parameters
 func measurementsList(c *cli.Context) error {
 	opts := make(map[string]string)
@@ -136,10 +124,6 @@ func measurementsList(c *cli.Context) error {
 		opts["type"] = fMeasureType
 	}
 
-	if fWantMine {
-		opts["mine"] = "true"
-	}
-
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
 
@@ -147,7 +131,7 @@ func measurementsList(c *cli.Context) error {
 		displayOptions(opts)
 	}
 
-	q, err := atlas.GetMeasurements(opts)
+	q, err := client.GetMeasurements(opts)
 	if err != nil {
 		log.Printf("GetMeasurements err: %v - q:%v", err, q)
 		os.Exit(1)
@@ -167,7 +151,7 @@ func measurementInfo(c *cli.Context) error {
 
 	id, _ := strconv.Atoi(args[0])
 
-	p, err := atlas.GetMeasurement(id)
+	p, err := client.GetMeasurement(id)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
@@ -186,7 +170,7 @@ func measurementResults(c *cli.Context) error {
 
 	id, _ := strconv.Atoi(args[0])
 
-	m, err := atlas.GetMeasurement(id)
+	m, err := client.GetMeasurement(id)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
@@ -197,20 +181,13 @@ func measurementResults(c *cli.Context) error {
 		fmt.Println("Empty result")
 	}
 
-	resp, err := http.Get(m.Result)
+	resp, err := client.FetchResult(m.Result)
 	if err != nil {
 		err = fmt.Errorf("bad net/http answer for %s: %v", m.Result, err)
 		return err
 	}
-	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		err = fmt.Errorf("error reading body for %s: %v", m.Result, err)
-		return err
-	}
-
-	fmt.Print(displayResult(body, fVerbose))
+	fmt.Print(resp)
 	return nil
 }
 
@@ -226,12 +203,16 @@ func measurementDelete(c *cli.Context) (err error) {
 		// Check global parameters
 		opts = checkGlobalFlags(opts)
 
-		list, err := atlas.GetMeasurements(opts)
+		if fVerbose {
+			displayOptions(opts)
+		}
+
+		list, err := client.GetMeasurements(opts)
 		if err != nil {
 			err = fmt.Errorf("Delete all failed: %v", err)
 		} else {
 			for _, m := range list {
-				err = atlas.DeleteMeasurement(m.ID)
+				err = client.DeleteMeasurement(m.ID)
 				if err != nil {
 					err = fmt.Errorf("Error: can not delete measurement %d", m.ID)
 				}
@@ -245,7 +226,7 @@ func measurementDelete(c *cli.Context) (err error) {
 		}
 
 		id, _ := strconv.Atoi(args[0])
-		err = atlas.DeleteMeasurement(id)
+		err = client.DeleteMeasurement(id)
 	}
 
 	return

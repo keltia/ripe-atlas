@@ -32,7 +32,7 @@ func prepareTLSCert(target string, port int) (req *atlas.MeasurementRequest) {
 		"Port":        fmt.Sprintf("%d", port),
 	}
 
-	req = atlas.NewMeasurement()
+	req = client.NewMeasurement()
 	if mycnf.WantAF == WantBoth {
 
 		opts["AF"] = "4"
@@ -61,7 +61,7 @@ func cmdTLSCert(c *cli.Context) (err error) {
 	log.Printf("req=%#v", req)
 	//str := res.Result.Display()
 
-	tls, err := atlas.SSLCert(req)
+	tls, err := client.SSLCert(req)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)

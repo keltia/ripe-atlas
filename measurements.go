@@ -3,7 +3,7 @@ package atlas
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sendgrid/rest"
+	"io/ioutil"
 )
 
 var (
@@ -53,66 +53,68 @@ type measurementList struct {
 }
 
 // fetch the given resource
-func fetchOneMeasurementPage(opts map[string]string) (raw *measurementList, err error) {
-	req := prepareRequest("measurements")
-	req.Method = rest.Get
-
-	// Do not forget to copy our options
-	for qp, val := range opts {
-		req.QueryParams[qp] = val
-	}
+func (client *Client) fetchOneMeasurementPage(opts map[string]string) (raw *measurementList, err error) {
+	client.mergeGlobalOptions(opts)
+	req := client.prepareRequest("GET", "measurements", opts)
 
 	//log.Printf("req=%s qp=%#v", MeasurementEP, opts)
-	r, err := rest.API(req)
-	err = handleAPIResponse(r)
+	resp, err := client.call(req)
+	err = handleAPIResponse(resp)
 	if err != nil {
 		return
 	}
 
 	raw = &measurementList{}
-	err = json.Unmarshal([]byte(r.Body), raw)
-	//log.Printf("Count=%d raw=%v", raw.Count, r)
-	//log.Printf(">> rawlist=%+v r=%+v Next=|%s|", rawlist, r, rawlist.Next)
+	body, _ := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+
+	err = json.Unmarshal(body, raw)
+	//log.Printf("Count=%d raw=%v", raw.Count, resp)
+	//log.Printf(">> rawlist=%+v resp=%+v Next=|%s|", rawlist, resp, rawlist.Next)
 	return
 }
 
 // -- public
 
 // GetMeasurement gets info for a single one
-func GetMeasurement(id int) (m *Measurement, err error) {
+func (client *Client) GetMeasurement(id int) (m *Measurement, err error) {
+	opts := make(map[string]string)
 
-	req := prepareRequest(fmt.Sprintf("measurements/%d", id))
-	req.Method = rest.Get
+	client.mergeGlobalOptions(opts)
+	req := client.prepareRequest("GET", fmt.Sprintf("measurements/%d", id), opts)
 
 	//log.Printf("req: %#v", req)
-	r, err := rest.API(req)
-	err = handleAPIResponse(r)
+	resp, err := client.call(req)
+	err = handleAPIResponse(resp)
 	if err != nil {
 		return
 	}
 
 	m = &Measurement{}
-	err = json.Unmarshal([]byte(r.Body), m)
+	body, _ := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+
+	err = json.Unmarshal(body, m)
 	//log.Printf("json: %#v\n", m)
 	return
 }
 
 // DeleteMeasurement stops (not really deletes) a given measurement
-func DeleteMeasurement(id int) (err error) {
+func (client *Client) DeleteMeasurement(id int) (err error) {
+	opts := make(map[string]string)
 
-	req := prepareRequest(fmt.Sprintf("measurements/%d", id))
-	req.Method = rest.Delete
+	req := client.prepareRequest("DELETE", fmt.Sprintf("measurements/%d", id), opts)
 
 	//log.Printf("req: %#v", req)
-	r, err := rest.API(req)
-	err = handleAPIResponse(r)
+	resp, err := client.call(req)
+	err = handleAPIResponse(resp)
 	return
 }
 
 // GetMeasurements gets info for a set
-func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
+func (client *Client) GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 	// First call
-	rawlist, err := fetchOneMeasurementPage(opts)
+	rawlist, err := client.fetchOneMeasurementPage(opts)
 
 	// Empty answer
 	if rawlist.Count == 0 {
@@ -127,7 +129,7 @@ func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
 			opts["page"] = pn
 
-			rawlist, err = fetchOneMeasurementPage(opts)
+			rawlist, err = client.fetchOneMeasurementPage(opts)
 			if err != nil {
 				return
 			}
@@ -139,14 +141,3 @@ func GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 	return
 }
 
-// Measurement-related methods
-
-// Start is for starting a given measurement
-func (m *Measurement) Start(id int) (err error) {
-	return nil
-}
-
-// Stop is an alias for delete
-func (m *Measurement) Stop() (err error) {
-	return DeleteMeasurement(m.ID)
-}

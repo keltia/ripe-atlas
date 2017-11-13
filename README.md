@@ -13,16 +13,14 @@ It features a simple CLI-based tool called `atlas` which serve both as a collect
 ## Table of content
  
 - [Features](#features)
-- [Install](#install)
+- [Installation](#installation)
 - [API usage](#api-usage)
   - [Basics](#basics)
-      - [Authentication](#auth)
-	  - [Probes](#probes)
-	  - [Measurements](#measurements)
-  - [Applications](#applications)
+- [CLI Application](#cli-application)
+- [TODO](#todo)
 - [External Documentation](#external-documentation)
 
-## [#features]: Features
+## Features
 
 I am trying to implement the full REST API in Go.  The API itself is not particularly complex but the settings and parameters are.
 
@@ -48,34 +46,43 @@ In addition to these major commands, there are a few shortcut commands (see belo
 - keys
 - ntp
 - ping
-- sslcert
+- sslcert/tls
 - traceroute
 
 ## Installation
 
-  Like many Go-based tools, installation is very easy
+Like many Go-based tools, installation is very easy
   
-    go get github.com/keltia/ripe-atlas
+    go get github.com/keltia/ripe-atlas/cmd/...
 
-  or
+or
   
     git clone https://github.com/keltia/ripe-atlas
-    go install ./cmd/...
+    make install
     
-  The library is fetched, compiled and installed in whichever directory is specified by `$GOPATH`.  The `atlas` binary will also be installed. 
+The library is fetched, compiled and installed in whichever directory is specified by `$GOPATH`.  The `atlas` binary will also be installed (on windows, this will be called `atlas.exe`). 
 
-  Dependencies:
+You can install the dependencies with `go get`
+  
+- `github.com/sendgrid/rest`
+- `github.com/urfave/cli`
+- `github.com/naoina/toml`
+
+To run the tests, you will also need:
+
+- `github.com/stretchr/assert`
+
 ## API usage
 
-### Configuration
+You must foremost instanciate a new API client with
 
-This package uses a configuration file in the [TOML](https://github.com/naoina/toml) file format located by default in `$HOME/.ripe-atlas/config.toml`.
+    client, err := atlas.NewClient(config)
 
-There are only a few parameters for now, the most important one being your API Key for autheicate against the RIPE API endpoint.
+where `config` is an `atlas.Config{}` struct with various options.
 
-    API_key = "UUID"
-    pool_size = 10
-    default_probe = "YOUR-PROBE-ID"
+All API calls after that will use `client`:
+
+    probe, err := client.GetProbe(12345)
 
 ### Basics
 
@@ -84,40 +91,69 @@ There are only a few parameters for now, the most important one being your API K
 - Measurements
 - Applications
 
-  The `atlas` command is a command-line client for the Go API:
-  
-  ```
-  NAME:
-     atlas - RIPE Atlas CLI interface
-  
-  USAGE:
-     atlas [global options] command [command options] [arguments...]
-  
-  AUTHOR(S):
-     Ollivier Robert <roberto@keltia.net>
-  
-  COMMANDS:
-     dns			send dns queries
-     keys           key management
-     http, https		connect to host/IP through HTTP
-     ip				returns current ip
-     measurements, measures, m	measurements-related keywords
-     ntp			get time from ntp server
-     ping			ping selected address
-     probes, p, pb		probe-related keywords
-     sslcert, tlscert, tls	get TLS certificate from host/IP
-     traceroute, trace		traceroute to given host/IP
+## CLI utility
 
-  GLOBAL OPTIONS:
-     --format value, -f value	specify output format
-     --verbose, -v		verbose mode
-     --fields value, -F value	specify which fields are wanted
-     --opt-fields value, -O value	specify which optional fields are wanted
-     --sort value, -S value	sort results (default: "id")
-     --help, -h			show help
-  ```
+The `atlas` command is a command-line client for the Go API.
+
+### Configuration
+
+The `atlas` utility uses a configuration file in the [TOML](https://github.com/naoina/toml) file format.
+
+On UNIX, it is located in `$HOME/.config/ripe-atlas/config.toml` and in `%LOCALAPPDATA%\RIPE-ATLAS` on Windows. 
+
+There are only a few parameters for now, the most important one being your API Key for autheicate against the RIPE API endpoint.
+
+    API_key = "UUID"
+    pool_size = 10
+    default_probe = "YOUR-PROBE-ID"
+
+### Usage
+
+```
+NAME:
+   atlas - RIPE Atlas CLI interface
+
+USAGE:
+   atlas [global options] command [command options] [arguments...]
+
+VERSION:
+   0.11
+
+AUTHOR:
+   Ollivier Robert <roberto@keltia.net>
+
+COMMANDS:
+     credits, c                 credits-related keywords
+     dns, dig, drill            send dns queries
+     http, https                connect to host/IP through HTTP
+     ip                         returns current ip
+     keys, k, key               key-related keywords
+     measurements, measures, m  measurements-related keywords
+     ntp                        get time from ntp server
+     ping                       ping selected address
+     probes, p, pb              probe-related keywords
+     results, r, res            results for one measurement
+     sslcert, tlscert, tls      get TLS certificate from host/IP
+     traceroute, trace          traceroute to given host/IP
+     help, h                    Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --format value, -f value      specify output format
+   --debug, -D                   debug mode
+   --verbose, -v                 verbose mode
+   --fields value, -F value      specify which fields are wanted
+   --include value, -I value     specify whether objects should be expanded
+   --mine, -M                    limit output to my objects
+   --opt-fields value, -O value  specify which optional fields are wanted
+   --page-size value, -P value   page size for results
+   --sort value, -S value        sort results
+   -6, --ipv6                    Only IPv6
+   -4, --ipv4                    Only IPv4
+   --help, -h                    show help
+   --version, -V
+```
   
-  In addition to the main `probes` and `measurements` commands, it features fast-access to common tasks like `ping`and `traceroute`.
+In addition to the main `probes` and `measurements` commands, it features fast-access to common tasks like `ping`and `traceroute`.
 
 When looking at measurement results, it is very easy to use something like [jq](https://stedolan.github.io/jq) to properly display JSON data:
 
@@ -127,9 +163,6 @@ When looking at measurement results, it is very easy to use something like [jq](
 
 - more tests (and better ones!)
 - better display of results
-- implementation behind many keywords
-  dns, keys, sslcert, ping, ntp, probes, measurements: done
-  traceroute, http, https: done
 - refactoring to reduce code duplication: done
 - even more tests
 

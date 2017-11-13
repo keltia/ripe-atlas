@@ -66,9 +66,10 @@ func displayProbe(p *atlas.Probe, verbose bool) (res string) {
 	if verbose {
 		res = fmt.Sprintf("%v\n", p)
 	} else {
-		res = fmt.Sprintf("ID: %d Country: %s IPv4: %s IPv6: %s Descr: %s\n",
+		res = fmt.Sprintf("ID: %d Country: %s ASN4: %d IPv4: %s IPv6: %s Descr: %s\n",
 			p.ID,
 			p.CountryCode,
+			p.AsnV4,
 			p.AddressV4,
 			p.AddressV6,
 			p.Description)
@@ -90,20 +91,16 @@ func displayAllProbes(pl *[]atlas.Probe, verbose bool) (res string) {
 	return
 }
 
-// probeList displays all probes
-func probesList(c *cli.Context) error {
-	opts := make(map[string]string)
-
-	if fCountry != "" {
-		opts["country_code"] = fCountry
+// prepareTraceroute build the request with our parameters
+func prepareProbes(country, asn string, anchor bool) (map[string]string) {
+	opts := map[string]string{
+		"Asn":         asn,
+		"CountryCode": country,
+		"IsAnchor":    fmt.Sprintf("%v", anchor),
 	}
 
-	if fAsn != "" {
-		opts["asn"] = fAsn
-	}
-
-	if fWantAnchor {
-		opts["is_anchor"] = "true"
+	if mycnf.WantAF != WantBoth {
+		opts["AF"] = mycnf.WantAF
 	}
 
 	// Check global parameters
@@ -113,7 +110,13 @@ func probesList(c *cli.Context) error {
 		displayOptions(opts)
 	}
 
-	q, err := atlas.GetProbes(opts)
+	return opts
+}
+
+// probeList displays all probes
+func probesList(c *cli.Context) error {
+	opts := prepareProbes(fCountry, fAsn, fWantAnchor)
+	q, err := client.GetProbes(opts)
 	if err != nil {
 		log.Printf("GetProbes err: %v - q:%v", err, q)
 		os.Exit(1)
@@ -131,9 +134,8 @@ func probeInfo(c *cli.Context) error {
 		log.Fatal("Error: you must specify a probe ID!")
 	}
 
-	id, _ := strconv.ParseInt(args[0], 10, 32)
-
-	p, err := atlas.GetProbe(int(id))
+	id, _ := strconv.Atoi(args[0])
+	p, err := client.GetProbe(id)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
