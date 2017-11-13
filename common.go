@@ -45,9 +45,17 @@ func AddQueryParameters(baseURL string, queryParams map[string]string) string {
 
 // prepareRequest insert all pre-defined stuff
 func (client *Client) prepareRequest(method, what string, opts map[string]string) (req *http.Request) {
-	endPoint := apiEndpoint + fmt.Sprintf("/%s/", what)
-	key, ok := client.HasAPIKey()
+	var endPoint string
 
+	// This is a hack to fetch direct urls for results
+	if method == "FETCH" {
+		endPoint = what
+		method = "GET"
+	} else {
+		endPoint = apiEndpoint + fmt.Sprintf("/%s/", what)
+	}
+
+	key, ok := client.HasAPIKey()
 	// Insert key
 	if ok {
 		opts["key"] = key
