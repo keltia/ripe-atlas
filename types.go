@@ -28,6 +28,12 @@ type APIError struct {
 		Code   int    `json:"code"`
 		Detail string `json:"detail"`
 		Title  string `json:"title"`
+		Errors []struct {
+			Source struct {
+				Pointer string
+			} `json:"errors"`
+			Detail string
+		}
 	} `json:"error"`
 }
 

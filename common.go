@@ -124,9 +124,10 @@ func handleAPIResponse(r *http.Response) (err error) {
 		log.Printf("Error handling error: %s - %v", r.Body, err)
 	}
 
-	err = fmt.Errorf("status: %d code: %d - r:%v",
+	err = fmt.Errorf("status: %d code: %d - r:%s\nerrors: %v",
 		aerr.Error.Status,
 		aerr.Error.Code,
-		aerr.Error.Detail)
+		aerr.Error.Detail,
+		aerr.Error.Errors)
 	return
 }
