@@ -147,8 +147,6 @@ func finalcheck(c *cli.Context) error {
 		mycnf.WantAF = WantBoth
 	}
 
-	// Set global options
-	//client.SetAF(mycnf.WantAF)
 	return nil
 }
 
