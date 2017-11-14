@@ -169,7 +169,7 @@ func main() {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:        "format,f",
-			Usage:       "specify output format",
+			Usage:       "specify output format (NOT IMPLEMENTED)",
 			Destination: &fFormat,
 		},
 		cli.BoolFlag{
