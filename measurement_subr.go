@@ -125,8 +125,10 @@ func (client *Client) createMeasurement(t string, d *MeasurementRequest) (m *Mea
 	defer resp.Body.Close()
 
 	err = json.Unmarshal(rbody, m)
-	//r, err := api.Res(base, &resp).Post(d)
-	fmt.Printf("m: %v\nresp: %#v\nd: %v\n", m, string(rbody), d)
+	// Only display if debug/verbose
+	if client.config.Verbose {
+		fmt.Printf("m: %v\nresp: %#v\nd: %v\n", m, string(rbody), d)
+	}
 	if err != nil {
 		err = fmt.Errorf("err: %v - m:%v", err, m)
 		return
