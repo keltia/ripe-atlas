@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/urfave/cli"
 	"log"
+	"net"
 	"net/url"
 	"strconv"
 	"strings"
@@ -91,4 +92,34 @@ func analyzeTarget(target string) (proto, site, path string, port int) {
 		}
 	}
 	return
+}
+
+const (
+	Hostname = iota
+	IPv4
+	IPv6
+)
+
+// checkArgumentType checks whether we have a domain/host or an IPv4/v6 address
+func checkArgumentType(arg string) int {
+	ip := net.ParseIP(arg)
+	if ip != nil {
+		if ip.To4() == nil {
+			return IPv6
+		}
+		return IPv4
+	}
+	return Hostname
+}
+
+// prepareFamily sets Want4 and/or Want6 depending on the argument
+func prepareFamily(arg string) {
+	switch checkArgumentType(arg) {
+	case IPv4:
+		mycnf.WantAF = Want4
+	case IPv6:
+		mycnf.WantAF = Want6
+	default:
+		mycnf.WantAF = WantBoth
+	}
 }
