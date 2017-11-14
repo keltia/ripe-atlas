@@ -1,14 +1,14 @@
 package main
 
 import (
+	"fmt"
+	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
 	"log"
 	"net"
 	"net/url"
 	"strconv"
 	"strings"
-	"github.com/keltia/ripe-atlas"
-	"fmt"
 )
 
 // ByAlphabet is for sorting
@@ -61,9 +61,8 @@ func displayOptions(opts map[string]string) {
 func boolToString(k bool) string {
 	if k {
 		return "true"
-	} else {
-		return "false"
 	}
+	return "false"
 }
 
 // analyzeTarget breaks up an url into its components
@@ -128,7 +127,7 @@ func prepareFamily(arg string) {
 
 // displayMeasurementID display result of measurement requests.
 func displayMeasurementID(list atlas.MeasurementResp) {
-		fmt.Println("Measurements created:")
+	fmt.Println("Measurements created:")
 	for _, m := range list.Measurements {
 		fmt.Printf("%d\n", m)
 	}
