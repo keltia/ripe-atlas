@@ -28,6 +28,9 @@ func preparePing(target string) (req *atlas.MeasurementRequest) {
 		"Target":      target,
 	}
 
+	// Try to configure -4/-6 depending on the argument to DTRT
+	prepareFamily(target)
+
 	req = client.NewMeasurement()
 	if mycnf.WantAF == WantBoth {
 
@@ -61,7 +64,9 @@ func cmdPing(c *cli.Context) error {
 	addr := args[0]
 
 	req := preparePing(addr)
-	log.Printf("req=%#v", req)
+	if fDebug {
+		log.Printf("req=%#v", req)
+	}
 	m, err := client.Ping(req)
 	if err != nil {
 		fmt.Printf("err: %v", err)
@@ -69,6 +74,6 @@ func cmdPing(c *cli.Context) error {
 	}
 
 	//str := res.Result.Display()
-	fmt.Printf("m: %v\n", m)
+	displayMeasurementID(*m)
 	return nil
 }

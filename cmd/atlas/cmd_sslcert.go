@@ -34,6 +34,9 @@ func prepareTLSCert(target string, port int) (req *atlas.MeasurementRequest) {
 		"Port":        fmt.Sprintf("%d", port),
 	}
 
+	// Try to configure -4/-6 depending on the argument to DTRT
+	prepareFamily(target)
+
 	req = client.NewMeasurement()
 	if mycnf.WantAF == WantBoth {
 
@@ -64,7 +67,9 @@ func cmdTLSCert(c *cli.Context) (err error) {
 	_, site, _, port := analyzeTarget(target)
 
 	req := prepareTLSCert(site, port)
-	log.Printf("req=%#v", req)
+	if fDebug {
+		log.Printf("req=%#v", req)
+	}
 	//str := res.Result.Display()
 
 	tls, err := client.SSLCert(req)
@@ -72,6 +77,7 @@ func cmdTLSCert(c *cli.Context) (err error) {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("TLS: %#v", tls)
+	displayMeasurementID(*tls)
+
 	return
 }

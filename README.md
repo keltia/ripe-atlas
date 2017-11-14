@@ -51,6 +51,8 @@ In addition to these major commands, there are a few shortcut commands (see belo
 
 ## Installation
 
+NOTE: you MUST have Go 1.8 or later.  Previous versions did not have the `ProxyHeader` fields and thus no support for HTTP proxy.
+
 Like many Go-based tools, installation is very easy
   
     go get github.com/keltia/ripe-atlas/cmd/...
@@ -64,7 +66,6 @@ The library is fetched, compiled and installed in whichever directory is specifi
 
 You can install the dependencies with `go get`
   
-- `github.com/sendgrid/rest`
 - `github.com/urfave/cli`
 - `github.com/naoina/toml`
 
@@ -101,11 +102,13 @@ The `atlas` utility uses a configuration file in the [TOML](https://github.com/n
 
 On UNIX, it is located in `$HOME/.config/ripe-atlas/config.toml` and in `%LOCALAPPDATA%\RIPE-ATLAS` on Windows. 
 
-There are only a few parameters for now, the most important one being your API Key for autheicate against the RIPE API endpoint.
+There are only a few parameters for now, the most important one being your API Key for authenticate against the RIPE API endpoint.
 
     API_key = "UUID"
     pool_size = 10
-    default_probe = "YOUR-PROBE-ID"
+    default_probe = YOUR-PROBE-ID
+
+Both `API_key` and `WantAF` are strings and `pool_size` and `default_probe` are integers.  The second one is to specify whether you want requests to be done for IPv4 and/or IPv6.  Be aware that if you ask for an IPv6 object (like a domain or machine name), the API will refuse your request if the IPv6 version of that object does not exist.
 
 ### Usage
 
@@ -158,6 +161,35 @@ In addition to the main `probes` and `measurements` commands, it features fast-a
 When looking at measurement results, it is very easy to use something like [jq](https://stedolan.github.io/jq) to properly display JSON data:
 
     atlas results <ID> | jq .
+
+You can also analyze the results, as explained [here](https://labs.ripe.net/Members/stephane_bortzmeyer/processing-ripe-atlas-results-with-jq).
+
+Here,to find the maximum RTT:
+
+
+    % ./atlas measurements results 10185594 | jq 'map(.result[0].rtt) | max'
+    24.10811
+
+And with this jq file, to get more information from a measurement:
+
+```
+% cat ping-report.jq
+map(.result) | flatten(1) | map(.rtt) | length as $total | 
+ "Median: " + (sort |
+      if length % 2 == 0 then .[length/2] else .[(length-1)/2] end | tostring),
+ "Average: " + (map(select(. != null)) | add/length | tostring) + " ms",
+ "Min: " + (map(select(. != null)) | min | tostring) + " ms",
+ "Max: " + (max | tostring) + " ms",
+ "Failures: " + (map(select(. == null)) | (length*100/$total) | tostring) + " %"
+```
+
+
+    %./atlas measurements results 10185594 |  jq --raw-output --from-file ping-report.jq
+    Median: 15.068505
+    Average: 15.480822916666666 ms
+    Min: 3.786365 ms
+    Max: 24.164375 ms
+    Failures: 14.285714285714286 %
 
 ### TODO
 

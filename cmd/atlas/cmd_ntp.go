@@ -34,6 +34,9 @@ func prepareNTP(target string) (req *atlas.MeasurementRequest) {
 		displayOptions(opts)
 	}
 
+	// Try to configure -4/-6 depending on the argument to DTRT
+	prepareFamily(target)
+
 	req = client.NewMeasurement()
 	if mycnf.WantAF == WantBoth {
 
@@ -58,7 +61,9 @@ func cmdNTP(c *cli.Context) error {
 	target := args[0]
 
 	req := prepareNTP(target)
-	log.Printf("req=%#v", req)
+	if fDebug {
+		log.Printf("req=%#v", req)
+	}
 	//str := res.Result.Display()
 
 	ntp, err := client.NTP(req)
@@ -66,7 +71,7 @@ func cmdNTP(c *cli.Context) error {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("NTP: %#v", ntp)
+    displayMeasurementID(*ntp)
 
-	return nil
+    return nil
 }

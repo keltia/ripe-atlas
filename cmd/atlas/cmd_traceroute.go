@@ -52,6 +52,9 @@ func prepareTraceroute(target, protocol string, maxhops, size int) (req *atlas.M
 		"Protocol":    protocol,
 	}
 
+	// Try to configure -4/-6 depending on the argument to DTRT
+	prepareFamily(target)
+
 	req = client.NewMeasurement()
 	if mycnf.WantAF == WantBoth {
 
@@ -94,7 +97,9 @@ func cmdTraceroute(c *cli.Context) error {
 
 	req := prepareTraceroute(target, proto, maxHops, packetSize)
 
-	log.Printf("req=%#v", req)
+	if fDebug {
+		log.Printf("req=%#v", req)
+	}
 	//str := res.Result.Display()
 
 	trc, err := client.Traceroute(req)
@@ -102,7 +107,7 @@ func cmdTraceroute(c *cli.Context) error {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("Traceroute: %#v", trc)
+	displayMeasurementID(*trc)
 
 	return nil
 }

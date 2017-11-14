@@ -148,7 +148,9 @@ func cmdDNS(c *cli.Context) error {
 
 	req := prepareDNS(proto, addr, qclass, qtype, bitDO, bitCD)
 
-	log.Printf("req=%#v", req)
+	if fDebug {
+		log.Printf("req=%#v", req)
+	}
 	m, err := client.DNS(req)
 	if err != nil {
 		fmt.Printf("err: %v", err)
@@ -156,7 +158,7 @@ func cmdDNS(c *cli.Context) error {
 	}
 
 	//str := res.Result.Display()
-	fmt.Printf("m: %v\n", m)
+	displayMeasurementID(*m)
 
 	return nil
 }

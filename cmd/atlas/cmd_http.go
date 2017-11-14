@@ -91,7 +91,9 @@ func cmdHTTP(c *cli.Context) error {
 
 	req := prepareHTTP(site, path, port)
 
-	log.Printf("req=%#v", req)
+	if fDebug {
+		log.Printf("req=%#v", req)
+	}
 	//str := res.Result.Display()
 
 	http, err := client.HTTP(req)
@@ -99,7 +101,8 @@ func cmdHTTP(c *cli.Context) error {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("HTTP: %#v", http)
+	displayMeasurementID(*http)
+
 	return nil
 
 }
