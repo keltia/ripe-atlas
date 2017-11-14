@@ -22,7 +22,7 @@ EXE=	${BIN}.exe
 
 OPTS=	-ldflags="-s -w" -v
 
-all: checks ${BIN} ${EXE}
+all: checks ${BIN}
 
 checks:
 	@V=`go version|cut -d' ' -f 3| sed 's/^go//'` && \
@@ -30,6 +30,8 @@ checks:
 		echo "You must have go 1.8+"; \
 		exit 1; \
 	fi
+
+windows:  ${EXE}
 
 ${BIN}: ${SRCS} ${USRC}
 	go build ${OPTS} ./cmd/...
