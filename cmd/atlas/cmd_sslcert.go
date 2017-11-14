@@ -34,6 +34,9 @@ func prepareTLSCert(target string, port int) (req *atlas.MeasurementRequest) {
 		"Port":        fmt.Sprintf("%d", port),
 	}
 
+	// Try to configure -4/-6 depending on the argument to DTRT
+	prepareFamily(target)
+
 	req = client.NewMeasurement()
 	if mycnf.WantAF == WantBoth {
 

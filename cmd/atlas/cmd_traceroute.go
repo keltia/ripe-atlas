@@ -52,6 +52,9 @@ func prepareTraceroute(target, protocol string, maxhops, size int) (req *atlas.M
 		"Protocol":    protocol,
 	}
 
+	// Try to configure -4/-6 depending on the argument to DTRT
+	prepareFamily(target)
+
 	req = client.NewMeasurement()
 	if mycnf.WantAF == WantBoth {
 
