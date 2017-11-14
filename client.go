@@ -81,18 +81,22 @@ func (client *Client) addHTTPClient() (*Client, error) {
 	return client, err
 }
 
+// SetAF sets the global option WantAF
 func (client *Client) SetAF(family string) *Client {
 	return client.SetOption("wantAF", family)
 }
 
+// SetFormat sets the global option
 func (client *Client) SetFormat(format string) *Client {
 	return client.SetOption("format", format)
 }
 
+// SetInclude sets the global option
 func (client *Client) SetInclude(include string) *Client {
 	return client.SetOption("include", include)
 }
 
+// SetOption sets a global option
 func (client *Client) SetOption(name, value string) *Client {
 	if value != "" {
 		client.opts[name] = value

@@ -6,12 +6,14 @@ package atlas
 
 import "net/http"
 
+// Client is the main struct holding state in an API client
 type Client struct {
 	config Config
 	client *http.Client
 	opts   map[string]string // Default, optional options
 }
 
+// Config is the main object when creating an API Client
 type Config struct {
 	APIKey       string
 	DefaultProbe int

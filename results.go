@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 )
 
+// FetchResult downloads result for a given measurement
 func (client *Client) FetchResult(url string) (string, error) {
 	opts := make(map[string]string)
 

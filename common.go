@@ -89,7 +89,7 @@ func (client *Client) prepareRequest(method, what string, opts map[string]string
 // handleAPIResponse check status code & errors from the API
 func handleAPIResponse(r *http.Response) (err error) {
 	if r == nil {
-		return fmt.Errorf("Error: r is nil!")
+		return fmt.Errorf("error: r is nil")
 	}
 
 	// Everything is fine
