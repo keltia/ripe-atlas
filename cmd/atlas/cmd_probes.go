@@ -94,7 +94,7 @@ func displayAllProbes(pl *[]atlas.Probe, verbose bool) (res string) {
 // prepareTraceroute build the request with our parameters
 func prepareProbes(country, asn string, anchor bool) map[string]string {
 	opts := map[string]string{
-		"asn":          asn,
+		"asn_v4":       asn,
 		"country_code": country,
 		"is_anchor":    boolToString(anchor),
 	}
