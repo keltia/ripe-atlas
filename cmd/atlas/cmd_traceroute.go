@@ -97,7 +97,9 @@ func cmdTraceroute(c *cli.Context) error {
 
 	req := prepareTraceroute(target, proto, maxHops, packetSize)
 
-	log.Printf("req=%#v", req)
+	if fDebug {
+		log.Printf("req=%#v", req)
+	}
 	//str := res.Result.Display()
 
 	trc, err := client.Traceroute(req)

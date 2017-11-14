@@ -67,7 +67,9 @@ func cmdTLSCert(c *cli.Context) (err error) {
 	_, site, _, port := analyzeTarget(target)
 
 	req := prepareTLSCert(site, port)
-	log.Printf("req=%#v", req)
+	if fDebug {
+		log.Printf("req=%#v", req)
+	}
 	//str := res.Result.Display()
 
 	tls, err := client.SSLCert(req)
