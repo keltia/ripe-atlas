@@ -22,7 +22,14 @@ EXE=	${BIN}.exe
 
 OPTS=	-ldflags="-s -w" -v
 
-all: ${BIN} ${EXE}
+all: checks ${BIN} ${EXE}
+
+checks:
+	@V=`go version|cut -d' ' -f 3| sed 's/^go//'` && \
+	if test "x$$V" \< "x1.8" ; then \
+		echo "You must have go 1.8+"; \
+		exit 1; \
+	fi
 
 ${BIN}: ${SRCS} ${USRC}
 	go build ${OPTS} ./cmd/...
@@ -30,10 +37,10 @@ ${BIN}: ${SRCS} ${USRC}
 ${EXE}: ${SRCS} ${WSRC}
 	GOOS=windows go build ${OPTS} ./cmd/...
 
-test:
+test: checks
 	go test -v ./...
 
-install: ${BIN}
+install: check ${BIN}
 	go install -v ./cmd/...
 
 clean:
@@ -43,5 +50,3 @@ clean:
 push:
 	git push --all
 	git push --tags
-	git push --all upstream
-	git push --tags upstream

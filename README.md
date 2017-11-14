@@ -51,6 +51,8 @@ In addition to these major commands, there are a few shortcut commands (see belo
 
 ## Installation
 
+NOTE: you MUST have Go 1.8 or later.  Previous versions did not have the `ProxyHeader` fields and thus no support for HTTP proxy.
+
 Like many Go-based tools, installation is very easy
   
     go get github.com/keltia/ripe-atlas/cmd/...
