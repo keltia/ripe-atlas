@@ -162,6 +162,35 @@ When looking at measurement results, it is very easy to use something like [jq](
 
     atlas results <ID> | jq .
 
+You can also analyze the results, as explained [here](https://labs.ripe.net/Members/stephane_bortzmeyer/processing-ripe-atlas-results-with-jq).
+
+Here,to find the maximum RTT:
+
+
+    % ./atlas measurements results 10185594 | jq 'map(.result[0].rtt) | max'
+    24.10811
+
+And with this jq file, to get more information from a measurement:
+
+```
+% cat ping-report.jq
+map(.result) | flatten(1) | map(.rtt) | length as $total | 
+ "Median: " + (sort |
+      if length % 2 == 0 then .[length/2] else .[(length-1)/2] end | tostring),
+ "Average: " + (map(select(. != null)) | add/length | tostring) + " ms",
+ "Min: " + (map(select(. != null)) | min | tostring) + " ms",
+ "Max: " + (max | tostring) + " ms",
+ "Failures: " + (map(select(. == null)) | (length*100/$total) | tostring) + " %"
+```
+
+
+    %./atlas measurements results 10185594 |  jq --raw-output --from-file ping-report.jq
+    Median: 15.068505
+    Average: 15.480822916666666 ms
+    Min: 3.786365 ms
+    Max: 24.164375 ms
+    Failures: 14.285714285714286 %
+
 ### TODO
 
 - more tests (and better ones!)
