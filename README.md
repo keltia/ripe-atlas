@@ -103,11 +103,13 @@ The `atlas` utility uses a configuration file in the [TOML](https://github.com/n
 
 On UNIX, it is located in `$HOME/.config/ripe-atlas/config.toml` and in `%LOCALAPPDATA%\RIPE-ATLAS` on Windows. 
 
-There are only a few parameters for now, the most important one being your API Key for autheicate against the RIPE API endpoint.
+There are only a few parameters for now, the most important one being your API Key for authenticate against the RIPE API endpoint.
 
     API_key = "UUID"
     pool_size = 10
-    default_probe = "YOUR-PROBE-ID"
+    default_probe = YOUR-PROBE-ID
+
+Both `API_key` and `WantAF` are strings and `pool_size` and `default_probe` are integers.  The second one is to specify whether you want requests to be done for IPv4 and/or IPv6.  Be aware that if you ask for an IPv6 object (like a domain or machine name), the API will refuse your request if the IPv6 version of that object does not exist.
 
 ### Usage
 
