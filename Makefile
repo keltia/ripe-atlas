@@ -42,7 +42,7 @@ ${EXE}: ${SRCS} ${WSRC}
 test: checks
 	go test -v ./...
 
-install: check ${BIN}
+install: checks ${BIN}
 	go install -v ./cmd/...
 
 clean:
