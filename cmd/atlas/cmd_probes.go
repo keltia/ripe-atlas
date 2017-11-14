@@ -92,11 +92,11 @@ func displayAllProbes(pl *[]atlas.Probe, verbose bool) (res string) {
 }
 
 // prepareTraceroute build the request with our parameters
-func prepareProbes(country, asn string, anchor bool) (map[string]string) {
+func prepareProbes(country, asn string, anchor bool) map[string]string {
 	opts := map[string]string{
-		"Asn":         asn,
-		"CountryCode": country,
-		"IsAnchor":    fmt.Sprintf("%v", anchor),
+		"asn":          asn,
+		"country_code": country,
+		"is_anchor":    boolToString(anchor),
 	}
 
 	if mycnf.WantAF != WantBoth {
