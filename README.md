@@ -16,7 +16,7 @@ It features a simple CLI-based tool called `atlas` which serve both as a collect
 - [Installation](#installation)
 - [API usage](#api-usage)
   - [Basics](#basics)
-- [CLI Application](#cli-application)
+- [CLI Utility](#cli-utility)
 - [TODO](#todo)
 - [External Documentation](#external-documentation)
 
