@@ -28,6 +28,9 @@ func preparePing(target string) (req *atlas.MeasurementRequest) {
 		"Target":      target,
 	}
 
+	// Try to configure -4/-6 depending on the argument to DTRT
+	prepareFamily(target)
+
 	req = client.NewMeasurement()
 	if mycnf.WantAF == WantBoth {
 
