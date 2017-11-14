@@ -73,6 +73,8 @@ To run the tests, you will also need:
 
 - `github.com/stretchr/assert`
 
+NOTE: please use and test the Windows version (use `make windows`to generate it).  It should work but I lack resources to play much with it.
+
 ## API usage
 
 You must foremost instanciate a new API client with
