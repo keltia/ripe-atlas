@@ -74,6 +74,6 @@ func cmdPing(c *cli.Context) error {
 	}
 
 	//str := res.Result.Display()
-	fmt.Printf("m: %v\n", m)
+	displayMeasurementID(*m)
 	return nil
 }

@@ -107,7 +107,7 @@ func cmdTraceroute(c *cli.Context) error {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("Traceroute: %#v", trc)
+	displayMeasurementID(*trc)
 
 	return nil
 }

@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"github.com/keltia/ripe-atlas"
+	"fmt"
 )
 
 // ByAlphabet is for sorting
@@ -122,4 +124,18 @@ func prepareFamily(arg string) {
 	default:
 		mycnf.WantAF = WantBoth
 	}
+}
+
+// displayMeasurementID display result of measurement requests.
+func displayMeasurementID(list atlas.MeasurementResp) {
+		fmt.Println("Measurements created:")
+	for _, m := range list.Measurements {
+		fmt.Printf("%d\n", m)
+	}
+	fmt.Printf(`
+Use the following command to retrieve results in JSON:
+
+  atlas r <id>
+
+`)
 }

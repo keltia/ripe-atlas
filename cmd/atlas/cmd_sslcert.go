@@ -77,6 +77,7 @@ func cmdTLSCert(c *cli.Context) (err error) {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("TLS: %#v", tls)
+	displayMeasurementID(*tls)
+
 	return
 }

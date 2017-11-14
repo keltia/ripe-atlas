@@ -101,7 +101,8 @@ func cmdHTTP(c *cli.Context) error {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("HTTP: %#v", http)
+	displayMeasurementID(*http)
+
 	return nil
 
 }

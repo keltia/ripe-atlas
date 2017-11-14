@@ -71,7 +71,7 @@ func cmdNTP(c *cli.Context) error {
 		fmt.Printf("err: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("NTP: %#v", ntp)
+    displayMeasurementID(*ntp)
 
-	return nil
+    return nil
 }
