@@ -66,7 +66,6 @@ The library is fetched, compiled and installed in whichever directory is specifi
 
 You can install the dependencies with `go get`
   
-- `github.com/sendgrid/rest`
 - `github.com/urfave/cli`
 - `github.com/naoina/toml`
 
