@@ -112,6 +112,34 @@ There are only a few parameters for now, the most important one being your API K
 
 Both `API_key` and `WantAF` are strings and `pool_size` and `default_probe` are integers.  The second one is to specify whether you want requests to be done for IPv4 and/or IPv6.  Be aware that if you ask for an IPv6 object (like a domain or machine name), the API will refuse your request if the IPv6 version of that object does not exist.
 
+### Proxy authentication
+
+If you want to use `atlas` or the API behind an authenticating HTTP/HTTPS proxy, you need to create another configuration file holding the proxy credentials.  The file is called `.dbrc` under UNIX and is located in your `$HOME` directory.  On Windows, it is in the same directory as `config.toml` inside `%LOCALAPPDATA%\RIPE-ATLAS`.
+
+The format is inherited from a Perl package I've used before.  You have a series of line for each service and contains both username and password:
+
+    <service>   <username>  <password>      <tag>
+
+in our case, the `service` is `proxy`, you fill username and password and `tag` will be ignored.
+
+    proxy   john.doe    secret      ignored
+
+For the API, you will to generate the  `username:password` string, encode it in base64 and give it to `atlas.NewClient()` with the `ProxyAuth` parameter (see `config.go` for `setupProxyAuth()`).
+    
+    atlas.go:
+    
+    // Check whether we have proxy authentication (from a separate config file)
+    auth, err := setupProxyAuth()
+
+    client, err = atlas.NewClient(atlas.Config{
+        APIKey:       mycnf.APIKey,
+        DefaultProbe: mycnf.DefaultProbe,
+        PoolSize:     mycnf.PoolSize,
+        ProxyAuth:    auth,
+        Verbose:      fVerbose,
+    })
+    
+
 ### Usage
 
 ```
