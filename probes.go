@@ -70,9 +70,12 @@ func (client *Client) fetchOneProbePage(opts map[string]string) (raw *probeList,
 	defer resp.Body.Close()
 
 	err = json.Unmarshal(body, raw)
-	log.Printf("Count=%d raw=%v", raw.Count, resp)
-	//log.Printf(">> rawlist=%+v resp=%+v Next=|%s|", raw, resp, raw.Next)
+	if err != nil {
+		log.Printf("err reading json: raw=%#v err=%v", raw, err)
+		return
+	}
 	if client.config.Verbose {
+		log.Printf("Count=%d raw=%v", raw.Count, resp)
 		fmt.Print("P")
 	}
 	return
