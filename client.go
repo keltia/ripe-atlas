@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"os"
 )
 
 // NewClient is the first function to call.
@@ -18,6 +19,11 @@ func NewClient(cfgs ...Config) (*Client, error) {
 
 	// This holds the global options
 	client.opts = make(map[string]string)
+
+	// If no log output is specified, use the default one
+	if client.log == nil {
+		client.log = log.New(os.Stderr, "ripe-atlas", log.LstdFlags | log.LUTC)
+	}
 
 	// Create and save the http.Client
 	return client.addHTTPClient()
