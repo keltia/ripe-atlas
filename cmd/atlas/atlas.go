@@ -75,7 +75,12 @@ const (
 // -4 & -6 are special, if neither is specified, then we turn both as true
 // Check a few other things while we are here
 func finalcheck(c *cli.Context) error {
-	var err error
+
+	var (
+		err   error
+		fh    *os.File
+		mylog *log.Logger
+	)
 
 	// Load main configuration
 	mycnf, err = LoadConfig("")
@@ -112,6 +117,17 @@ func finalcheck(c *cli.Context) error {
 		}
 	}
 
+	if fLogfile != "" {
+		if fh, err = os.Open(fLogfile); err != nil {
+			fh, err = os.Create(fLogfile)
+			if err != nil {
+				log.Fatalf("error: can not open logfile %s: %v", fLogfile, err)
+			}
+		}
+		mylog = log.New(fh, "atlas", log.LstdFlags)
+		log.Printf("Logfile: %s %#v", fLogfile, mylog)
+	}
+
 	// Wondering whether to move to the Functional options pattern
 	// cf. https://dave.cheney.net/2016/11/13/do-not-fear-first-class-functions
 	client, err = atlas.NewClient(atlas.Config{
@@ -120,6 +136,7 @@ func finalcheck(c *cli.Context) error {
 		PoolSize:     mycnf.PoolSize,
 		ProxyAuth:    auth,
 		Verbose:      fVerbose,
+		Log:          mylog,
 	})
 
 	// No need to continue if this fails
