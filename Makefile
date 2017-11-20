@@ -22,7 +22,7 @@ EXE=	${BIN}.exe
 
 OPTS=	-ldflags="-s -w" -v
 
-all: checks ${BIN}
+all: check ${BIN}
 
 check:
 	@V=`go version|cut -d' ' -f 3| sed 's/^go//'` && \
