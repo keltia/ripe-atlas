@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"reflect"
 	"strconv"
+	"log"
 )
 
 // MeasurementResp contains all the results of the measurements
@@ -103,15 +103,15 @@ func (client *Client) createMeasurement(t string, d *MeasurementRequest) (m *Mea
 	req.ContentLength = int64(buf.Len())
 
 	if client.config.Verbose {
-		log.Printf("req: %#v", req)
-		log.Printf("body: %s", body)
+		client.log.Printf("req: %#v", req)
+		client.log.Printf("body: %s", body)
 	}
 	resp, err := client.call(req)
 	if client.config.Verbose {
-		log.Printf("resp: %v", resp)
+		client.log.Printf("resp: %v", resp)
 	}
 	if err != nil {
-		log.Printf("err: %v", err)
+		client.log.Printf("err: %v", err)
 		//return
 	}
 

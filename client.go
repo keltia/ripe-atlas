@@ -40,7 +40,7 @@ func (client *Client) HasAPIKey() (string, bool) {
 // call is s shortcut
 func (client *Client) call(req *http.Request) (*http.Response, error) {
 	if client.config.Verbose {
-		log.Printf("Full URL:\n%v", req.URL)
+		client.log.Printf("Full URL:\n%v", req.URL)
 	}
 
 	return client.client.Do(req)
@@ -53,7 +53,7 @@ func (client *Client) setupTransport() (*http.Transport, error) {
 	*/
 	req, err := http.NewRequest("HEAD", apiEndpoint, nil)
 	if err != nil {
-		log.Printf("error: transport: %v", err)
+		client.log.Printf("error: transport: %v", err)
 		return nil, err
 	}
 
@@ -61,7 +61,7 @@ func (client *Client) setupTransport() (*http.Transport, error) {
 	proxyURL, err := http.ProxyFromEnvironment(req)
 	if err != nil {
 		if client.config.Verbose {
-			log.Println("no proxy defined")
+			client.log.Println("no proxy defined")
 		}
 	}
 
@@ -81,7 +81,7 @@ func (client *Client) setupTransport() (*http.Transport, error) {
 func (client *Client) addHTTPClient() (*Client, error) {
 	transport, err := client.setupTransport()
 	if err != nil {
-		log.Fatalf("unable to create httpclient: %v", err)
+		client.log.Fatalf("unable to create httpclient: %v", err)
 	}
 	client.client = &http.Client{Transport: transport, Timeout: 20 * time.Second}
 	return client, err

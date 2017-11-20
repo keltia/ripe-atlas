@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -63,13 +62,13 @@ func (client *Client) prepareRequest(method, what string, opts map[string]string
 
 	client.mergeGlobalOptions(opts)
 	if client.config.Verbose {
-		log.Printf("Options:\n%v", opts)
+		client.log.Printf("Options:\n%v", opts)
 	}
 	baseURL := AddQueryParameters(endPoint, opts)
 
 	req, err := http.NewRequest(method, baseURL, nil)
 	if err != nil {
-		log.Printf("error parsing %s: %v", baseURL, err)
+		client.log.Printf("error parsing %s: %v", baseURL, err)
 		return &http.Request{}
 	}
 
