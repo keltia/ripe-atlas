@@ -13,7 +13,7 @@ func (client *Client) FetchResult(url string) (string, error) {
 
 	//log.Printf("req: %#v", req)
 	resp, err := client.call(req)
-	err = handleAPIResponse(resp)
+	err = client.handleAPIResponsese(resp)
 	if err != nil {
 		return "", err
 	}

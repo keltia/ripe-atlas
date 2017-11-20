@@ -24,7 +24,7 @@ func (client *Client) GetProbe(id int) (p *Probe, err error) {
 		if client.config.Verbose {
 			client.log.Printf("API error: %v", err)
 		}
-		err = handleAPIResponse(resp)
+		err = client.handleAPIResponsese(resp)
 		if err != nil {
 			return
 		}
@@ -58,7 +58,7 @@ func (client *Client) fetchOneProbePage(opts map[string]string) (raw *probeList,
 		if client.config.Verbose {
 			client.log.Printf("API error: %v", err)
 		}
-		err = handleAPIResponse(resp)
+		err = client.handleAPIResponsese(resp)
 		if err != nil {
 			return
 		}

@@ -23,7 +23,7 @@ func (client *Client) fetchOneKeyPage(opts map[string]string) (raw *keyList, err
 	req := client.prepareRequest("GET", "keys", opts)
 
 	resp, err := client.call(req)
-	err = handleAPIResponse(resp)
+	err = client.handleAPIResponsese(resp)
 	if err != nil {
 		return
 	}
@@ -46,7 +46,7 @@ func (client *Client) GetKey(uuid string) (k Key, err error) {
 
 	//log.Printf("req: %#v", req)
 	resp, err := client.call(req)
-	err = handleAPIResponse(resp)
+	err = client.handleAPIResponsese(resp)
 	if err != nil {
 		return
 	}

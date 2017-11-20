@@ -85,8 +85,8 @@ func (client *Client) prepareRequest(method, what string, opts map[string]string
 	return
 }
 
-// handleAPIResponse check status code & errors from the API
-func handleAPIResponse(r *http.Response) (err error) {
+// client.handleAPIResponsese check status code & errors from the API
+func (client *Client) handleAPIResponsese(r *http.Response) (err error) {
 	if r == nil {
 		return fmt.Errorf("error: r is nil")
 	}
@@ -110,10 +110,10 @@ func handleAPIResponse(r *http.Response) (err error) {
 
 		err = json.Unmarshal(body, &aerr)
 		if err != nil {
-			log.Printf("Error handling error: %s - %v", r.Body, err)
+			client.log.Printf("Error handling error: %s - %v", r.Body, err)
 		}
 
-		log.Printf("Info 3XX status: %d code: %d - r:%v\n",
+		client.log.Printf("Info 3XX status: %d code: %d - r:%v\n",
 			aerr.Error.Status,
 			aerr.Error.Code,
 			aerr.Error.Detail)
@@ -128,7 +128,7 @@ func handleAPIResponse(r *http.Response) (err error) {
 
 	err = json.Unmarshal(body, &aerr)
 	if err != nil {
-		log.Printf("Error handling error: %s - %v", r.Body, err)
+		client.log.Printf("Error handling error: %s - %v", r.Body, err)
 	}
 
 	err = fmt.Errorf("status: %d code: %d - r:%s\nerrors: %v",

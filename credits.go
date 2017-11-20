@@ -23,7 +23,7 @@ func (client *Client) GetCredits() (credits *Credits, err error) {
 		if client.config.Verbose {
 			client.log.Printf("API error: %v", err)
 		}
-		err = handleAPIResponse(resp)
+		err = client.handleAPIResponsese(resp)
 		if err != nil {
 			client.log.Printf("error getting credits: %#v", err)
 			return

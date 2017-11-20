@@ -115,7 +115,7 @@ func (client *Client) createMeasurement(t string, d *MeasurementRequest) (m *Mea
 		//return
 	}
 
-	err = handleAPIResponse(resp)
+	err = client.handleAPIResponsese(resp)
 	if err != nil {
 		return
 	}
