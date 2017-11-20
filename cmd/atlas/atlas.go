@@ -24,6 +24,7 @@ var (
 	fFieldList string
 	fFormat    string
 	fInclude   string
+	fLogfile   string
 	fOptFields string
 	fPageNum   string
 	fPageSize  string
@@ -60,7 +61,7 @@ var (
 const (
 	atlasVersion = "0.22"
 	// MyName is the application name
-	MyName       = "ripe-atlas"
+	MyName = "ripe-atlas"
 
 	// WantBoth is the way to ask for both IPv4 & IPv6.
 	WantBoth = "64"
@@ -192,6 +193,11 @@ func main() {
 			Name:        "include,I",
 			Usage:       "specify whether objects should be expanded",
 			Destination: &fInclude,
+		},
+		cli.StringFlag{
+			Name:        "logfile,L",
+			Usage:       "specify a log file",
+			Destination: &fLogfile,
 		},
 		cli.BoolFlag{
 			Name:        "mine,M",
