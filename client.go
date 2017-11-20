@@ -21,7 +21,7 @@ func NewClient(cfgs ...Config) (*Client, error) {
 	client.opts = make(map[string]string)
 
 	// If no log output is specified, use the default one
-	if client.log == nil {
+	if client.config.Log == nil {
 		client.log = log.New(os.Stderr, "ripe-atlas", log.LstdFlags | log.LUTC)
 	}
 

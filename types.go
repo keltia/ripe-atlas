@@ -25,6 +25,7 @@ type Config struct {
 	WantAF       string
 	ProxyAuth    string
 	Verbose      bool
+	Log          *log.Logger
 }
 
 // APIError is for errors returned by the RIPE API.
