@@ -4,12 +4,16 @@
 
 package atlas
 
-import "net/http"
+import (
+	"log"
+	"net/http"
+)
 
 // Client is the main struct holding state in an API client
 type Client struct {
 	config Config
 	client *http.Client
+	log    *log.Logger
 	opts   map[string]string // Default, optional options
 }
 
