@@ -203,4 +203,7 @@ map(.result) | flatten(1) | map(.rtt) | length as $total |
   - [Main RIPE Atlas site](https://atlas.ripe.net/)
   - [REST API Documentation](https://atlas.ripe.net/docs/api/v2/manual/)
   - [REST API Reference](https://atlas.ripe.net/docs/api/v2/reference/)
-  
+
+## Contributing
+
+As usual, you can open issues, send pull requests and such.  Please do PR only on the `develop` branch, that would mess up my "git flow" otherwise.  Thanks!
