@@ -71,30 +71,30 @@ func TestGetPageNum(t *testing.T) {
 	}
 }
 
-func TestHandleAPIResponse(t *testing.T) {
+func Testclient.handleAPIResponsese(t *testing.T) {
 	var r rest.Response
 
-	err := handleAPIResponse(nil)
+	err := client.handleAPIResponsese(nil)
 	assert.Error(t, err, "should be in error")
 
 
 	r = rest.Response{StatusCode: 0}
-	err = handleAPIResponse(&r)
+	err = client.handleAPIResponsese(&r)
 	assert.NoError(t, err, "should be no error")
 
 	r = rest.Response{StatusCode: 200}
-	err = handleAPIResponse(&r)
+	err = client.handleAPIResponsese(&r)
 	assert.NoError(t, err, "should be no error")
 
 	var jsonErr = `error:{status: 501, code: 500, detail: "test"}`
 
 	r.StatusCode = 300
 	r.Body = jsonErr
-	err = handleAPIResponse(&r)
+	err = client.handleAPIResponsese(&r)
 	assert.NoError(t, err, "should be in error")
 
 	r.StatusCode = 500
 	r.Body = jsonErr
-	err = handleAPIResponse(&r)
+	err = client.handleAPIResponsese(&r)
 	assert.Error(t, err, "should be in error")
 }

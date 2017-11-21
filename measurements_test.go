@@ -74,7 +74,7 @@ func TestDNS(t *testing.T) {
 				return httpmock.NewStringResponse(400, ""), nil
 			}
 
-			log.Printf("test.req=%#v", reqData)
+			client.log.Printf("test.req=%#v", reqData)
 			if reqData.Definitions[0].Type != "dns" {
 
 				ap.Error.Status = 500

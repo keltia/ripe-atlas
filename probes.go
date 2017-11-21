@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 )
 
 // GetProbe returns data for a single probe
@@ -23,9 +22,9 @@ func (client *Client) GetProbe(id int) (p *Probe, err error) {
 	//log.Printf("resp: %#v - err: %#v", resp, err)
 	if err != nil {
 		if client.config.Verbose {
-			log.Printf("API error: %v", err)
+			client.log.Printf("API error: %v", err)
 		}
-		err = handleAPIResponse(resp)
+		err = client.handleAPIResponsese(resp)
 		if err != nil {
 			return
 		}
@@ -57,9 +56,9 @@ func (client *Client) fetchOneProbePage(opts map[string]string) (raw *probeList,
 	resp, err := client.call(req)
 	if err != nil {
 		if client.config.Verbose {
-			log.Printf("API error: %v", err)
+			client.log.Printf("API error: %v", err)
 		}
-		err = handleAPIResponse(resp)
+		err = client.handleAPIResponsese(resp)
 		if err != nil {
 			return
 		}
@@ -71,11 +70,11 @@ func (client *Client) fetchOneProbePage(opts map[string]string) (raw *probeList,
 
 	err = json.Unmarshal(body, raw)
 	if err != nil {
-		log.Printf("err reading json: raw=%#v err=%v", raw, err)
+		client.log.Printf("err reading json: raw=%#v err=%v", raw, err)
 		return
 	}
 	if client.config.Verbose {
-		log.Printf("Count=%d raw=%v", raw.Count, resp)
+		client.log.Printf("Count=%d raw=%v", raw.Count, resp)
 		fmt.Print("P")
 	}
 	return

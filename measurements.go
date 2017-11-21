@@ -59,7 +59,7 @@ func (client *Client) fetchOneMeasurementPage(opts map[string]string) (raw *meas
 
 	//log.Printf("req=%s qp=%#v", MeasurementEP, opts)
 	resp, err := client.call(req)
-	err = handleAPIResponse(resp)
+	err = client.handleAPIResponsese(resp)
 	if err != nil {
 		return
 	}
@@ -85,7 +85,7 @@ func (client *Client) GetMeasurement(id int) (m *Measurement, err error) {
 
 	//log.Printf("req: %#v", req)
 	resp, err := client.call(req)
-	err = handleAPIResponse(resp)
+	err = client.handleAPIResponsese(resp)
 	if err != nil {
 		return
 	}
@@ -107,7 +107,7 @@ func (client *Client) DeleteMeasurement(id int) (err error) {
 
 	//log.Printf("req: %#v", req)
 	resp, err := client.call(req)
-	err = handleAPIResponse(resp)
+	err = client.handleAPIResponsese(resp)
 	return
 }
 
