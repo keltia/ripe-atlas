@@ -32,7 +32,7 @@ func preparePing(target string) (req *atlas.MeasurementRequest) {
 	prepareFamily(target)
 
 	req = client.NewMeasurement()
-	if mycnf.WantAF == WantBoth {
+	if cnf.WantAF == WantBoth {
 
 		opts["AF"] = "4"
 		req.AddDefinition(opts)
@@ -40,7 +40,7 @@ func preparePing(target string) (req *atlas.MeasurementRequest) {
 		opts["AF"] = "6"
 		req.AddDefinition(opts)
 	} else {
-		opts["AF"] = mycnf.WantAF
+		opts["AF"] = cnf.WantAF
 		req.AddDefinition(opts)
 	}
 

@@ -34,10 +34,10 @@ func cmdIP(c *cli.Context) error {
 	}
 
 	if probeID == 0 {
-		if mycnf.DefaultProbe == 0 {
+		if cnf.DefaultProbe == 0 {
 			log.Fatal("Error: you must specify a probe ID!")
 		} else {
-			probeID = mycnf.DefaultProbe
+			probeID = cnf.DefaultProbe
 		}
 	}
 

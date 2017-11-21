@@ -52,7 +52,7 @@ var (
 	fMaxHops    int
 	fPacketSize int
 
-	mycnf *Config
+	cnf *Config
 
 	cliCommands []cli.Command
 
@@ -84,7 +84,7 @@ func finalcheck(c *cli.Context) error {
 	)
 
 	// Load main configuration
-	mycnf, err = LoadConfig("")
+	cnf, err = LoadConfig("")
 	if err != nil {
 		if fVerbose {
 			log.Printf("No configuration file found.")
@@ -94,19 +94,19 @@ func finalcheck(c *cli.Context) error {
 	// Logical
 	if fDebug {
 		fVerbose = true
-		log.Printf("config: %#v", mycnf)
+		log.Printf("config: %#v", cnf)
 	}
 
 	// Various messages
 	if fVerbose {
-		if mycnf.APIKey != "" {
+		if cnf.APIKey != "" {
 			log.Printf("Found API key!")
 		} else {
 			log.Printf("No API key!")
 		}
 
-		if mycnf.DefaultProbe != 0 {
-			log.Printf("Found default probe: %d\n", mycnf.DefaultProbe)
+		if cnf.DefaultProbe != 0 {
+			log.Printf("Found default probe: %d\n", cnf.DefaultProbe)
 		}
 	}
 
@@ -134,9 +134,9 @@ func finalcheck(c *cli.Context) error {
 	// Wondering whether to move to the Functional options pattern
 	// cf. https://dave.cheney.net/2016/11/13/do-not-fear-first-class-functions
 	client, err = atlas.NewClient(atlas.Config{
-		APIKey:       mycnf.APIKey,
-		DefaultProbe: mycnf.DefaultProbe,
-		PoolSize:     mycnf.PoolSize,
+		APIKey:       cnf.APIKey,
+		DefaultProbe: cnf.DefaultProbe,
+		PoolSize:     cnf.PoolSize,
 		ProxyAuth:    auth,
 		Verbose:      fVerbose,
 		Log:          mylog,
@@ -152,21 +152,21 @@ func finalcheck(c *cli.Context) error {
 	}
 
 	if fWant4 {
-		mycnf.WantAF = Want4
+		cnf.WantAF = Want4
 	}
 
 	if fWant6 {
-		mycnf.WantAF = Want6
+		cnf.WantAF = Want6
 	}
 
 	// Both are fine
 	if fWant4 && fWant6 {
-		mycnf.WantAF = WantBoth
+		cnf.WantAF = WantBoth
 	}
 
 	// So is neither — common case
 	if !fWant4 && !fWant6 {
-		mycnf.WantAF = WantBoth
+		cnf.WantAF = WantBoth
 	}
 
 	return nil
