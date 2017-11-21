@@ -4,8 +4,8 @@ import (
 	"crypto/tls"
 	"log"
 	"net/http"
-	"time"
 	"os"
+	"time"
 )
 
 // NewClient is the first function to call.
@@ -22,7 +22,9 @@ func NewClient(cfgs ...Config) (*Client, error) {
 
 	// If no log output is specified, use the default one
 	if client.config.Log == nil {
-		client.log = log.New(os.Stderr, "ripe-atlas", log.LstdFlags | log.LUTC)
+		client.log = log.New(os.Stderr, "", log.LstdFlags|log.LUTC)
+	} else {
+		client.log = client.config.Log
 	}
 
 	// Create and save the http.Client
