@@ -10,22 +10,22 @@ import (
 )
 
 // GetCredits returns high-level data for credits
-func (client *Client) GetCredits() (credits *Credits, err error) {
+func (c *Client) GetCredits() (credits *Credits, err error) {
 
 	opts := make(map[string]string)
-	client.mergeGlobalOptions(opts)
+	c.mergeGlobalOptions(opts)
 
-	req := client.prepareRequest("GET", "credits", opts)
+	req := c.prepareRequest("GET", "credits", opts)
 
-	resp, err := client.call(req)
+	resp, err := c.call(req)
 	//log.Printf("resp: %#v - err: %#v", resp, err)
 	if err != nil {
-		if client.config.Verbose {
-			client.log.Printf("API error: %v", err)
+		if c.config.Verbose {
+			c.log.Printf("API error: %v", err)
 		}
-		err = client.handleAPIResponsese(resp)
+		err = c.handleAPIResponsese(resp)
 		if err != nil {
-			client.log.Printf("error getting credits: %#v", err)
+			c.log.Printf("error getting credits: %#v", err)
 			return
 		}
 	}

@@ -11,20 +11,20 @@ import (
 )
 
 // GetProbe returns data for a single probe
-func (client *Client) GetProbe(id int) (p *Probe, err error) {
+func (c *Client) GetProbe(id int) (p *Probe, err error) {
 
 	opts := make(map[string]string)
-	client.mergeGlobalOptions(opts)
+	c.mergeGlobalOptions(opts)
 
-	req := client.prepareRequest("GET", fmt.Sprintf("probes/%d", id), opts)
+	req := c.prepareRequest("GET", fmt.Sprintf("probes/%d", id), opts)
 
-	resp, err := client.call(req)
+	resp, err := c.call(req)
 	//log.Printf("resp: %#v - err: %#v", resp, err)
 	if err != nil {
-		if client.config.Verbose {
-			client.log.Printf("API error: %v", err)
+		if c.config.Verbose {
+			c.log.Printf("API error: %v", err)
 		}
-		err = client.handleAPIResponsese(resp)
+		err = c.handleAPIResponsese(resp)
 		if err != nil {
 			return
 		}
@@ -48,17 +48,17 @@ type probeList struct {
 }
 
 // fetch the given resource
-func (client *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err error) {
+func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err error) {
 
-	client.mergeGlobalOptions(opts)
-	req := client.prepareRequest("GET", "probes", opts)
+	c.mergeGlobalOptions(opts)
+	req := c.prepareRequest("GET", "probes", opts)
 
-	resp, err := client.call(req)
+	resp, err := c.call(req)
 	if err != nil {
-		if client.config.Verbose {
-			client.log.Printf("API error: %v", err)
+		if c.config.Verbose {
+			c.log.Printf("API error: %v", err)
 		}
-		err = client.handleAPIResponsese(resp)
+		err = c.handleAPIResponsese(resp)
 		if err != nil {
 			return
 		}
@@ -70,20 +70,20 @@ func (client *Client) fetchOneProbePage(opts map[string]string) (raw *probeList,
 
 	err = json.Unmarshal(body, raw)
 	if err != nil {
-		client.log.Printf("err reading json: raw=%#v err=%v", raw, err)
+		c.log.Printf("err reading json: raw=%#v err=%v", raw, err)
 		return
 	}
-	if client.config.Verbose {
-		client.log.Printf("Count=%d raw=%v", raw.Count, resp)
+	if c.config.Verbose {
+		c.log.Printf("Count=%d raw=%v", raw.Count, resp)
 		fmt.Print("P")
 	}
 	return
 }
 
 // GetProbes returns data for a collection of probes
-func (client *Client) GetProbes(opts map[string]string) (p []Probe, err error) {
+func (c *Client) GetProbes(opts map[string]string) (p []Probe, err error) {
 	// First call
-	rawlist, err := client.fetchOneProbePage(opts)
+	rawlist, err := c.fetchOneProbePage(opts)
 
 	// Empty answer
 	if rawlist.Count == 0 {
@@ -98,7 +98,7 @@ func (client *Client) GetProbes(opts map[string]string) (p []Probe, err error) {
 		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
 			opts["page"] = pn
 
-			rawlist, err = client.fetchOneProbePage(opts)
+			rawlist, err = c.fetchOneProbePage(opts)
 			if err != nil {
 				return
 			}

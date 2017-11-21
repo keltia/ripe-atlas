@@ -43,7 +43,7 @@ func AddQueryParameters(baseURL string, queryParams map[string]string) string {
 }
 
 // prepareRequest insert all pre-defined stuff
-func (client *Client) prepareRequest(method, what string, opts map[string]string) (req *http.Request) {
+func (c *Client) prepareRequest(method, what string, opts map[string]string) (req *http.Request) {
 	var endPoint string
 
 	// This is a hack to fetch direct urls for results
@@ -54,21 +54,21 @@ func (client *Client) prepareRequest(method, what string, opts map[string]string
 		endPoint = apiEndpoint + fmt.Sprintf("/%s/", what)
 	}
 
-	key, ok := client.HasAPIKey()
+	key, ok := c.HasAPIKey()
 	// Insert key
 	if ok {
 		opts["key"] = key
 	}
 
-	client.mergeGlobalOptions(opts)
-	if client.config.Verbose {
-		client.log.Printf("Options:\n%v", opts)
+	c.mergeGlobalOptions(opts)
+	if c.config.Verbose {
+		c.log.Printf("Options:\n%v", opts)
 	}
 	baseURL := AddQueryParameters(endPoint, opts)
 
 	req, err := http.NewRequest(method, baseURL, nil)
 	if err != nil {
-		client.log.Printf("error parsing %s: %v", baseURL, err)
+		c.log.Printf("error parsing %s: %v", baseURL, err)
 		return &http.Request{}
 	}
 
@@ -86,7 +86,7 @@ func (client *Client) prepareRequest(method, what string, opts map[string]string
 }
 
 // client.handleAPIResponsese check status code & errors from the API
-func (client *Client) handleAPIResponsese(r *http.Response) (err error) {
+func (c *Client) handleAPIResponsese(r *http.Response) (err error) {
 	if r == nil {
 		return fmt.Errorf("error: r is nil")
 	}
@@ -110,10 +110,10 @@ func (client *Client) handleAPIResponsese(r *http.Response) (err error) {
 
 		err = json.Unmarshal(body, &aerr)
 		if err != nil {
-			client.log.Printf("Error handling error: %s - %v", r.Body, err)
+			c.log.Printf("Error handling error: %s - %v", r.Body, err)
 		}
 
-		client.log.Printf("Info 3XX status: %d code: %d - r:%v\n",
+		c.log.Printf("Info 3XX status: %d code: %d - r:%v\n",
 			aerr.Error.Status,
 			aerr.Error.Code,
 			aerr.Error.Detail)
@@ -128,7 +128,7 @@ func (client *Client) handleAPIResponsese(r *http.Response) (err error) {
 
 	err = json.Unmarshal(body, &aerr)
 	if err != nil {
-		client.log.Printf("Error handling error: %s - %v", r.Body, err)
+		c.log.Printf("Error handling error: %s - %v", r.Body, err)
 	}
 
 	err = fmt.Errorf("status: %d code: %d - r:%s\nerrors: %v",

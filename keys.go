@@ -18,12 +18,12 @@ type keyList struct {
 }
 
 // fetch the given resource
-func (client *Client) fetchOneKeyPage(opts map[string]string) (raw *keyList, err error) {
+func (c *Client) fetchOneKeyPage(opts map[string]string) (raw *keyList, err error) {
 
-	req := client.prepareRequest("GET", "keys", opts)
+	req := c.prepareRequest("GET", "keys", opts)
 
-	resp, err := client.call(req)
-	err = client.handleAPIResponsese(resp)
+	resp, err := c.call(req)
+	err = c.handleAPIResponsese(resp)
 	if err != nil {
 		return
 	}
@@ -39,14 +39,14 @@ func (client *Client) fetchOneKeyPage(opts map[string]string) (raw *keyList, err
 }
 
 // GetKey returns a given API key
-func (client *Client) GetKey(uuid string) (k Key, err error) {
+func (c *Client) GetKey(uuid string) (k Key, err error) {
 	opts := make(map[string]string)
 
-	req := client.prepareRequest("GET", fmt.Sprintf("keys/%s", uuid), opts)
+	req := c.prepareRequest("GET", fmt.Sprintf("keys/%s", uuid), opts)
 
 	//log.Printf("req: %#v", req)
-	resp, err := client.call(req)
-	err = client.handleAPIResponsese(resp)
+	resp, err := c.call(req)
+	err = c.handleAPIResponsese(resp)
 	if err != nil {
 		return
 	}
@@ -61,10 +61,10 @@ func (client *Client) GetKey(uuid string) (k Key, err error) {
 }
 
 // GetKeys returns all your API keys
-func (client *Client) GetKeys(opts map[string]string) (kl []Key, err error) {
+func (c *Client) GetKeys(opts map[string]string) (kl []Key, err error) {
 
 	// First call
-	rawlist, err := client.fetchOneKeyPage(opts)
+	rawlist, err := c.fetchOneKeyPage(opts)
 
 	// Empty answer
 	if rawlist.Count == 0 {
@@ -79,7 +79,7 @@ func (client *Client) GetKeys(opts map[string]string) (kl []Key, err error) {
 		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
 			opts["page"] = pn
 
-			rawlist, err = client.fetchOneKeyPage(opts)
+			rawlist, err = c.fetchOneKeyPage(opts)
 			if err != nil {
 				return
 			}

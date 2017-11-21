@@ -12,63 +12,63 @@ import (
 // Yes, it does take multiple config
 // and the last one wins.
 func NewClient(cfgs ...Config) (*Client, error) {
-	client := &Client{}
+	c := &Client{}
 	for _, cfg := range cfgs {
-		client.config = cfg
+		c.config = cfg
 	}
 
 	// This holds the global options
-	client.opts = make(map[string]string)
+	c.opts = make(map[string]string)
 
 	// If no log output is specified, use the default one
-	if client.config.Log == nil {
-		client.log = log.New(os.Stderr, "", log.LstdFlags|log.LUTC)
+	if c.config.Log == nil {
+		c.log = log.New(os.Stderr, "", log.LstdFlags|log.LUTC)
 	} else {
-		client.log = client.config.Log
+		c.log = c.config.Log
 	}
 
 	// Create and save the http.Client
-	return client.addHTTPClient()
+	return c.addHTTPClient()
 }
 
 // HasAPIKey returns whether an API key is stored
-func (client *Client) HasAPIKey() (string, bool) {
-	if client.config.APIKey == "" {
+func (c *Client) HasAPIKey() (string, bool) {
+	if c.config.APIKey == "" {
 		return "", false
 	}
-	return client.config.APIKey, true
+	return c.config.APIKey, true
 }
 
 // call is s shortcut
-func (client *Client) call(req *http.Request) (*http.Response, error) {
-	if client.config.Verbose {
-		client.log.Printf("Full URL:\n%v", req.URL)
+func (c *Client) call(req *http.Request) (*http.Response, error) {
+	if c.config.Verbose {
+		c.log.Printf("Full URL:\n%v", req.URL)
 	}
 
-	return client.client.Do(req)
+	return c.client.Do(req)
 }
 
-func (client *Client) setupTransport() (*http.Transport, error) {
+func (c *Client) setupTransport() (*http.Transport, error) {
 	/*
 	   Proxy code taken from https://github.com/LeoCBS/poc-proxy-https/blob/master/main.go
 	   Analyse endPoint to check proxy stuff
 	*/
 	req, err := http.NewRequest("HEAD", apiEndpoint, nil)
 	if err != nil {
-		client.log.Printf("error: transport: %v", err)
+		c.log.Printf("error: transport: %v", err)
 		return nil, err
 	}
 
 	// Get proxy URL
 	proxyURL, err := http.ProxyFromEnvironment(req)
 	if err != nil {
-		if client.config.Verbose {
-			client.log.Println("no proxy defined")
+		if c.config.Verbose {
+			c.log.Println("no proxy defined")
 		}
 	}
 
-	if client.config.ProxyAuth != "" {
-		req.Header.Set("Proxy-Authorization", client.config.ProxyAuth)
+	if c.config.ProxyAuth != "" {
+		req.Header.Set("Proxy-Authorization", c.config.ProxyAuth)
 	}
 
 	transport := &http.Transport{
@@ -80,40 +80,40 @@ func (client *Client) setupTransport() (*http.Transport, error) {
 	return transport, nil
 }
 
-func (client *Client) addHTTPClient() (*Client, error) {
-	transport, err := client.setupTransport()
+func (c *Client) addHTTPClient() (*Client, error) {
+	transport, err := c.setupTransport()
 	if err != nil {
-		client.log.Fatalf("unable to create httpclient: %v", err)
+		c.log.Fatalf("unable to create httpclient: %v", err)
 	}
-	client.client = &http.Client{Transport: transport, Timeout: 20 * time.Second}
-	return client, err
+	c.client = &http.Client{Transport: transport, Timeout: 20 * time.Second}
+	return c, err
 }
 
 // SetAF sets the global option WantAF
-func (client *Client) SetAF(family string) *Client {
-	return client.SetOption("wantAF", family)
+func (c *Client) SetAF(family string) *Client {
+	return c.SetOption("wantAF", family)
 }
 
 // SetFormat sets the global option
-func (client *Client) SetFormat(format string) *Client {
-	return client.SetOption("format", format)
+func (c *Client) SetFormat(format string) *Client {
+	return c.SetOption("format", format)
 }
 
 // SetInclude sets the global option
-func (client *Client) SetInclude(include string) *Client {
-	return client.SetOption("include", include)
+func (c *Client) SetInclude(include string) *Client {
+	return c.SetOption("include", include)
 }
 
 // SetOption sets a global option
-func (client *Client) SetOption(name, value string) *Client {
+func (c *Client) SetOption(name, value string) *Client {
 	if value != "" {
-		client.opts[name] = value
+		c.opts[name] = value
 	}
-	return client
+	return c
 }
 
-func (client *Client) mergeGlobalOptions(opts map[string]string) {
-	for k, v := range client.opts {
+func (c *Client) mergeGlobalOptions(opts map[string]string) {
+	for k, v := range c.opts {
 		opts[k] = v
 	}
 }
