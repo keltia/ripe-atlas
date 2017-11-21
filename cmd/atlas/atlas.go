@@ -57,8 +57,6 @@ var (
 	cliCommands []cli.Command
 
 	client *atlas.Client
-
-	mylog *log.Logger
 )
 
 const (
@@ -75,12 +73,27 @@ const (
 	Want6 = "6"
 )
 
+func openlog(fn string) *log.Logger {
+	fh, err := os.OpenFile(fn, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatalf("error: can not open logfile %s: %v", fn, err)
+	}
+
+	mylog := log.New(fh, "", log.LstdFlags)
+	if fVerbose {
+		log.Printf("Logfile: %s %#v", fn, mylog)
+	}
+
+	return mylog
+}
+
 // -4 & -6 are special, if neither is specified, then we turn both as true
 // Check a few other things while we are here
 func finalcheck(c *cli.Context) error {
 
 	var (
 		err error
+		mylog *log.Logger
 	)
 
 	// Load main configuration
@@ -120,15 +133,7 @@ func finalcheck(c *cli.Context) error {
 
 	// If we want a logfile, open one for the API to log into
 	if fLogfile != "" {
-		fh, err := os.OpenFile(fLogfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			log.Fatalf("error: can not open logfile %s: %v", fLogfile, err)
-		}
-
-		mylog = log.New(fh, "", log.LstdFlags)
-		if fVerbose {
-			log.Printf("Logfile: %s %#v", fLogfile, mylog)
-		}
+		mylog = openlog(fLogfile)
 	}
 
 	// Wondering whether to move to the Functional options pattern
