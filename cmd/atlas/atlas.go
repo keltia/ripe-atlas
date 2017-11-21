@@ -5,6 +5,7 @@ Consider this both as an example on how to use the API and a testing tool for th
 package main
 
 import (
+	"fmt"
 	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
 	"log"
@@ -56,6 +57,8 @@ var (
 	cliCommands []cli.Command
 
 	client *atlas.Client
+
+	mylog *log.Logger
 )
 
 const (
@@ -77,9 +80,7 @@ const (
 func finalcheck(c *cli.Context) error {
 
 	var (
-		err   error
-		fh    *os.File
-		mylog *log.Logger
+		err error
 	)
 
 	// Load main configuration
@@ -117,15 +118,17 @@ func finalcheck(c *cli.Context) error {
 		}
 	}
 
+	// If we want a logfile, open one for the API to log into
 	if fLogfile != "" {
-		if fh, err = os.Open(fLogfile); err != nil {
-			fh, err = os.Create(fLogfile)
-			if err != nil {
-				log.Fatalf("error: can not open logfile %s: %v", fLogfile, err)
-			}
+		fh, err := os.OpenFile(fLogfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Fatalf("error: can not open logfile %s: %v", fLogfile, err)
 		}
-		mylog = log.New(fh, "atlas", log.LstdFlags)
-		log.Printf("Logfile: %s %#v", fLogfile, mylog)
+
+		mylog = log.New(fh, "", log.LstdFlags)
+		if fVerbose {
+			log.Printf("Logfile: %s %#v", fLogfile, mylog)
+		}
 	}
 
 	// Wondering whether to move to the Functional options pattern
@@ -174,7 +177,7 @@ func main() {
 	cli.VersionFlag = cli.BoolFlag{Name: "version, V"}
 
 	cli.VersionPrinter = func(c *cli.Context) {
-		log.Printf("API wrapper: %s Atlas API: %s\n", c.App.Version, atlas.GetVersion())
+		fmt.Printf("API wrapper: %s Atlas API: %s\n", c.App.Version, atlas.GetVersion())
 	}
 
 	app := cli.NewApp()
