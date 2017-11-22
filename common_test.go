@@ -1,44 +1,17 @@
 package atlas
 
 import (
-	"testing"
+	"bytes"
+	"fmt"
 	"github.com/stretchr/testify/assert"
-	"github.com/sendgrid/rest"
+	"io/ioutil"
+	"net/http"
+	"testing"
 )
-
-func TestSetAuth(t *testing.T) {
-
-	SetAuth("foo")
-
-	if APIKey != "foo" {
-		t.Errorf("APIKey is not set")
-	}
-}
 
 func TestGetVersion(t *testing.T) {
 	ver := GetVersion()
 	assert.EqualValues(t, ourVersion, ver, "should be equal")
-}
-
-func TestWantAuth(t *testing.T) {
-
-	var (
-		key string
-		ok  bool
-	)
-
-	SetAuth("")
-	assert.EqualValues(t, "", APIKey, "should be equal")
-
-	key, ok = HasAPIKey()
-	assert.EqualValues(t, false, ok, "should be equal")
-	assert.EqualValues(t, "", key, "should be equal")
-
-
-	SetAuth("foo")
-	key, ok = HasAPIKey()
-	assert.EqualValues(t, true, ok, "should be equal")
-	assert.EqualValues(t, "foo", key, "should be equal")
 }
 
 func TestGetPageNum(t *testing.T) {
@@ -71,30 +44,34 @@ func TestGetPageNum(t *testing.T) {
 	}
 }
 
-func Testclient.handleAPIResponsese(t *testing.T) {
-	var r rest.Response
+func TestClienthandleAPIResponsese(t *testing.T) {
+	var (
+		r http.Response
+		b bytes.Buffer
+	)
 
-	err := client.handleAPIResponsese(nil)
+	client, err := NewClient()
+	err = client.handleAPIResponsese(nil)
 	assert.Error(t, err, "should be in error")
 
-
-	r = rest.Response{StatusCode: 0}
+	r = http.Response{StatusCode: 0}
 	err = client.handleAPIResponsese(&r)
 	assert.NoError(t, err, "should be no error")
 
-	r = rest.Response{StatusCode: 200}
+	r = http.Response{StatusCode: 200}
 	err = client.handleAPIResponsese(&r)
 	assert.NoError(t, err, "should be no error")
 
 	var jsonErr = `error:{status: 501, code: 500, detail: "test"}`
 
+	fmt.Fprintf(&b, "%v", jsonErr)
 	r.StatusCode = 300
-	r.Body = jsonErr
+	r.Body = ioutil.NopCloser(&b)
 	err = client.handleAPIResponsese(&r)
 	assert.NoError(t, err, "should be in error")
 
 	r.StatusCode = 500
-	r.Body = jsonErr
+	r.Body = ioutil.NopCloser(&b)
 	err = client.handleAPIResponsese(&r)
 	assert.Error(t, err, "should be in error")
 }
