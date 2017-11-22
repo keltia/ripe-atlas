@@ -92,19 +92,20 @@ func displayAllProbes(pl *[]atlas.Probe, verbose bool) (res string) {
 }
 
 // prepareTraceroute build the request with our parameters
-func prepareProbes(country, asn string, anchor bool) map[string]string {
-	opts := map[string]string{
-		"asn_v4":       asn,
-		"country_code": country,
-		"is_anchor":    boolToString(anchor),
-	}
+func prepareProbes() map[string]string {
+	opts := make(map[string]string)
+
+	opts = mergeOptions(opts, commonFlags)
+
+	log.Printf("opts: %#v", opts)
+	// Check global parameters
+	opts = checkGlobalFlags(opts)
 
 	if wantAF != WantBoth {
 		opts["AF"] = wantAF
 	}
 
-	// Check global parameters
-	opts = checkGlobalFlags(opts)
+	log.Printf("opts: %#v", opts)
 
 	if fVerbose {
 		displayOptions(opts)
@@ -115,7 +116,8 @@ func prepareProbes(country, asn string, anchor bool) map[string]string {
 
 // probeList displays all probes
 func probesList(c *cli.Context) error {
-	opts := prepareProbes(fCountry, fAsn, fIsAnchor)
+	opts := prepareProbes()
+
 	q, err := client.GetProbes(opts)
 	if err != nil {
 		log.Printf("GetProbes err: %v - q:%v", err, q)

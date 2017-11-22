@@ -112,17 +112,7 @@ func displayAllMeasurements(ml *[]atlas.Measurement, verbose bool) (res string) 
 func measurementsList(c *cli.Context) error {
 	opts := make(map[string]string)
 
-	if fCountry != "" {
-		opts["country_code"] = fCountry
-	}
-
-	if fAsn != "" {
-		opts["asn"] = fAsn
-	}
-
-	if fMeasureType != "" {
-		opts["type"] = fMeasureType
-	}
+	opts = mergeOptions(opts, commonFlags)
 
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
