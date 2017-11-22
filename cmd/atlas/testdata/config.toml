@@ -1,0 +1,10 @@
+# Default configuration file
+
+API_key = "<YOUR-API-KEY>"
+default_probe = 14037
+
+[probe_set]
+
+pool_size = 10
+type = "area"
+value = "WW"
