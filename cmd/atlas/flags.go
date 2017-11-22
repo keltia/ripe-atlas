@@ -18,14 +18,22 @@ XXX checking of options is very limited as the API server does that anyway.
 */
 
 var (
-	globalFlags = map[string]string{
-		"fields":          fFieldList,
-		"format":          fFormat,
-		"include":         fInclude,
-		"optional_fields": fOptFields,
-		"page":            fPageNum,
-		"page_size":       fPageSize,
-		"sort":            fSortOrder,
+	globalFlags = map[string]*string{
+		"fields":          &fFieldList,
+		"format":          &fFormat,
+		"include":         &fInclude,
+		"optional_fields": &fOptFields,
+		"page":            &fPageNum,
+		"page_size":       &fPageSize,
+		"sort":            &fSortOrder,
+	}
+
+	commonFlags = map[string]*string{
+		"asn":          &fAsn,
+		"asn_v4":       &fAsn,
+		"asn_v6":       &fAsn,
+		"country_code": &fCountry,
+		"type":         &fMeasureType,
 	}
 )
 
@@ -47,11 +55,11 @@ func checkGlobalFlags(o map[string]string) (opts map[string]string) {
 }
 
 // mergeOptions does the obvious thing
-func mergeOptions(to, from map[string]string) map[string]string {
+func mergeOptions(to map[string]string, from map[string]*string) map[string]string {
 	o := to
 	for k, v := range from {
-		if v != "" {
-			o[k] = v
+		if *v != "" {
+			o[k] = *v
 		}
 	}
 	return o
