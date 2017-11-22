@@ -47,7 +47,7 @@ func init() {
 					cli.BoolFlag{
 						Name:        "is-anchor",
 						Usage:       "select anchor measurements",
-						Destination: &fWantAnchor,
+						Destination: &fIsAnchor,
 					},
 					cli.StringFlag{
 						Name:        "t, type",
