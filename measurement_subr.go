@@ -15,18 +15,6 @@ type MeasurementResp struct {
 	Measurements []int
 }
 
-var (
-	// If nothing is specified, use this
-	defProbeSet = ProbeSet{
-		{
-			Requested: 10,
-			Type:      "area",
-			Value:     "WW",
-			Tags:      nil,
-		},
-	}
-)
-
 // NewMeasurement create a new MeasurementRequest and fills some fields
 func (c *Client) NewMeasurement() (req *MeasurementRequest) {
 	var defs []Definition
@@ -34,18 +22,30 @@ func (c *Client) NewMeasurement() (req *MeasurementRequest) {
 	req = &MeasurementRequest{
 		Definitions: defs,
 		IsOneoff:    true,
-		Probes:      defProbeSet,
+		Probes:      *NewProbeSet(c.config.PoolSize, c.config.AreaType, c.config.AreaValue),
 	}
 	return
 }
 
 // NewProbeSet create a set of probes for later requests
-func NewProbeSet(howmany int) (ps *ProbeSet) {
+func NewProbeSet(howmany int, settype, value string) (ps *ProbeSet) {
+	if howmany == 0 {
+		howmany = 10
+	}
+
+	if settype == "" {
+		settype = "area"
+	}
+
+	if value == "" {
+		value = "WW"
+	}
+
 	ps = &ProbeSet{
 		{
 			Requested: howmany,
-			Type:      "area",
-			Value:     "WW",
+			Type:      settype,
+			Value:     value,
 			Tags:      nil,
 		},
 	}
