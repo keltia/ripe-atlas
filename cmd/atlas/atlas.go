@@ -35,7 +35,7 @@ var (
 	fAllProbes bool
 	fIsAnchor  bool
 
-	// Measurement-specific ones
+	// Common measurement ones
 	fAllMeasurements bool
 	fAsn             string
 	fCountry         string
