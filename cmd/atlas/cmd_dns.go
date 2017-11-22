@@ -135,7 +135,6 @@ func cmdDNS(c *cli.Context) error {
 	}
 
 	if fProtocol != "" {
-		log.Printf("Use %s", fProtocol)
 		proto = fProtocol
 	}
 
