@@ -171,10 +171,6 @@ func finalcheck(c *cli.Context) error {
 		log.Fatalf("Error creating the Atlas client: %v", err)
 	}
 
-	if fWantMine {
-		client.SetOption("mine", "true")
-	}
-
 	if fWant4 {
 		wantAF = Want4
 	}
