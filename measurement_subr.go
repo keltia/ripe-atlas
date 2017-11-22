@@ -5,27 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"reflect"
 	"strconv"
-	"log"
 )
 
 // MeasurementResp contains all the results of the measurements
 type MeasurementResp struct {
 	Measurements []int
 }
-
-var (
-	// If nothing is specified, use this
-	defProbeSet = ProbeSet{
-		{
-			Requested: 10,
-			Type:      "area",
-			Value:     "WW",
-			Tags:      nil,
-		},
-	}
-)
 
 // NewMeasurement create a new MeasurementRequest and fills some fields
 func (c *Client) NewMeasurement() (req *MeasurementRequest) {
@@ -34,18 +22,30 @@ func (c *Client) NewMeasurement() (req *MeasurementRequest) {
 	req = &MeasurementRequest{
 		Definitions: defs,
 		IsOneoff:    true,
-		Probes:      defProbeSet,
+		Probes:      *NewProbeSet(c.config.PoolSize, c.config.AreaType, c.config.AreaValue),
 	}
 	return
 }
 
 // NewProbeSet create a set of probes for later requests
-func NewProbeSet(howmany int) (ps *ProbeSet) {
+func NewProbeSet(howmany int, settype, value string) (ps *ProbeSet) {
+	if howmany == 0 {
+		howmany = 10
+	}
+
+	if settype == "" {
+		settype = "area"
+	}
+
+	if value == "" {
+		value = "WW"
+	}
+
 	ps = &ProbeSet{
 		{
 			Requested: howmany,
-			Type:      "area",
-			Value:     "WW",
+			Type:      settype,
+			Value:     value,
 			Tags:      nil,
 		},
 	}
@@ -53,6 +53,10 @@ func NewProbeSet(howmany int) (ps *ProbeSet) {
 }
 
 // SetParams set a few parameters in a definition list
+/*
+The goal here is to give a dictionary of string and let it figure out each field's type
+depending on the recipient's type in the struct.
+*/
 func (d *Definition) setParams(fields map[string]string) {
 	sdef := reflect.ValueOf(d).Elem()
 	typeOfDef := sdef.Type()

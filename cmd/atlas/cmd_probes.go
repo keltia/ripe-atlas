@@ -46,7 +46,7 @@ func init() {
 					cli.BoolFlag{
 						Name:        "is-anchor",
 						Usage:       "select anchor probes",
-						Destination: &fWantAnchor,
+						Destination: &fIsAnchor,
 					},
 				},
 				Action: probesList,
@@ -99,8 +99,8 @@ func prepareProbes(country, asn string, anchor bool) map[string]string {
 		"is_anchor":    boolToString(anchor),
 	}
 
-	if cnf.WantAF != WantBoth {
-		opts["AF"] = cnf.WantAF
+	if wantAF != WantBoth {
+		opts["AF"] = wantAF
 	}
 
 	// Check global parameters
@@ -115,7 +115,7 @@ func prepareProbes(country, asn string, anchor bool) map[string]string {
 
 // probeList displays all probes
 func probesList(c *cli.Context) error {
-	opts := prepareProbes(fCountry, fAsn, fWantAnchor)
+	opts := prepareProbes(fCountry, fAsn, fIsAnchor)
 	q, err := client.GetProbes(opts)
 	if err != nil {
 		log.Printf("GetProbes err: %v - q:%v", err, q)

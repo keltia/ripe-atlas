@@ -14,49 +14,70 @@ import (
 )
 
 var (
-	// flags
-	fWant4 bool
-	fWant6 bool
+	// CLI specific options
+	fDebug   bool
+	fLogfile string
+	fVerbose bool
 
-	fAllProbes       bool
-	fAllMeasurements bool
+	// See flag.go for details
 
-	// Global options
+	// Global API options
 	fFieldList string
 	fFormat    string
 	fInclude   string
-	fLogfile   string
 	fOptFields string
 	fPageNum   string
 	fPageSize  string
 	fSortOrder string
 	fWantMine  bool
 
-	// Measurement-specific ones
-	fAsn         string
-	fCountry     string
-	fProtocol    string
-	fMeasureType string
+	// Probe-specific ones
+	fAllProbes bool
+	fIsAnchor  bool
 
+	// Common measurement ones
+	fAllMeasurements bool
+	fAsn             string
+	fCountry         string
+	fProtocol        string
+	fMeasureType     string
+	fWant4           bool
+	fWant6           bool
+
+	// Create measurements
+	fBillTo    string
+	fIsOneOff  bool
+	fStartTime string
+	fStopTime  string
+
+	// HTTP
 	fHTTPMethod  string
 	fUserAgent   string
 	fHTTPVersion string
 
+	// DNS
 	fBitCD         bool
 	fDisableDNSSEC bool
 
-	fDebug      bool
-	fVerbose    bool
-	fWantAnchor bool
-
+	// Traceroute
 	fMaxHops    int
 	fPacketSize int
 
+	// ProbeSet parameters
+	fPoolSize  int
+	fAreaType  string
+	fAreaValue string
+
+	// Our configuration file
 	cnf *Config
 
+	// All possible commands
 	cliCommands []cli.Command
 
 	client *atlas.Client
+
+	// Our tiple-valued synthesis of fWant4/fWant6
+	wantAF string
 )
 
 const (
@@ -92,7 +113,7 @@ func openlog(fn string) *log.Logger {
 func finalcheck(c *cli.Context) error {
 
 	var (
-		err error
+		err   error
 		mylog *log.Logger
 	)
 
@@ -123,6 +144,17 @@ func finalcheck(c *cli.Context) error {
 		}
 	}
 
+	// Allow overwrite of a few parameters
+	if fPoolSize != 0 {
+		cnf.ProbeSet.PoolSize = fPoolSize
+	}
+	if fAreaType != "" {
+		cnf.ProbeSet.Type = fAreaType
+	}
+	if fAreaValue != "" {
+		cnf.ProbeSet.Value = fAreaValue
+	}
+
 	// Check whether we have proxy authentication (from a separate config file)
 	auth, err := setupProxyAuth()
 	if err != nil {
@@ -141,7 +173,10 @@ func finalcheck(c *cli.Context) error {
 	client, err = atlas.NewClient(atlas.Config{
 		APIKey:       cnf.APIKey,
 		DefaultProbe: cnf.DefaultProbe,
-		PoolSize:     cnf.PoolSize,
+		IsOneOff:     fIsOneOff,
+		PoolSize:     cnf.ProbeSet.PoolSize,
+		AreaType:     cnf.ProbeSet.Type,
+		AreaValue:    cnf.ProbeSet.Value,
 		ProxyAuth:    auth,
 		Verbose:      fVerbose,
 		Log:          mylog,
@@ -152,26 +187,22 @@ func finalcheck(c *cli.Context) error {
 		log.Fatalf("Error creating the Atlas client: %v", err)
 	}
 
-	if fWantMine {
-		client.SetOption("mine", "true")
-	}
-
 	if fWant4 {
-		cnf.WantAF = Want4
+		wantAF = Want4
 	}
 
 	if fWant6 {
-		cnf.WantAF = Want6
+		wantAF = Want6
 	}
 
 	// Both are fine
 	if fWant4 && fWant6 {
-		cnf.WantAF = WantBoth
+		wantAF = WantBoth
 	}
 
 	// So is neither — common case
 	if !fWant4 && !fWant6 {
-		cnf.WantAF = WantBoth
+		wantAF = WantBoth
 	}
 
 	return nil
@@ -239,10 +270,16 @@ func main() {
 			Usage:       "page size for results",
 			Destination: &fPageSize,
 		},
+
 		cli.StringFlag{
 			Name:        "sort,S",
 			Usage:       "sort results",
 			Destination: &fSortOrder,
+		},
+		cli.BoolTFlag{
+			Name:        "1,is-oneoff",
+			Usage:       "one-time measurement",
+			Destination: &fIsOneOff,
 		},
 		cli.BoolFlag{
 			Name:        "6, ipv6",
@@ -253,6 +290,23 @@ func main() {
 			Name:        "4, ipv4",
 			Usage:       "Only IPv4",
 			Destination: &fWant4,
+		},
+		// These are not global parameters but it makes sense to define them only once
+		// and not in every cmd_* files.
+		cli.IntFlag{
+			Name:        "pool-size",
+			Usage:       "Number of probes to request",
+			Destination: &fPoolSize,
+		},
+		cli.StringFlag{
+			Name:        "area-type",
+			Usage:       "Set type for probes (area, country, etc.)",
+			Destination: &fAreaType,
+		},
+		cli.StringFlag{
+			Name:        "area-value",
+			Usage:       "Value for the probe set (WW, West, etc.)",
+			Destination: &fAreaValue,
 		},
 	}
 
