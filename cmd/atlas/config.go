@@ -26,8 +26,18 @@ const (
 type Config struct {
 	APIKey       string
 	DefaultProbe int
-	PoolSize     int
 	ProxyAuth    string
+
+	ProbeSet struct {
+		PoolSize int
+		Type     string
+		Value    string
+		Tags     string
+	}
+
+	Measurements struct {
+		BillTo string
+	}
 }
 
 // LoadConfig reads a file as a TOML document and return the structure
