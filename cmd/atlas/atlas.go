@@ -44,6 +44,12 @@ var (
 	fWant4           bool
 	fWant6           bool
 
+	// Create measurements
+	fBillTo      string
+	fIsOneOff    bool
+	fStartTime   string
+	fStopTime    string
+
 	// HTTP
 	fHTTPMethod  string
 	fUserAgent   string
@@ -151,6 +157,7 @@ func finalcheck(c *cli.Context) error {
 	client, err = atlas.NewClient(atlas.Config{
 		APIKey:       cnf.APIKey,
 		DefaultProbe: cnf.DefaultProbe,
+		IsOneOff:     fIsOneOff,
 		PoolSize:     cnf.PoolSize,
 		ProxyAuth:    auth,
 		Verbose:      fVerbose,
@@ -249,10 +256,16 @@ func main() {
 			Usage:       "page size for results",
 			Destination: &fPageSize,
 		},
+
 		cli.StringFlag{
 			Name:        "sort,S",
 			Usage:       "sort results",
 			Destination: &fSortOrder,
+		},
+		cli.BoolTFlag{
+			Name:        "1,is-oneoff",
+			Usage:       "one-time measurement",
+			Destination: &fIsOneOff,
 		},
 		cli.BoolFlag{
 			Name:        "6, ipv6",
