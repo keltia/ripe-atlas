@@ -21,6 +21,9 @@ type Client struct {
 type Config struct {
 	APIKey       string
 	DefaultProbe int
+	AreaType     string
+	AreaValue    string
+	IsOneOff     bool
 	PoolSize     int
 	WantAF       string
 	ProxyAuth    string

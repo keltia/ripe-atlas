@@ -87,7 +87,7 @@ func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRe
 
 	req = client.NewMeasurement()
 
-	if cnf.WantAF == WantBoth {
+	if wantAF == WantBoth {
 
 		opts["AF"] = "4"
 		req.AddDefinition(opts)
@@ -95,7 +95,7 @@ func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRe
 		opts["AF"] = "6"
 		req.AddDefinition(opts)
 	} else {
-		opts["AF"] = cnf.WantAF
+		opts["AF"] = wantAF
 		req.AddDefinition(opts)
 	}
 
@@ -122,6 +122,7 @@ func cmdDNS(c *cli.Context) error {
 		log.Fatal("Error: you must specify at least a name")
 	}
 
+	// Format is <query_data> [<query_type> [<query_class>]]
 	if len(args) == 1 {
 		addr = args[0]
 	} else if len(args) == 2 {
@@ -134,7 +135,6 @@ func cmdDNS(c *cli.Context) error {
 	}
 
 	if fProtocol != "" {
-		log.Printf("Use %s", fProtocol)
 		proto = fProtocol
 	}
 

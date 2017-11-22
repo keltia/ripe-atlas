@@ -47,7 +47,7 @@ func init() {
 					cli.BoolFlag{
 						Name:        "is-anchor",
 						Usage:       "select anchor measurements",
-						Destination: &fWantAnchor,
+						Destination: &fIsAnchor,
 					},
 					cli.StringFlag{
 						Name:        "t, type",
@@ -73,7 +73,7 @@ func init() {
 			},
 			{
 				Name:        "delete",
-				Aliases:     []string{"rm", "del", "destroy"},
+				Aliases:     []string{"rm", "del", "destroy", "stop"},
 				Usage:       "info for one measurement",
 				Description: "stops one measurement (or all)",
 				Flags: []cli.Flag{
