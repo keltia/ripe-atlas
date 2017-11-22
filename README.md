@@ -17,8 +17,12 @@ It features a simple CLI-based tool called `atlas` which serve both as a collect
 - [API usage](#api-usage)
   - [Basics](#basics)
 - [CLI Utility](#cli-utility)
+  - [Configuration](#configuration)
+  - [Proxy Authentication](#proxy-authentication)
+  - [Usage](#usage) 
 - [TODO](#todo)
 - [External Documentation](#external-documentation)
+- [Contributing](#contributing)
 
 ## Features
 
@@ -164,7 +168,7 @@ USAGE:
    atlas [global options] command [command options] [arguments...]
 
 VERSION:
-   0.22
+   0.23
 
 AUTHOR(S):
    Ollivier Robert <roberto@keltia.net>
@@ -240,7 +244,7 @@ map(.result) | flatten(1) | map(.rtt) | length as $total |
     Max: 24.164375 ms
     Failures: 14.285714285714286 %
 
-### TODO
+## TODO
 
 - implement "anchors"
 - more tests (and better ones!)
@@ -248,7 +252,7 @@ map(.result) | flatten(1) | map(.rtt) | length as $total |
 - refactoring to reduce code duplication: done
 - even more tests
 
-### External Documentation
+## External Documentation
 
   - [Main RIPE Atlas site](https://atlas.ripe.net/)
   - [REST API Documentation](https://atlas.ripe.net/docs/api/v2/manual/)
@@ -256,4 +260,4 @@ map(.result) | flatten(1) | map(.rtt) | length as $total |
 
 ## Contributing
 
-As usual, you can open issues, send pull requests and such.  Please do PR only on the `develop` branch, that would mess up my "git flow" otherwise.  Thanks!
+Please see CONTRIBUTING.md for some simple rules.
