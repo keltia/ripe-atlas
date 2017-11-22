@@ -108,7 +108,7 @@ func openlog(fn string) *log.Logger {
 func finalcheck(c *cli.Context) error {
 
 	var (
-		err error
+		err   error
 		mylog *log.Logger
 	)
 
