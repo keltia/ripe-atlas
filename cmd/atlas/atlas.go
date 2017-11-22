@@ -14,46 +14,53 @@ import (
 )
 
 var (
-	// flags
-	fWant4 bool
-	fWant6 bool
+	// CLI specific options
+	fDebug   bool
+	fLogfile string
+	fVerbose bool
 
-	fAllProbes       bool
-	fAllMeasurements bool
+	// See flag.go for details
 
-	// Global options
+	// Global API options
 	fFieldList string
 	fFormat    string
 	fInclude   string
-	fLogfile   string
 	fOptFields string
 	fPageNum   string
 	fPageSize  string
 	fSortOrder string
 	fWantMine  bool
 
-	// Measurement-specific ones
-	fAsn         string
-	fCountry     string
-	fProtocol    string
-	fMeasureType string
+	// Probe-specific ones
+	fAllProbes bool
+	fIsAnchor  bool
 
+	// Measurement-specific ones
+	fAllMeasurements bool
+	fAsn             string
+	fCountry         string
+	fProtocol        string
+	fMeasureType     string
+	fWant4           bool
+	fWant6           bool
+
+	// HTTP
 	fHTTPMethod  string
 	fUserAgent   string
 	fHTTPVersion string
 
+	// DNS
 	fBitCD         bool
 	fDisableDNSSEC bool
 
-	fDebug      bool
-	fVerbose    bool
-	fWantAnchor bool
-
+	// Traceroute
 	fMaxHops    int
 	fPacketSize int
 
+	// Our configuration file
 	cnf *Config
 
+	// All possible commands
 	cliCommands []cli.Command
 
 	client *atlas.Client
