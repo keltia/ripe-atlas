@@ -45,10 +45,10 @@ var (
 	fWant6           bool
 
 	// Create measurements
-	fBillTo      string
-	fIsOneOff    bool
-	fStartTime   string
-	fStopTime    string
+	fBillTo    string
+	fIsOneOff  bool
+	fStartTime string
+	fStopTime  string
 
 	// HTTP
 	fHTTPMethod  string
