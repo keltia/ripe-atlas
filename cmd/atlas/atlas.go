@@ -63,6 +63,11 @@ var (
 	fMaxHops    int
 	fPacketSize int
 
+	// ProbeSet parameters
+	fPoolSize  int
+	fAreaType  string
+	fAreaValue string
+
 	// Our configuration file
 	cnf *Config
 
@@ -137,6 +142,17 @@ func finalcheck(c *cli.Context) error {
 		if cnf.DefaultProbe != 0 {
 			log.Printf("Found default probe: %d\n", cnf.DefaultProbe)
 		}
+	}
+
+	// Allow overwrite of a few parameters
+	if fPoolSize != 0 {
+		cnf.ProbeSet.PoolSize = fPoolSize
+	}
+	if fAreaType != "" {
+		cnf.ProbeSet.Type = fAreaType
+	}
+	if fAreaValue != "" {
+		cnf.ProbeSet.Value = fAreaValue
 	}
 
 	// Check whether we have proxy authentication (from a separate config file)
@@ -274,6 +290,23 @@ func main() {
 			Name:        "4, ipv4",
 			Usage:       "Only IPv4",
 			Destination: &fWant4,
+		},
+		// These are not global parameters but it makes sense to define them only once
+		// and not in every cmd_* files.
+		cli.IntFlag{
+			Name:        "pool-size",
+			Usage:       "Number of probes to request",
+			Destination: &fPoolSize,
+		},
+		cli.StringFlag{
+			Name:        "area-type",
+			Usage:       "Set type for probes (area, country, etc.)",
+			Destination: &fAreaType,
+		},
+		cli.StringFlag{
+			Name:        "area-value",
+			Usage:       "Value for the probe set (WW, West, etc.)",
+			Destination: &fAreaValue,
 		},
 	}
 
