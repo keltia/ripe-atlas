@@ -158,9 +158,9 @@ USAGE:
    atlas [global options] command [command options] [arguments...]
 
 VERSION:
-   0.11
+   0.22
 
-AUTHOR:
+AUTHOR(S):
    Ollivier Robert <roberto@keltia.net>
 
 COMMANDS:
@@ -179,17 +179,22 @@ COMMANDS:
      help, h                    Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --format value, -f value      specify output format
+   --format value, -f value      specify output format (NOT IMPLEMENTED)
    --debug, -D                   debug mode
    --verbose, -v                 verbose mode
    --fields value, -F value      specify which fields are wanted
    --include value, -I value     specify whether objects should be expanded
+   --logfile value, -L value     specify a log file
    --mine, -M                    limit output to my objects
    --opt-fields value, -O value  specify which optional fields are wanted
    --page-size value, -P value   page size for results
    --sort value, -S value        sort results
+   -1, --is-oneoff               one-time measurement
    -6, --ipv6                    Only IPv6
    -4, --ipv4                    Only IPv4
+   --pool-size value             Number of probes to request (default: 0)
+   --area-type value             Set type for probes (area, country, etc.)
+   --area-value value            Value for the probe set (WW, West, etc.)
    --help, -h                    show help
    --version, -V
 ```
