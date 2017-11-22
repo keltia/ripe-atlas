@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"reflect"
 	"strconv"
-	"log"
 )
 
 // MeasurementResp contains all the results of the measurements
@@ -53,6 +53,10 @@ func NewProbeSet(howmany int) (ps *ProbeSet) {
 }
 
 // SetParams set a few parameters in a definition list
+/*
+The goal here is to give a dictionary of string and let it figure out each field's type
+depending on the recipient's type in the struct.
+*/
 func (d *Definition) setParams(fields map[string]string) {
 	sdef := reflect.ValueOf(d).Elem()
 	typeOfDef := sdef.Type()
