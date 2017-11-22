@@ -118,11 +118,11 @@ func checkArgumentType(arg string) int {
 func prepareFamily(arg string) {
 	switch checkArgumentType(arg) {
 	case ipv4:
-		cnf.WantAF = Want4
+		wantAF = Want4
 	case ipv6:
-		cnf.WantAF = Want6
+		wantAF = Want6
 	default:
-		cnf.WantAF = WantBoth
+		wantAF = WantBoth
 	}
 }
 

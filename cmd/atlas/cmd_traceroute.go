@@ -56,7 +56,7 @@ func prepareTraceroute(target, protocol string, maxhops, size int) (req *atlas.M
 	prepareFamily(target)
 
 	req = client.NewMeasurement()
-	if cnf.WantAF == WantBoth {
+	if wantAF == WantBoth {
 
 		opts["AF"] = "4"
 		req.AddDefinition(opts)
@@ -64,7 +64,7 @@ func prepareTraceroute(target, protocol string, maxhops, size int) (req *atlas.M
 		opts["AF"] = "6"
 		req.AddDefinition(opts)
 	} else {
-		opts["AF"] = cnf.WantAF
+		opts["AF"] = wantAF
 		req.AddDefinition(opts)
 	}
 

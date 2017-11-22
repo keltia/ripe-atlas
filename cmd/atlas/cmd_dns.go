@@ -87,7 +87,7 @@ func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRe
 
 	req = client.NewMeasurement()
 
-	if cnf.WantAF == WantBoth {
+	if wantAF == WantBoth {
 
 		opts["AF"] = "4"
 		req.AddDefinition(opts)
@@ -95,7 +95,7 @@ func prepareDNS(proto, qa, qc, qt string, do, cd bool) (req *atlas.MeasurementRe
 		opts["AF"] = "6"
 		req.AddDefinition(opts)
 	} else {
-		opts["AF"] = cnf.WantAF
+		opts["AF"] = wantAF
 		req.AddDefinition(opts)
 	}
 

@@ -99,8 +99,8 @@ func prepareProbes(country, asn string, anchor bool) map[string]string {
 		"is_anchor":    boolToString(anchor),
 	}
 
-	if cnf.WantAF != WantBoth {
-		opts["AF"] = cnf.WantAF
+	if wantAF != WantBoth {
+		opts["AF"] = wantAF
 	}
 
 	// Check global parameters

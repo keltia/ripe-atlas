@@ -57,6 +57,9 @@ var (
 	cliCommands []cli.Command
 
 	client *atlas.Client
+
+	// Our tiple-valued synthesis of fWant4/fWant6
+	wantAF string
 )
 
 const (
@@ -157,21 +160,21 @@ func finalcheck(c *cli.Context) error {
 	}
 
 	if fWant4 {
-		cnf.WantAF = Want4
+		wantAF = Want4
 	}
 
 	if fWant6 {
-		cnf.WantAF = Want6
+		wantAF = Want6
 	}
 
 	// Both are fine
 	if fWant4 && fWant6 {
-		cnf.WantAF = WantBoth
+		wantAF = WantBoth
 	}
 
 	// So is neither — common case
 	if !fWant4 && !fWant6 {
-		cnf.WantAF = WantBoth
+		wantAF = WantBoth
 	}
 
 	return nil
