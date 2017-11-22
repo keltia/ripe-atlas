@@ -106,11 +106,18 @@ On UNIX, it is located in `$HOME/.config/ripe-atlas/config.toml` and in `%LOCALA
 
 There are only a few parameters for now, the most important one being your API Key for authenticate against the RIPE API endpoint.
 
+    # String
     API_key = "UUID"
+    
+    # Integers
     pool_size = 10
     default_probe = YOUR-PROBE-ID
 
-Both `API_key` and `WantAF` are strings and `pool_size` and `default_probe` are integers.  The second one is to specify whether you want requests to be done for IPv4 and/or IPv6.  Be aware that if you ask for an IPv6 object (like a domain or machine name), the API will refuse your request if the IPv6 version of that object does not exist.
+`API_key` is a string and `pool_size` and `default_probe` are integers.  The second one is to specify whether you want requests to be done for IPv4 and/or IPv6.  Be aware that if you ask for an IPv6 object (like a domain or machine name), the API will refuse your request if the IPv6 version of that object does not exist.
+
+### Important note
+
+Not all parameters specified for the different commands are implemented, as you can see in the [API Reference](https://atlas.ripe.net/docs/api/v2/reference/), there are *a lot* of different parameters like all the `id__{gt,gte,lt,lte,in}` stuff.
 
 ### Proxy authentication
 
@@ -138,7 +145,8 @@ For the API, you will to generate the  `username:password` string, encode it in 
         ProxyAuth:    auth,
         Verbose:      fVerbose,
     })
-    
+
+As an alternative, you can do the encoding yourself and put that in `config.toml` as `proxy_auth`.    
 
 ### Usage
 
@@ -223,6 +231,7 @@ map(.result) | flatten(1) | map(.rtt) | length as $total |
 
 ### TODO
 
+- implement "anchors"
 - more tests (and better ones!)
 - better display of results
 - refactoring to reduce code duplication: done
