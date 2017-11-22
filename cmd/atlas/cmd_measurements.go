@@ -191,10 +191,6 @@ func measurementResults(c *cli.Context) error {
 	return nil
 }
 
-func measurementCreate(c *cli.Context) error {
-	return nil
-}
-
 func measurementDelete(c *cli.Context) (err error) {
 
 	if fAllMeasurements {
