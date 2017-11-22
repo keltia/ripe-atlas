@@ -27,7 +27,6 @@ type Config struct {
 	APIKey       string
 	DefaultProbe int
 	PoolSize     int
-	WantAF       string
 	ProxyAuth    string
 }
 
