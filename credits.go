@@ -7,26 +7,25 @@ package atlas
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 )
 
 // GetCredits returns high-level data for credits
-func (client *Client) GetCredits() (credits *Credits, err error) {
+func (c *Client) GetCredits() (credits *Credits, err error) {
 
 	opts := make(map[string]string)
-	client.mergeGlobalOptions(opts)
+	c.mergeGlobalOptions(opts)
 
-	req := client.prepareRequest("GET", "credits", opts)
+	req := c.prepareRequest("GET", "credits", opts)
 
-	resp, err := client.call(req)
+	resp, err := c.call(req)
 	//log.Printf("resp: %#v - err: %#v", resp, err)
 	if err != nil {
-		if client.config.Verbose {
-			log.Printf("API error: %v", err)
+		if c.config.Verbose {
+			c.log.Printf("API error: %v", err)
 		}
-		err = handleAPIResponse(resp)
+		err = c.handleAPIResponsese(resp)
 		if err != nil {
-			log.Printf("error getting credits: %#v", err)
+			c.log.Printf("error getting credits: %#v", err)
 			return
 		}
 	}

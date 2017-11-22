@@ -1,14 +1,12 @@
 package atlas
 
 import (
-	"github.com/stretchr/testify/assert"
-	"github.com/jarcoal/httpmock"
-	"testing"
-	"net/http"
-	"encoding/json"
-	"github.com/sendgrid/rest"
 	"bytes"
-	"log"
+	"encoding/json"
+	"github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/assert"
+	"net/http"
+	"testing"
 )
 
 func TestCheckType(t *testing.T) {
@@ -65,7 +63,7 @@ func TestDNS(t *testing.T) {
 			var reqData MeasurementRequest
 			var ap APIError
 			var body bytes.Buffer
-			var badType rest.Response
+			var badType http.Response
 			var myerr error
 
 			//respData := new(MeasurementResp)
@@ -74,7 +72,7 @@ func TestDNS(t *testing.T) {
 				return httpmock.NewStringResponse(400, ""), nil
 			}
 
-			log.Printf("test.req=%#v", reqData)
+			//client.log.Printf("test.req=%#v", reqData)
 			if reqData.Definitions[0].Type != "dns" {
 
 				ap.Error.Status = 500
@@ -109,16 +107,17 @@ func TestDNS(t *testing.T) {
 		},
 	)
 
-
+	client, err := NewClient()
 	d := []Definition{{Type: "foo"}}
 	r := &MeasurementRequest{Definitions: d}
 	myrp := MeasurementResp{}
 
-	rp, err := DNS(r)
+	rp, err := client.DNS(r)
 	assert.Error(t, err, "should be in error")
 	assert.EqualValues(t, myrp, rp, "should be equal")
 	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
 }
+
 /*
 func TestNTP(t *testing.T) {
 	d := []Definition{{Type: "foo"}}

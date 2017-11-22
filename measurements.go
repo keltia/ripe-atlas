@@ -53,13 +53,13 @@ type measurementList struct {
 }
 
 // fetch the given resource
-func (client *Client) fetchOneMeasurementPage(opts map[string]string) (raw *measurementList, err error) {
-	client.mergeGlobalOptions(opts)
-	req := client.prepareRequest("GET", "measurements", opts)
+func (c *Client) fetchOneMeasurementPage(opts map[string]string) (raw *measurementList, err error) {
+	c.mergeGlobalOptions(opts)
+	req := c.prepareRequest("GET", "measurements", opts)
 
 	//log.Printf("req=%s qp=%#v", MeasurementEP, opts)
-	resp, err := client.call(req)
-	err = handleAPIResponse(resp)
+	resp, err := c.call(req)
+	err = c.handleAPIResponsese(resp)
 	if err != nil {
 		return
 	}
@@ -77,15 +77,15 @@ func (client *Client) fetchOneMeasurementPage(opts map[string]string) (raw *meas
 // -- public
 
 // GetMeasurement gets info for a single one
-func (client *Client) GetMeasurement(id int) (m *Measurement, err error) {
+func (c *Client) GetMeasurement(id int) (m *Measurement, err error) {
 	opts := make(map[string]string)
 
-	client.mergeGlobalOptions(opts)
-	req := client.prepareRequest("GET", fmt.Sprintf("measurements/%d", id), opts)
+	c.mergeGlobalOptions(opts)
+	req := c.prepareRequest("GET", fmt.Sprintf("measurements/%d", id), opts)
 
 	//log.Printf("req: %#v", req)
-	resp, err := client.call(req)
-	err = handleAPIResponse(resp)
+	resp, err := c.call(req)
+	err = c.handleAPIResponsese(resp)
 	if err != nil {
 		return
 	}
@@ -100,21 +100,21 @@ func (client *Client) GetMeasurement(id int) (m *Measurement, err error) {
 }
 
 // DeleteMeasurement stops (not really deletes) a given measurement
-func (client *Client) DeleteMeasurement(id int) (err error) {
+func (c *Client) DeleteMeasurement(id int) (err error) {
 	opts := make(map[string]string)
 
-	req := client.prepareRequest("DELETE", fmt.Sprintf("measurements/%d", id), opts)
+	req := c.prepareRequest("DELETE", fmt.Sprintf("measurements/%d", id), opts)
 
 	//log.Printf("req: %#v", req)
-	resp, err := client.call(req)
-	err = handleAPIResponse(resp)
+	resp, err := c.call(req)
+	err = c.handleAPIResponsese(resp)
 	return
 }
 
 // GetMeasurements gets info for a set
-func (client *Client) GetMeasurements(opts map[string]string) (m []Measurement, err error) {
+func (c *Client) GetMeasurements(opts map[string]string) (m []Measurement, err error) {
 	// First call
-	rawlist, err := client.fetchOneMeasurementPage(opts)
+	rawlist, err := c.fetchOneMeasurementPage(opts)
 
 	// Empty answer
 	if rawlist.Count == 0 {
@@ -129,7 +129,7 @@ func (client *Client) GetMeasurements(opts map[string]string) (m []Measurement, 
 		for pn := getPageNum(rawlist.Next); rawlist.Next != ""; pn = getPageNum(rawlist.Next) {
 			opts["page"] = pn
 
-			rawlist, err = client.fetchOneMeasurementPage(opts)
+			rawlist, err = c.fetchOneMeasurementPage(opts)
 			if err != nil {
 				return
 			}
