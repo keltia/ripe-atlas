@@ -81,7 +81,7 @@ var (
 )
 
 const (
-	atlasVersion = "0.22"
+	atlasVersion = "0.23"
 	// MyName is the application name
 	MyName = "ripe-atlas"
 
