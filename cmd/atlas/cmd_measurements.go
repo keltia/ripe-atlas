@@ -73,7 +73,7 @@ func init() {
 			},
 			{
 				Name:        "delete",
-				Aliases:     []string{"rm", "del", "destroy"},
+				Aliases:     []string{"rm", "del", "destroy", "stop"},
 				Usage:       "info for one measurement",
 				Description: "stops one measurement (or all)",
 				Flags: []cli.Flag{
