@@ -47,7 +47,7 @@ func init() {
 					cli.BoolFlag{
 						Name:        "is-anchor",
 						Usage:       "select anchor measurements",
-						Destination: &fWantAnchor,
+						Destination: &fIsAnchor,
 					},
 					cli.StringFlag{
 						Name:        "t, type",
@@ -73,7 +73,7 @@ func init() {
 			},
 			{
 				Name:        "delete",
-				Aliases:     []string{"rm", "del", "destroy"},
+				Aliases:     []string{"rm", "del", "destroy", "stop"},
 				Usage:       "info for one measurement",
 				Description: "stops one measurement (or all)",
 				Flags: []cli.Flag{
@@ -112,17 +112,7 @@ func displayAllMeasurements(ml *[]atlas.Measurement, verbose bool) (res string) 
 func measurementsList(c *cli.Context) error {
 	opts := make(map[string]string)
 
-	if fCountry != "" {
-		opts["country_code"] = fCountry
-	}
-
-	if fAsn != "" {
-		opts["asn"] = fAsn
-	}
-
-	if fMeasureType != "" {
-		opts["type"] = fMeasureType
-	}
+	opts = mergeOptions(opts, commonFlags)
 
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
@@ -188,10 +178,6 @@ func measurementResults(c *cli.Context) error {
 	}
 
 	fmt.Print(resp)
-	return nil
-}
-
-func measurementCreate(c *cli.Context) error {
 	return nil
 }
 

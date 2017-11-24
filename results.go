@@ -4,15 +4,16 @@ import (
 	"io/ioutil"
 )
 
-func (client *Client) FetchResult(url string) (string, error) {
+// FetchResult downloads result for a given measurement
+func (c *Client) FetchResult(url string) (string, error) {
 	opts := make(map[string]string)
 
-	client.mergeGlobalOptions(opts)
-	req := client.prepareRequest("FETCH", url, opts)
+	c.mergeGlobalOptions(opts)
+	req := c.prepareRequest("FETCH", url, opts)
 
 	//log.Printf("req: %#v", req)
-	resp, err := client.call(req)
-	err = handleAPIResponse(resp)
+	resp, err := c.call(req)
+	err = c.handleAPIResponsese(resp)
 	if err != nil {
 		return "", err
 	}

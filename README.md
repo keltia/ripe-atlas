@@ -16,9 +16,13 @@ It features a simple CLI-based tool called `atlas` which serve both as a collect
 - [Installation](#installation)
 - [API usage](#api-usage)
   - [Basics](#basics)
-- [CLI Application](#cli-application)
+- [CLI Utility](#cli-utility)
+  - [Configuration](#configuration)
+  - [Proxy Authentication](#proxy-authentication)
+  - [Usage](#usage) 
 - [TODO](#todo)
 - [External Documentation](#external-documentation)
+- [Contributing](#contributing)
 
 ## Features
 
@@ -73,6 +77,8 @@ To run the tests, you will also need:
 
 - `github.com/stretchr/assert`
 
+NOTE: please use and test the Windows version (use `make windows`to generate it).  It should work but I lack resources to play much with it.
+
 ## API usage
 
 You must foremost instanciate a new API client with
@@ -102,13 +108,55 @@ The `atlas` utility uses a configuration file in the [TOML](https://github.com/n
 
 On UNIX, it is located in `$HOME/.config/ripe-atlas/config.toml` and in `%LOCALAPPDATA%\RIPE-ATLAS` on Windows. 
 
-There are only a few parameters for now, the most important one being your API Key for authenticate against the RIPE API endpoint.
+There are only a few parameters for now, the most important one being your API Key for authenticate against the RIPE API endpoint.  You can now specify the default probe set (and override it from the CLI):
 
-    API_key = "UUID"
-    pool_size = 10
-    default_probe = YOUR-PROBE-ID
+    # Default configuration file
+    
+    API_key = "<INSERT-API-KEY>"
+    default_probe = <PROBE-ID>
+    
+    [probe_set]
+    
+    pool_size = <POOL-SIZE>
+    type = "area"
+    value = "WW"
 
-Both `API_key` and `WantAF` are strings and `pool_size` and `default_probe` are integers.  The second one is to specify whether you want requests to be done for IPv4 and/or IPv6.  Be aware that if you ask for an IPv6 object (like a domain or machine name), the API will refuse your request if the IPv6 version of that object does not exist.
+Everything is a string except for `pool_size` and `default_probe` which are integers. 
+
+Be aware that if you ask for an IPv6 object (like a domain or machine name), the API will refuse your request if the IPv6 version of that object does not exist.
+
+### Important note
+
+Not all parameters specified for the different commands are implemented, as you can see in the [API Reference](https://atlas.ripe.net/docs/api/v2/reference/), there are *a lot* of different parameters like all the `id__{gt,gte,lt,lte,in}` stuff.
+
+### Proxy authentication
+
+If you want to use `atlas` or the API behind an authenticating HTTP/HTTPS proxy, you need to create another configuration file holding the proxy credentials.  The file is called `.dbrc` under UNIX and is located in your `$HOME` directory.  On Windows, it is in the same directory as `config.toml` inside `%LOCALAPPDATA%\RIPE-ATLAS`.
+
+The format is inherited from a Perl package I've used before.  You have a series of line for each service and contains both username and password:
+
+    <service>   <username>  <password>      <tag>
+
+in our case, the `service` is `proxy`, you fill username and password and `tag` will be ignored.
+
+    proxy   john.doe    secret      ignored
+
+For the API, you will to generate the  `username:password` string, encode it in base64 and give it to `atlas.NewClient()` with the `ProxyAuth` parameter (see `config.go` for `setupProxyAuth()`).
+    
+    atlas.go:
+    
+    // Check whether we have proxy authentication (from a separate config file)
+    auth, err := setupProxyAuth()
+
+    client, err = atlas.NewClient(atlas.Config{
+        APIKey:       mycnf.APIKey,
+        DefaultProbe: mycnf.DefaultProbe,
+        PoolSize:     mycnf.PoolSize,
+        ProxyAuth:    auth,
+        Verbose:      fVerbose,
+    })
+
+As an alternative, you can do the encoding yourself and put that in `config.toml` as `proxy_auth`.    
 
 ### Usage
 
@@ -120,9 +168,9 @@ USAGE:
    atlas [global options] command [command options] [arguments...]
 
 VERSION:
-   0.11
+   0.23
 
-AUTHOR:
+AUTHOR(S):
    Ollivier Robert <roberto@keltia.net>
 
 COMMANDS:
@@ -141,17 +189,22 @@ COMMANDS:
      help, h                    Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --format value, -f value      specify output format
+   --format value, -f value      specify output format (NOT IMPLEMENTED)
    --debug, -D                   debug mode
    --verbose, -v                 verbose mode
    --fields value, -F value      specify which fields are wanted
    --include value, -I value     specify whether objects should be expanded
+   --logfile value, -L value     specify a log file
    --mine, -M                    limit output to my objects
    --opt-fields value, -O value  specify which optional fields are wanted
    --page-size value, -P value   page size for results
    --sort value, -S value        sort results
+   -1, --is-oneoff               one-time measurement
    -6, --ipv6                    Only IPv6
    -4, --ipv4                    Only IPv4
+   --pool-size value             Number of probes to request (default: 0)
+   --area-type value             Set type for probes (area, country, etc.)
+   --area-value value            Value for the probe set (WW, West, etc.)
    --help, -h                    show help
    --version, -V
 ```
@@ -191,14 +244,15 @@ map(.result) | flatten(1) | map(.rtt) | length as $total |
     Max: 24.164375 ms
     Failures: 14.285714285714286 %
 
-### TODO
+## TODO
 
+- implement "anchors"
 - more tests (and better ones!)
 - better display of results
 - refactoring to reduce code duplication: done
 - even more tests
 
-### External Documentation
+## External Documentation
 
   - [Main RIPE Atlas site](https://atlas.ripe.net/)
   - [REST API Documentation](https://atlas.ripe.net/docs/api/v2/manual/)
@@ -206,4 +260,4 @@ map(.result) | flatten(1) | map(.rtt) | length as $total |
 
 ## Contributing
 
-As usual, you can open issues, send pull requests and such.  Please do PR only on the `develop` branch, that would mess up my "git flow" otherwise.  Thanks!
+Please see CONTRIBUTING.md for some simple rules.

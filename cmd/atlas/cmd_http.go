@@ -51,7 +51,7 @@ func prepareHTTP(target, path string, port int) (req *atlas.MeasurementRequest) 
 	}
 
 	req = client.NewMeasurement()
-	if mycnf.WantAF == WantBoth {
+	if wantAF == WantBoth {
 
 		opts["AF"] = "4"
 		req.AddDefinition(opts)
@@ -59,7 +59,7 @@ func prepareHTTP(target, path string, port int) (req *atlas.MeasurementRequest) 
 		opts["AF"] = "6"
 		req.AddDefinition(opts)
 	} else {
-		opts["AF"] = mycnf.WantAF
+		opts["AF"] = wantAF
 		req.AddDefinition(opts)
 	}
 

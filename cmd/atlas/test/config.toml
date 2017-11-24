@@ -1,0 +1,10 @@
+# Default configuration file
+
+API_key = "<INSERT-API-KEY>"
+default_probe = 666
+
+[probe_set]
+
+pool_size = 10
+type = "area"
+value = "WW"

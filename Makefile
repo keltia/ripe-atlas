@@ -12,7 +12,7 @@ SRCS= common.go credits.go keys.go measurements.go probes.go types.go \
 	cmd/atlas/cmd_dns.go cmd/atlas/cmd_http.go cmd/atlas/cmd_ip.go \
 	cmd/atlas/cmd_ntp.go cmd/atlas/cmd_ping.go cmd/atlas/cmd_sslcert.go \
 	cmd/atlas/cmd_traceroute.go cmd/atlas/cmd_keys.go cmd/atlas/cmd_results.go \
-	cmd/atlas/config.go cmd/atlas/cmd_credits.go cmd/atlas/utils.go
+	cmd/atlas/config.go cmd/atlas/cmd_credits.go cmd/atlas/flags.go cmd/atlas/utils.go
 
 USRC=	 cmd/atlas/config_unix.go
 WSRC=	cmd/atlas/config_windows.go
@@ -22,9 +22,9 @@ EXE=	${BIN}.exe
 
 OPTS=	-ldflags="-s -w" -v
 
-all: checks ${BIN}
+all: check ${BIN}
 
-checks:
+check:
 	@V=`go version|cut -d' ' -f 3| sed 's/^go//'` && \
 	if test "x$$V" \< "x1.8" ; then \
 		echo "You must have go 1.8+"; \
@@ -39,7 +39,7 @@ ${BIN}: ${SRCS} ${USRC}
 ${EXE}: ${SRCS} ${WSRC}
 	GOOS=windows go build ${OPTS} ./cmd/...
 
-test: checks
+test: check
 	go test -v ./...
 
 install: check ${BIN}

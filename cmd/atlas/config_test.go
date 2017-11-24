@@ -68,5 +68,5 @@ func TestLoadConfig(t *testing.T) {
 	assert.EqualValues(t, key, conf.APIKey, "should be equal")
 
 	poolSize := 10
-	assert.EqualValues(t, poolSize, conf.PoolSize, "should be equal")
+	assert.EqualValues(t, poolSize, conf.ProbeSet.PoolSize, "should be equal")
 }
