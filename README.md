@@ -246,10 +246,10 @@ map(.result) | flatten(1) | map(.rtt) | length as $total |
 
 ## TODO
 
-- implement "anchors"
+- implement "anchors" & "participation requests"
 - more tests (and better ones!)
 - better display of results
-- refactoring to reduce code duplication: done
+- refactoring to reduce code duplication: always in progress
 - even more tests
 
 ## External Documentation
