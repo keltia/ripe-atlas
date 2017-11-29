@@ -101,9 +101,7 @@ func openlog(fn string) *log.Logger {
 	}
 
 	mylog := log.New(fh, "", log.LstdFlags)
-	if fVerbose {
-		log.Printf("Logfile: %s %#v", fn, mylog)
-	}
+	verbose("Logfile: %s %#v", fn, mylog)
 
 	return mylog
 }
@@ -120,28 +118,24 @@ func finalcheck(c *cli.Context) error {
 	// Load main configuration
 	cnf, err = LoadConfig("")
 	if err != nil {
-		if fVerbose {
-			log.Printf("No configuration file found.")
-		}
+		verbose("No configuration file found.")
 	}
 
 	// Logical
 	if fDebug {
 		fVerbose = true
-		log.Printf("config: %#v", cnf)
+		verbose("config: %#v", cnf)
 	}
 
 	// Various messages
-	if fVerbose {
-		if cnf.APIKey != "" {
-			log.Printf("Found API key!")
-		} else {
-			log.Printf("No API key!")
-		}
+	if cnf.APIKey != "" {
+		verbose("Found API key!")
+	} else {
+		verbose("No API key!")
+	}
 
-		if cnf.DefaultProbe != 0 {
-			log.Printf("Found default probe: %d\n", cnf.DefaultProbe)
-		}
+	if cnf.DefaultProbe != 0 {
+		verbose("Found default probe: %d\n", cnf.DefaultProbe)
 	}
 
 	// Allow overwrite of a few parameters
@@ -158,9 +152,7 @@ func finalcheck(c *cli.Context) error {
 	// Check whether we have proxy authentication (from a separate config file)
 	auth, err := setupProxyAuth()
 	if err != nil {
-		if fVerbose {
-			log.Printf("Invalid or no proxy auth credentials")
-		}
+		verbose("Invalid or no proxy auth credentials")
 	}
 
 	// If we want a logfile, open one for the API to log into

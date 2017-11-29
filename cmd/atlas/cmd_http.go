@@ -5,7 +5,6 @@ import (
 	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
 	"log"
-	"os"
 )
 
 // init injects our "http" related commands/options.
@@ -87,19 +86,16 @@ func cmdHTTP(c *cli.Context) error {
 		return fmt.Errorf("Invalid URL: %s", target)
 	}
 
-	log.Printf("Target: %s://%s:%d%s", proto, site, port, path)
+	verbose("Target: %s://%s:%d%s", proto, site, port, path)
 
 	req := prepareHTTP(site, path, port)
 
-	if fDebug {
-		log.Printf("req=%#v", req)
-	}
+	debug("req=%#v", req)
 	//str := res.Result.Display()
 
 	http, err := client.HTTP(req)
 	if err != nil {
-		fmt.Printf("err: %v", err)
-		os.Exit(1)
+		log.Fatalf("err: %v", err)
 	}
 	displayMeasurementID(*http)
 

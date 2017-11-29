@@ -63,9 +63,8 @@ func cmdPing(c *cli.Context) error {
 	addr := args[0]
 
 	req := preparePing(addr)
-	if fDebug {
-		log.Printf("req=%#v", req)
-	}
+	debug("req=%#v", req)
+
 	m, err := client.Ping(req)
 	if err != nil {
 		log.Fatalf("err: %v", err)

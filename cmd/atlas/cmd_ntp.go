@@ -60,9 +60,7 @@ func cmdNTP(c *cli.Context) error {
 	target := args[0]
 
 	req := prepareNTP(target)
-	if fDebug {
-		log.Printf("req=%#v", req)
-	}
+	debug("req=%#v", req)
 	//str := res.Result.Display()
 
 	ntp, err := client.NTP(req)

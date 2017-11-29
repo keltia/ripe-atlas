@@ -7,7 +7,6 @@ import (
 	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
 	"log"
-	"os"
 	"strconv"
 )
 
@@ -97,7 +96,6 @@ func prepareProbes() map[string]string {
 
 	opts = mergeOptions(opts, commonFlags)
 
-	log.Printf("opts: %#v", opts)
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
 
@@ -105,7 +103,7 @@ func prepareProbes() map[string]string {
 		opts["AF"] = wantAF
 	}
 
-	log.Printf("opts: %#v", opts)
+	debug("opts: %#v", opts)
 
 	if fVerbose {
 		displayOptions(opts)
@@ -120,10 +118,9 @@ func probesList(c *cli.Context) error {
 
 	q, err := client.GetProbes(opts)
 	if err != nil {
-		log.Printf("GetProbes err: %v - q:%v", err, q)
-		os.Exit(1)
+		log.Fatalf("GetProbes err: %v - q:%v", err, q)
 	}
-	log.Printf("Got %d probes with %v\n", len(q), opts)
+	fmt.Printf("Got %d probes with %v\n", len(q), opts)
 	fmt.Print(displayAllProbes(&q, fVerbose))
 
 	return nil
