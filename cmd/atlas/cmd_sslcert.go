@@ -5,7 +5,6 @@ import (
 	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
 	"log"
-	"os"
 	"strings"
 )
 
@@ -74,8 +73,7 @@ func cmdTLSCert(c *cli.Context) (err error) {
 
 	tls, err := client.SSLCert(req)
 	if err != nil {
-		fmt.Printf("err: %v", err)
-		os.Exit(1)
+		log.Fatalf("err: %v", err)
 	}
 	displayMeasurementID(*tls)
 

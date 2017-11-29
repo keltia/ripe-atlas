@@ -139,8 +139,7 @@ func probeInfo(c *cli.Context) error {
 	id, _ := strconv.Atoi(args[0])
 	p, err := client.GetProbe(id)
 	if err != nil {
-		fmt.Printf("err: %v", err)
-		os.Exit(1)
+		log.Fatalf("err: %v", err)
 	}
 	fmt.Print(displayProbe(p, fVerbose))
 

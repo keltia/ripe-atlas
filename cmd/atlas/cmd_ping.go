@@ -5,7 +5,6 @@ import (
 	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
 	"log"
-	"os"
 )
 
 // init injects our "ip" related commands/options.
@@ -69,8 +68,7 @@ func cmdPing(c *cli.Context) error {
 	}
 	m, err := client.Ping(req)
 	if err != nil {
-		fmt.Printf("err: %v", err)
-		os.Exit(1)
+		log.Fatalf("err: %v", err)
 	}
 
 	//str := res.Result.Display()
