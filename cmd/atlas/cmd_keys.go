@@ -5,7 +5,6 @@ import (
 	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
 	"log"
-	"os"
 )
 
 // init injects our key-related commands
@@ -72,10 +71,9 @@ func keysList(c *cli.Context) (err error) {
 
 	kl, err := client.GetKeys(opts)
 	if err != nil {
-		log.Printf("GetKeys err: %v - kl:%v", err, kl)
-		os.Exit(1)
+		log.Fatalf("GetKeys err: %v - kl:%v", err, kl)
 	}
-	log.Printf("Got %d keys\n", len(kl))
+	fmt.Printf("Got %d keys\n", len(kl))
 	fmt.Print(displayAllKeys(&kl, fVerbose))
 	return
 }
@@ -88,8 +86,7 @@ func keysInfo(c *cli.Context) (err error) {
 
 	k, err := client.GetKey(args[0])
 	if err != nil {
-		fmt.Printf("err: %v", err)
-		os.Exit(1)
+		log.Fatalf("err: %v", err)
 	}
 	fmt.Print(displayKey(&k, fVerbose))
 	return
