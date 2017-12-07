@@ -41,9 +41,7 @@ func (c *Client) HasAPIKey() (string, bool) {
 
 // call is s shortcut
 func (c *Client) call(req *http.Request) (*http.Response, error) {
-	if c.config.Verbose {
-		c.log.Printf("Full URL:\n%v", req.URL)
-	}
+	c.verbose("Full URL:\n%v", req.URL)
 
 	return c.client.Do(req)
 }
@@ -62,9 +60,7 @@ func (c *Client) setupTransport() (*http.Transport, error) {
 	// Get proxy URL
 	proxyURL, err := http.ProxyFromEnvironment(req)
 	if err != nil {
-		if c.config.Verbose {
-			c.log.Println("no proxy defined")
-		}
+		c.verbose("no proxy defined")
 	}
 
 	if c.config.ProxyAuth != "" {

@@ -61,9 +61,7 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 	}
 
 	c.mergeGlobalOptions(opts)
-	if c.config.Verbose {
-		c.log.Printf("Options:\n%v", opts)
-	}
+	c.verbose("Options:\n%v", opts)
 	baseURL := AddQueryParameters(endPoint, opts)
 
 	req, err := http.NewRequest(method, baseURL, nil)

@@ -21,9 +21,7 @@ func (c *Client) GetProbe(id int) (p *Probe, err error) {
 	resp, err := c.call(req)
 	//log.Printf("resp: %#v - err: %#v", resp, err)
 	if err != nil {
-		if c.config.Verbose {
-			c.log.Printf("API error: %v", err)
-		}
+		c.verbose("API error: %v", err)
 		err = c.handleAPIResponsese(resp)
 		if err != nil {
 			return
@@ -55,9 +53,7 @@ func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err 
 
 	resp, err := c.call(req)
 	if err != nil {
-		if c.config.Verbose {
-			c.log.Printf("API error: %v", err)
-		}
+		c.verbose("API error: %v", err)
 		err = c.handleAPIResponsese(resp)
 		if err != nil {
 			return
@@ -73,10 +69,8 @@ func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err 
 		c.log.Printf("err reading json: raw=%#v err=%v", raw, err)
 		return
 	}
-	if c.config.Verbose {
-		c.log.Printf("Count=%d raw=%v", raw.Count, resp)
-		fmt.Print("P")
-	}
+	c.verbose("Count=%d raw=%v", raw.Count, resp)
+	c.verbose("P")
 	return
 }
 
