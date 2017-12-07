@@ -51,7 +51,7 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 		endPoint = what
 		method = "GET"
 	} else {
-		endPoint = apiEndpoint + fmt.Sprintf("/%s/", what)
+		endPoint = fmt.Sprintf("%s/%s/", apiEndpoint, what)
 	}
 
 	key, ok := c.HasAPIKey()
