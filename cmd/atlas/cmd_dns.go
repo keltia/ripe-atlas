@@ -5,7 +5,6 @@ import (
 	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
 	"log"
-	"os"
 	"strings"
 )
 
@@ -148,13 +147,11 @@ func cmdDNS(c *cli.Context) error {
 
 	req := prepareDNS(proto, addr, qclass, qtype, bitDO, bitCD)
 
-	if fDebug {
-		log.Printf("req=%#v", req)
-	}
+	debug("req=%#v", req)
+
 	m, err := client.DNS(req)
 	if err != nil {
-		fmt.Printf("err: %v", err)
-		os.Exit(1)
+		log.Fatalf("err: %v", err)
 	}
 
 	//str := res.Result.Display()

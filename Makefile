@@ -19,6 +19,7 @@ WSRC=	cmd/atlas/config_windows.go
 
 BIN=	atlas
 EXE=	${BIN}.exe
+XTRAS=	contrib/* README.md
 
 OPTS=	-ldflags="-s -w" -v
 
@@ -45,9 +46,14 @@ test: check
 install: check ${BIN}
 	go install -v ./cmd/...
 
+pkg: ${BIN} ${EXE}
+	-/bin/mkdir pkg
+	tar cvf - ${BIN} ${XTRAS} | xz > pkg/${BIN}.tar.xz
+	zip -r pkg/${BIN}.zip ${EXE} ${XTRAS}
+
 clean:
 	go clean -v ./...
-	rm -f ${BIN} ${EXE}
+	rm -f ${BIN} ${EXE} pkg/*
 
 push:
 	git push --all

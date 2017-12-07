@@ -5,7 +5,6 @@ import (
 	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
 	"log"
-	"os"
 )
 
 const (
@@ -97,15 +96,12 @@ func cmdTraceroute(c *cli.Context) error {
 
 	req := prepareTraceroute(target, proto, maxHops, packetSize)
 
-	if fDebug {
-		log.Printf("req=%#v", req)
-	}
+	debug("req=%#v", req)
 	//str := res.Result.Display()
 
 	trc, err := client.Traceroute(req)
 	if err != nil {
-		fmt.Printf("err: %v", err)
-		os.Exit(1)
+		log.Fatalf("err: %v", err)
 	}
 	displayMeasurementID(*trc)
 

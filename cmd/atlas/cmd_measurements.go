@@ -123,10 +123,9 @@ func measurementsList(c *cli.Context) error {
 
 	q, err := client.GetMeasurements(opts)
 	if err != nil {
-		log.Printf("GetMeasurements err: %v - q:%v", err, q)
-		os.Exit(1)
+		log.Fatalf("GetMeasurements err: %v - q:%v", err, q)
 	}
-	log.Printf("Got %d measurements with %v\n", len(q), opts)
+	fmt.Printf("Got %d measurements with %v\n", len(q), opts)
 	fmt.Print(displayAllMeasurements(&q, fVerbose))
 
 	return nil
@@ -143,8 +142,7 @@ func measurementInfo(c *cli.Context) error {
 
 	p, err := client.GetMeasurement(id)
 	if err != nil {
-		fmt.Printf("err: %v", err)
-		os.Exit(1)
+		log.Fatalf("err: %v", err)
 	}
 	fmt.Print(displayMeasurement(p, fVerbose))
 
@@ -173,8 +171,7 @@ func measurementResults(c *cli.Context) error {
 
 	resp, err := client.FetchResult(m.Result)
 	if err != nil {
-		err = fmt.Errorf("bad net/http answer for %s: %v", m.Result, err)
-		return err
+		return fmt.Errorf("bad net/http answer for %s: %v", m.Result, err)
 	}
 
 	fmt.Print(resp)

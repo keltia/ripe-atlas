@@ -1,10 +1,9 @@
 package main
 
 import (
-	"github.com/urfave/cli"
-	"os"
-	"log"
 	"fmt"
+	"github.com/urfave/cli"
+	"log"
 )
 
 // init injects our key-related commands
@@ -23,8 +22,7 @@ func init() {
 func creditsList(c *cli.Context) {
 	cl, err := client.GetCredits()
 	if err != nil {
-		log.Printf("err: %v", err)
-		os.Exit(1)
+		log.Fatalf("err: %v", err)
 	}
 	fmt.Printf("Credits:\n%v", cl)
 }
