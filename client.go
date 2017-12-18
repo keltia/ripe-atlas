@@ -2,8 +2,10 @@ package atlas
 
 import (
 	"crypto/tls"
+	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 )
@@ -66,6 +68,10 @@ func (c *Client) setupTransport() (*http.Transport, error) {
 	if c.config.ProxyAuth != "" {
 		req.Header.Set("Proxy-Authorization", c.config.ProxyAuth)
 	}
+
+	myurl, _ := url.Parse(apiEndpoint)
+	req.Header.Set("Host", myurl.Host)
+	req.Header.Set("User-Agent", fmt.Sprintf("ripe-atlas/%s", ourVersion))
 
 	transport := &http.Transport{
 		Proxy:              http.ProxyURL(proxyURL),

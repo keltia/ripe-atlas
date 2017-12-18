@@ -70,15 +70,11 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 		return &http.Request{}
 	}
 
-	myurl, _ := url.Parse(baseURL)
-
 	// We need these when we POST
 	if method == "POST" {
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Accept", "application/json")
 	}
-	req.Header.Set("Host", myurl.Host)
-	req.Header.Set("User-Agent", fmt.Sprintf("ripe-atlas/%s", ourVersion))
 
 	return
 }
