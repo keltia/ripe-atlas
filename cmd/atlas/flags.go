@@ -30,8 +30,8 @@ var (
 
 	commonFlags = map[string]*string{
 		"asn":          &fAsn,
-		"asn_v4":       &fAsn,
-		"asn_v6":       &fAsn,
+		"asn_v4":       &fAsnV4,
+		"asn_v6":       &fAsnV6,
 		"country_code": &fCountry,
 		"type":         &fMeasureType,
 	}

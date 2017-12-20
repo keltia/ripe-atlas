@@ -38,6 +38,8 @@ var (
 	// Common measurement ones
 	fAllMeasurements bool
 	fAsn             string
+	fAsnV4           string
+	fAsnV6           string
 	fCountry         string
 	fProtocol        string
 	fMeasureType     string
