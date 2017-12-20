@@ -59,11 +59,12 @@ func (c *Client) fetchOneMeasurementPage(opts map[string]string) (raw *measureme
 
 	//log.Printf("req=%s qp=%#v", MeasurementEP, opts)
 	resp, err := c.call(req)
-	err = c.handleAPIResponsese(resp)
 	if err != nil {
-		return
+		err = c.handleAPIResponsese(resp)
+		if err != nil {
+			return
+		}
 	}
-
 	raw = &measurementList{}
 	body, _ := ioutil.ReadAll(resp.Body)
 	defer resp.Body.Close()
@@ -85,9 +86,11 @@ func (c *Client) GetMeasurement(id int) (m *Measurement, err error) {
 
 	//log.Printf("req: %#v", req)
 	resp, err := c.call(req)
-	err = c.handleAPIResponsese(resp)
 	if err != nil {
-		return
+		err = c.handleAPIResponsese(resp)
+		if err != nil {
+			return
+		}
 	}
 
 	m = &Measurement{}
@@ -140,4 +143,3 @@ func (c *Client) GetMeasurements(opts map[string]string) (m []Measurement, err e
 	m = res
 	return
 }
-
