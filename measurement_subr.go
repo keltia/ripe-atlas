@@ -24,6 +24,7 @@ func (c *Client) NewMeasurement() (req *MeasurementRequest) {
 		IsOneoff:    true,
 		Probes:      *NewProbeSet(c.config.PoolSize, c.config.AreaType, c.config.AreaValue),
 	}
+	c.verbose("probes: %#v", req.Probes)
 	return
 }
 
