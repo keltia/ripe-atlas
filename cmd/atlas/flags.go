@@ -10,7 +10,7 @@ Flags management.
 
 There are two types of flags for commands
 - global (sort, page_size)
-- local (dns-related ones, ping)related ones and so forth)
+- local (dns-related ones, ping-related ones and so forth)
 
 Outcome is the same in all cases, a given flag is transformed into a query flag
 
