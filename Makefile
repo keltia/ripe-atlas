@@ -23,7 +23,7 @@ XTRAS=	contrib/* README.md
 
 OPTS=	-ldflags="-s -w" -v
 
-all: check ${BIN}
+all: ${BIN}
 
 windows:  ${EXE}
 
