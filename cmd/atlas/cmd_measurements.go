@@ -164,6 +164,8 @@ func measurementResults(c *cli.Context) error {
 		os.Exit(1)
 	}
 
+	debug("m=%d url=%s", id, m.Result)
+
 	// m.Result is an URI pointing to results, fetch it
 	if m.Result == "" {
 		fmt.Println("Empty result")
