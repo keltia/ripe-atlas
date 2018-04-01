@@ -42,6 +42,16 @@ func AddQueryParameters(baseURL string, queryParams map[string]string) string {
 	return baseURL + params.Encode()
 }
 
+// addAPIKey insert the key into options if needed
+func (c *Client) addAPIKey(opts map[string]string) map[string]string {
+	key, ok := c.HasAPIKey()
+	// Insert key
+	if ok {
+		opts["key"] = key
+	}
+	return opts
+}
+
 // prepareRequest insert all pre-defined stuff
 func (c *Client) prepareRequest(method, what string, opts map[string]string) (req *http.Request) {
 	var endPoint string
@@ -52,12 +62,6 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 		method = "GET"
 	} else {
 		endPoint = fmt.Sprintf("%s/%s/", apiEndpoint, what)
-	}
-
-	key, ok := c.HasAPIKey()
-	// Insert key
-	if ok {
-		opts["key"] = key
 	}
 
 	c.mergeGlobalOptions(opts)
