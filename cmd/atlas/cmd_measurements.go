@@ -112,17 +112,7 @@ func displayAllMeasurements(ml *[]atlas.Measurement, verbose bool) (res string) 
 func measurementsList(c *cli.Context) error {
 	opts := make(map[string]string)
 
-	if fCountry != "" {
-		opts["country_code"] = fCountry
-	}
-
-	if fAsn != "" {
-		opts["asn"] = fAsn
-	}
-
-	if fMeasureType != "" {
-		opts["type"] = fMeasureType
-	}
+	opts = mergeOptions(opts, commonFlags)
 
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
@@ -133,10 +123,9 @@ func measurementsList(c *cli.Context) error {
 
 	q, err := client.GetMeasurements(opts)
 	if err != nil {
-		log.Printf("GetMeasurements err: %v - q:%v", err, q)
-		os.Exit(1)
+		log.Fatalf("GetMeasurements err: %v - q:%v", err, q)
 	}
-	log.Printf("Got %d measurements with %v\n", len(q), opts)
+	fmt.Printf("Got %d measurements with %v\n", len(q), opts)
 	fmt.Print(displayAllMeasurements(&q, fVerbose))
 
 	return nil
@@ -153,8 +142,7 @@ func measurementInfo(c *cli.Context) error {
 
 	p, err := client.GetMeasurement(id)
 	if err != nil {
-		fmt.Printf("err: %v", err)
-		os.Exit(1)
+		log.Fatalf("err: %v", err)
 	}
 	fmt.Print(displayMeasurement(p, fVerbose))
 
@@ -176,6 +164,8 @@ func measurementResults(c *cli.Context) error {
 		os.Exit(1)
 	}
 
+	debug("m=%d url=%s", id, m.Result)
+
 	// m.Result is an URI pointing to results, fetch it
 	if m.Result == "" {
 		fmt.Println("Empty result")
@@ -183,15 +173,10 @@ func measurementResults(c *cli.Context) error {
 
 	resp, err := client.FetchResult(m.Result)
 	if err != nil {
-		err = fmt.Errorf("bad net/http answer for %s: %v", m.Result, err)
-		return err
+		return fmt.Errorf("bad net/http answer for %s: %v", m.Result, err)
 	}
 
 	fmt.Print(resp)
-	return nil
-}
-
-func measurementCreate(c *cli.Context) error {
 	return nil
 }
 

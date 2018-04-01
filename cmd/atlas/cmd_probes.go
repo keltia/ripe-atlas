@@ -7,7 +7,6 @@ import (
 	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
 	"log"
-	"os"
 	"strconv"
 )
 
@@ -92,19 +91,19 @@ func displayAllProbes(pl *[]atlas.Probe, verbose bool) (res string) {
 }
 
 // prepareTraceroute build the request with our parameters
-func prepareProbes(country, asn string, anchor bool) map[string]string {
-	opts := map[string]string{
-		"asn_v4":       asn,
-		"country_code": country,
-		"is_anchor":    boolToString(anchor),
-	}
+func prepareProbes() map[string]string {
+	opts := make(map[string]string)
+
+	opts = mergeOptions(opts, commonFlags)
+
+	// Check global parameters
+	opts = checkGlobalFlags(opts)
 
 	if wantAF != WantBoth {
 		opts["AF"] = wantAF
 	}
 
-	// Check global parameters
-	opts = checkGlobalFlags(opts)
+	debug("opts: %#v", opts)
 
 	if fVerbose {
 		displayOptions(opts)
@@ -115,13 +114,13 @@ func prepareProbes(country, asn string, anchor bool) map[string]string {
 
 // probeList displays all probes
 func probesList(c *cli.Context) error {
-	opts := prepareProbes(fCountry, fAsn, fIsAnchor)
+	opts := prepareProbes()
+
 	q, err := client.GetProbes(opts)
 	if err != nil {
-		log.Printf("GetProbes err: %v - q:%v", err, q)
-		os.Exit(1)
+		log.Fatalf("GetProbes err: %v - q:%v", err, q)
 	}
-	log.Printf("Got %d probes with %v\n", len(q), opts)
+	fmt.Printf("Got %d probes with %v\n", len(q), opts)
 	fmt.Print(displayAllProbes(&q, fVerbose))
 
 	return nil
@@ -137,8 +136,7 @@ func probeInfo(c *cli.Context) error {
 	id, _ := strconv.Atoi(args[0])
 	p, err := client.GetProbe(id)
 	if err != nil {
-		fmt.Printf("err: %v", err)
-		os.Exit(1)
+		log.Fatalf("err: %v", err)
 	}
 	fmt.Print(displayProbe(p, fVerbose))
 

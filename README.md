@@ -2,6 +2,7 @@
 
 * RIPE Atlas v2 API access in Go. *
 
+[![Release](https://img.shields.io/github/release/keltia/ripe-atlas.svg?style=flat-square)](https://github.com/keltia/ripe-atlas/releases/latest)
 [![godoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/keltia/ripe-atlas) [![license](https://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/keltia/ripe-atlas/master/LICENSE) [![build](https://img.shields.io/travis/keltia/ripe-atlas.svg?style=flat)](https://travis-ci.org/keltia/ripe-atlas) [![Go Report Card](https://goreportcard.com/badge/github.com/keltia/ripe-atlas)](https://goreportcard.com/report/github.com/keltia/ripe-atlas)
 
 `ripe-atlas` is a [Go](https://golang.org/) library to access the RIPE Atlas [REST API](https://atlas.ripe.net/docs/api/v2/manual/).
@@ -17,8 +18,12 @@ It features a simple CLI-based tool called `atlas` which serve both as a collect
 - [API usage](#api-usage)
   - [Basics](#basics)
 - [CLI Utility](#cli-utility)
+  - [Configuration](#configuration)
+  - [Proxy Authentication](#proxy-authentication)
+  - [Usage](#usage) 
 - [TODO](#todo)
 - [External Documentation](#external-documentation)
+- [Contributing](#contributing)
 
 ## Features
 
@@ -164,7 +169,7 @@ USAGE:
    atlas [global options] command [command options] [arguments...]
 
 VERSION:
-   0.22
+   0.23
 
 AUTHOR(S):
    Ollivier Robert <roberto@keltia.net>
@@ -240,15 +245,15 @@ map(.result) | flatten(1) | map(.rtt) | length as $total |
     Max: 24.164375 ms
     Failures: 14.285714285714286 %
 
-### TODO
+## TODO
 
-- implement "anchors"
+- implement "anchors" & "participation requests"
 - more tests (and better ones!)
 - better display of results
-- refactoring to reduce code duplication: done
+- refactoring to reduce code duplication: always in progress
 - even more tests
 
-### External Documentation
+## External Documentation
 
   - [Main RIPE Atlas site](https://atlas.ripe.net/)
   - [REST API Documentation](https://atlas.ripe.net/docs/api/v2/manual/)
@@ -256,4 +261,4 @@ map(.result) | flatten(1) | map(.rtt) | length as $total |
 
 ## Contributing
 
-As usual, you can open issues, send pull requests and such.  Please do PR only on the `develop` branch, that would mess up my "git flow" otherwise.  Thanks!
+Please see CONTRIBUTING.md for some simple rules.

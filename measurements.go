@@ -54,16 +54,18 @@ type measurementList struct {
 
 // fetch the given resource
 func (c *Client) fetchOneMeasurementPage(opts map[string]string) (raw *measurementList, err error) {
+	opts = c.addAPIKey(opts)
 	c.mergeGlobalOptions(opts)
 	req := c.prepareRequest("GET", "measurements", opts)
 
 	//log.Printf("req=%s qp=%#v", MeasurementEP, opts)
 	resp, err := c.call(req)
-	err = c.handleAPIResponsese(resp)
 	if err != nil {
-		return
+		err = c.handleAPIResponsese(resp)
+		if err != nil {
+			return
+		}
 	}
-
 	raw = &measurementList{}
 	body, _ := ioutil.ReadAll(resp.Body)
 	defer resp.Body.Close()
@@ -79,15 +81,18 @@ func (c *Client) fetchOneMeasurementPage(opts map[string]string) (raw *measureme
 // GetMeasurement gets info for a single one
 func (c *Client) GetMeasurement(id int) (m *Measurement, err error) {
 	opts := make(map[string]string)
+	opts = c.addAPIKey(opts)
 
 	c.mergeGlobalOptions(opts)
 	req := c.prepareRequest("GET", fmt.Sprintf("measurements/%d", id), opts)
 
 	//log.Printf("req: %#v", req)
 	resp, err := c.call(req)
-	err = c.handleAPIResponsese(resp)
 	if err != nil {
-		return
+		err = c.handleAPIResponsese(resp)
+		if err != nil {
+			return
+		}
 	}
 
 	m = &Measurement{}
@@ -102,6 +107,7 @@ func (c *Client) GetMeasurement(id int) (m *Measurement, err error) {
 // DeleteMeasurement stops (not really deletes) a given measurement
 func (c *Client) DeleteMeasurement(id int) (err error) {
 	opts := make(map[string]string)
+	opts = c.addAPIKey(opts)
 
 	req := c.prepareRequest("DELETE", fmt.Sprintf("measurements/%d", id), opts)
 
@@ -140,4 +146,3 @@ func (c *Client) GetMeasurements(opts map[string]string) (m []Measurement, err e
 	m = res
 	return
 }
-

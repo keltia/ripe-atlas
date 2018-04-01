@@ -5,7 +5,6 @@ import (
 	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
 	"log"
-	"os"
 )
 
 // init injects our "ntp" related commands/options.
@@ -61,17 +60,14 @@ func cmdNTP(c *cli.Context) error {
 	target := args[0]
 
 	req := prepareNTP(target)
-	if fDebug {
-		log.Printf("req=%#v", req)
-	}
+	debug("req=%#v", req)
 	//str := res.Result.Display()
 
 	ntp, err := client.NTP(req)
 	if err != nil {
-		fmt.Printf("err: %v", err)
-		os.Exit(1)
+		log.Fatalf("err: %v", err)
 	}
-    displayMeasurementID(*ntp)
+	displayMeasurementID(*ntp)
 
-    return nil
+	return nil
 }

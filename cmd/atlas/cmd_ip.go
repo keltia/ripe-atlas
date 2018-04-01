@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/urfave/cli"
 	"log"
-	"os"
 	"strconv"
 )
 
@@ -43,8 +42,7 @@ func cmdIP(c *cli.Context) error {
 
 	p, err := client.GetProbe(probeID)
 	if err != nil {
-		fmt.Printf("err: %v", err)
-		os.Exit(1)
+		log.Fatalf("err: %v", err)
 	}
 
 	fmt.Printf("IPv4: %s IPv6: %s\n", p.AddressV4, p.AddressV6)

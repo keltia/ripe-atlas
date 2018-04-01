@@ -24,6 +24,7 @@ func (c *Client) NewMeasurement() (req *MeasurementRequest) {
 		IsOneoff:    true,
 		Probes:      *NewProbeSet(c.config.PoolSize, c.config.AreaType, c.config.AreaValue),
 	}
+	c.verbose("probes: %#v", req.Probes)
 	return
 }
 
@@ -106,14 +107,10 @@ func (c *Client) createMeasurement(t string, d *MeasurementRequest) (m *Measurem
 	req.Body = ioutil.NopCloser(buf)
 	req.ContentLength = int64(buf.Len())
 
-	if c.config.Verbose {
-		c.log.Printf("req: %#v", req)
-		c.log.Printf("body: %s", body)
-	}
+	c.verbose("req: %#v", req)
+	c.verbose("body: %s", body)
 	resp, err := c.call(req)
-	if c.config.Verbose {
-		c.log.Printf("resp: %v", resp)
-	}
+	c.verbose("resp: %v", resp)
 	if err != nil {
 		c.log.Printf("err: %v", err)
 		//return
@@ -130,9 +127,7 @@ func (c *Client) createMeasurement(t string, d *MeasurementRequest) (m *Measurem
 
 	err = json.Unmarshal(rbody, m)
 	// Only display if debug/verbose
-	if c.config.Verbose {
-		fmt.Printf("m: %v\nresp: %#v\nd: %v\n", m, string(rbody), d)
-	}
+	c.verbose("m: %v\nresp: %#v\nd: %v\n", m, string(rbody), d)
 	if err != nil {
 		err = fmt.Errorf("err: %v - m:%v", err, m)
 		return

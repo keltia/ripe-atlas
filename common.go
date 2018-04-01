@@ -42,6 +42,16 @@ func AddQueryParameters(baseURL string, queryParams map[string]string) string {
 	return baseURL + params.Encode()
 }
 
+// addAPIKey insert the key into options if needed
+func (c *Client) addAPIKey(opts map[string]string) map[string]string {
+	key, ok := c.HasAPIKey()
+	// Insert key
+	if ok {
+		opts["key"] = key
+	}
+	return opts
+}
+
 // prepareRequest insert all pre-defined stuff
 func (c *Client) prepareRequest(method, what string, opts map[string]string) (req *http.Request) {
 	var endPoint string
@@ -51,19 +61,11 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 		endPoint = what
 		method = "GET"
 	} else {
-		endPoint = apiEndpoint + fmt.Sprintf("/%s/", what)
-	}
-
-	key, ok := c.HasAPIKey()
-	// Insert key
-	if ok {
-		opts["key"] = key
+		endPoint = fmt.Sprintf("%s/%s/", apiEndpoint, what)
 	}
 
 	c.mergeGlobalOptions(opts)
-	if c.config.Verbose {
-		c.log.Printf("Options:\n%v", opts)
-	}
+	c.verbose("Options:\n%v", opts)
 	baseURL := AddQueryParameters(endPoint, opts)
 
 	req, err := http.NewRequest(method, baseURL, nil)
@@ -72,15 +74,11 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 		return &http.Request{}
 	}
 
-	myurl, err := url.Parse(baseURL)
-
 	// We need these when we POST
 	if method == "POST" {
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("Accept", "application/json")
 	}
-	req.Header.Set("Host", myurl.Host)
-	req.Header.Set("User-Agent", fmt.Sprintf("ripe-atlas/%s", ourVersion))
 
 	return
 }

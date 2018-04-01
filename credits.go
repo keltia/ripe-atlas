@@ -13,6 +13,7 @@ import (
 func (c *Client) GetCredits() (credits *Credits, err error) {
 
 	opts := make(map[string]string)
+	opts = c.addAPIKey(opts)
 	c.mergeGlobalOptions(opts)
 
 	req := c.prepareRequest("GET", "credits", opts)
@@ -20,9 +21,7 @@ func (c *Client) GetCredits() (credits *Credits, err error) {
 	resp, err := c.call(req)
 	//log.Printf("resp: %#v - err: %#v", resp, err)
 	if err != nil {
-		if c.config.Verbose {
-			c.log.Printf("API error: %v", err)
-		}
+		c.verbose("API error: %v", err)
 		err = c.handleAPIResponsese(resp)
 		if err != nil {
 			c.log.Printf("error getting credits: %#v", err)

@@ -9,6 +9,10 @@ func (c *Client) FetchResult(url string) (string, error) {
 	opts := make(map[string]string)
 
 	c.mergeGlobalOptions(opts)
+
+	// Remove our key for fetching the results
+	delete(opts, "key")
+
 	req := c.prepareRequest("FETCH", url, opts)
 
 	//log.Printf("req: %#v", req)
