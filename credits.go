@@ -13,6 +13,7 @@ import (
 func (c *Client) GetCredits() (credits *Credits, err error) {
 
 	opts := make(map[string]string)
+	opts = c.addAPIKey(opts)
 	c.mergeGlobalOptions(opts)
 
 	req := c.prepareRequest("GET", "credits", opts)

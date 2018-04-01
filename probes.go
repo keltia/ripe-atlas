@@ -14,6 +14,8 @@ import (
 func (c *Client) GetProbe(id int) (p *Probe, err error) {
 
 	opts := make(map[string]string)
+	opts = c.addAPIKey(opts)
+
 	c.mergeGlobalOptions(opts)
 
 	req := c.prepareRequest("GET", fmt.Sprintf("probes/%d", id), opts)
@@ -49,6 +51,7 @@ type probeList struct {
 func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err error) {
 
 	c.mergeGlobalOptions(opts)
+	opts = c.addAPIKey(opts)
 	req := c.prepareRequest("GET", "probes", opts)
 
 	resp, err := c.call(req)
