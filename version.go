@@ -1,4 +1,3 @@
 package atlas
 
-const ourVersion = "0.2"
-
+const ourVersion = "0.3"
