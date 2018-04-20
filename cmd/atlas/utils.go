@@ -75,15 +75,19 @@ func checkArgumentType(arg string) int {
 }
 
 // prepareFamily sets Want4 and/or Want6 depending on the argument
-func prepareFamily(arg string) {
+func prepareFamily(arg string) string {
+	var AF string
+
 	switch checkArgumentType(arg) {
 	case ipv4:
-		wantAF = Want4
+		AF = Want4
 	case ipv6:
-		wantAF = Want6
+		AF = Want6
 	default:
-		wantAF = WantBoth
+		AF = wantAF
 	}
+	debug("AF=%s", AF)
+	return AF
 }
 
 // displayMeasurementID display result of measurement requests.

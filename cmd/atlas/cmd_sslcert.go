@@ -33,11 +33,17 @@ func prepareTLSCert(target string, port int) (req *atlas.MeasurementRequest) {
 		"Port":        fmt.Sprintf("%d", port),
 	}
 
+	// Check global parameters
+	opts = checkGlobalFlags(opts)
+
 	// Try to configure -4/-6 depending on the argument to DTRT
-	prepareFamily(target)
+	AF := prepareFamily(target)
+	if AF == "" {
+		AF = wantAF
+	}
 
 	req = client.NewMeasurement()
-	if wantAF == WantBoth {
+	if AF == WantBoth {
 
 		opts["AF"] = "4"
 		req.AddDefinition(opts)
@@ -45,9 +51,10 @@ func prepareTLSCert(target string, port int) (req *atlas.MeasurementRequest) {
 		opts["AF"] = "6"
 		req.AddDefinition(opts)
 	} else {
-		opts["AF"] = wantAF
+		opts["AF"] = AF
 		req.AddDefinition(opts)
 	}
+
 	return
 }
 

@@ -27,11 +27,17 @@ func preparePing(target string) (req *atlas.MeasurementRequest) {
 		"Target":      target,
 	}
 
+	// Check global parameters
+	opts = checkGlobalFlags(opts)
+
 	// Try to configure -4/-6 depending on the argument to DTRT
-	prepareFamily(target)
+	AF := prepareFamily(target)
+	if AF == "" {
+		AF = wantAF
+	}
 
 	req = client.NewMeasurement()
-	if wantAF == WantBoth {
+	if AF == WantBoth {
 
 		opts["AF"] = "4"
 		req.AddDefinition(opts)
@@ -39,12 +45,9 @@ func preparePing(target string) (req *atlas.MeasurementRequest) {
 		opts["AF"] = "6"
 		req.AddDefinition(opts)
 	} else {
-		opts["AF"] = wantAF
+		opts["AF"] = AF
 		req.AddDefinition(opts)
 	}
-
-	// Check global parameters
-	opts = checkGlobalFlags(opts)
 
 	if fVerbose {
 		displayOptions(opts)
