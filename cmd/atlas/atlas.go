@@ -199,6 +199,7 @@ func finalcheck(c *cli.Context) error {
 		wantAF = WantBoth
 	}
 
+	debug("wantAF=%s", wantAF)
 	return nil
 }
 
