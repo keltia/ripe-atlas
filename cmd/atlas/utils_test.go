@@ -51,15 +51,14 @@ var TestArgumentTypeData = []struct {
 	Type int
 	AF   string
 }{
-	{"www.keltia.net", hostname, "64"},
+	{"www.keltia.net", hostname, ""},
 	{"212.83.129.136", ipv4, "4"},
 	{"2001:470:1f15:53d:1::2", ipv6, "6"},
 }
 
 func TestPrepareFamily(t *testing.T) {
 	for _, d := range TestArgumentTypeData {
-		prepareFamily(d.Arg)
-		assert.Equal(t, d.AF, wantAF)
+		assert.Equal(t, d.AF, prepareFamily(d.Arg))
 	}
 }
 
