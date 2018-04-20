@@ -83,7 +83,7 @@ var (
 )
 
 const (
-	atlasVersion = "0.25"
+	atlasVersion = "0.26"
 	// MyName is the application name
 	MyName = "ripe-atlas"
 
@@ -164,7 +164,7 @@ func finalcheck(c *cli.Context) error {
 
 	// Check whether the -C <country> was specified then override configuration
 	if fCountry != "" {
-		cnf.ProbeSet.Type  = "country"
+		cnf.ProbeSet.Type = "country"
 		cnf.ProbeSet.Value = fCountry
 	}
 
