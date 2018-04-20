@@ -162,6 +162,12 @@ func finalcheck(c *cli.Context) error {
 		mylog = openlog(fLogfile)
 	}
 
+	// Check whether the -C <country> was specified then override configuration
+	if fCountry != "" {
+		cnf.ProbeSet.Type  = "country"
+		cnf.ProbeSet.Value = fCountry
+	}
+
 	// Wondering whether to move to the Functional options pattern
 	// cf. https://dave.cheney.net/2016/11/13/do-not-fear-first-class-functions
 	client, err = atlas.NewClient(atlas.Config{
@@ -302,6 +308,11 @@ func main() {
 			Name:        "area-value",
 			Usage:       "Value for the probe set (WW, West, etc.)",
 			Destination: &fAreaValue,
+		},
+		cli.StringFlag{
+			Name:        "--country,C",
+			Usage:       "Short cut to specify a country",
+			Destination: &fCountry,
 		},
 	}
 
