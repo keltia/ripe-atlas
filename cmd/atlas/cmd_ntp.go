@@ -29,15 +29,14 @@ func prepareNTP(target string) (req *atlas.MeasurementRequest) {
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
 
-	if fVerbose {
-		displayOptions(opts)
+	// Try to configure -4/-6 depending on the argument to DTRT
+	AF := prepareFamily(target)
+	if AF == "" {
+		AF = wantAF
 	}
 
-	// Try to configure -4/-6 depending on the argument to DTRT
-	prepareFamily(target)
-
 	req = client.NewMeasurement()
-	if wantAF == WantBoth {
+	if AF == WantBoth {
 
 		opts["AF"] = "4"
 		req.AddDefinition(opts)
@@ -45,9 +44,14 @@ func prepareNTP(target string) (req *atlas.MeasurementRequest) {
 		opts["AF"] = "6"
 		req.AddDefinition(opts)
 	} else {
-		opts["AF"] = wantAF
+		opts["AF"] = AF
 		req.AddDefinition(opts)
 	}
+
+	if fVerbose {
+		displayOptions(opts)
+	}
+
 	return
 }
 

@@ -51,11 +51,17 @@ func prepareTraceroute(target, protocol string, maxhops, size int) (req *atlas.M
 		"Protocol":    protocol,
 	}
 
+	// Check global parameters
+	opts = checkGlobalFlags(opts)
+
 	// Try to configure -4/-6 depending on the argument to DTRT
-	prepareFamily(target)
+	AF := prepareFamily(target)
+	if AF == "" {
+		AF = wantAF
+	}
 
 	req = client.NewMeasurement()
-	if wantAF == WantBoth {
+	if AF == WantBoth {
 
 		opts["AF"] = "4"
 		req.AddDefinition(opts)
@@ -63,7 +69,7 @@ func prepareTraceroute(target, protocol string, maxhops, size int) (req *atlas.M
 		opts["AF"] = "6"
 		req.AddDefinition(opts)
 	} else {
-		opts["AF"] = wantAF
+		opts["AF"] = AF
 		req.AddDefinition(opts)
 	}
 
