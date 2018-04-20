@@ -288,7 +288,7 @@ func main() {
 		// These are not global parameters but it makes sense to define them only once
 		// and not in every cmd_* files.
 		cli.IntFlag{
-			Name:        "pool-size",
+			Name:        "pool-size,N",
 			Usage:       "Number of probes to request",
 			Destination: &fPoolSize,
 		},
