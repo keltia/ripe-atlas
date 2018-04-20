@@ -45,3 +45,26 @@ func TestAnalyzeTarget_3(t *testing.T) {
 	assert.EqualValues(t, 0, port, "should be 443")
 	assert.EqualValues(t, "/", path, "should be /")
 }
+
+var TestArgumentTypeData = []struct {
+	Arg  string
+	Type int
+	AF   string
+}{
+	{"www.keltia.net", hostname, "64"},
+	{"212.83.129.136", ipv4, "4"},
+	{"2001:470:1f15:53d:1::2", ipv6, "6"},
+}
+
+func TestPrepareFamily(t *testing.T) {
+	for _, d := range TestArgumentTypeData {
+		prepareFamily(d.Arg)
+		assert.Equal(t, d.AF, wantAF)
+	}
+}
+
+func TestCheckArgumentType(t *testing.T) {
+	for _, d := range TestArgumentTypeData {
+		assert.Equal(t, d.Type, checkArgumentType(d.Arg))
+	}
+}
