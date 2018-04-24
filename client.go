@@ -29,6 +29,8 @@ func NewClient(cfgs ...Config) (*Client, error) {
 		c.log = c.config.Log
 	}
 
+	c.verbose("c.config=%#v", c.config)
+
 	// Create and save the http.Client
 	return c.addHTTPClient()
 }

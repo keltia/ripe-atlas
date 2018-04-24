@@ -28,6 +28,7 @@ type Config struct {
 	WantAF       string
 	ProxyAuth    string
 	Verbose      bool
+	Tags         string
 	Log          *log.Logger
 }
 
@@ -190,7 +191,7 @@ type MeasurementRequest struct {
 	Definitions []Definition `json:"definitions"`
 
 	// requested set of probes
-	Probes ProbeSet `json:"probes"`
+	Probes []ProbeSet `json:"probes"`
 	//
 	BillTo       int  `json:"bill_to,omitempty"`
 	IsOneoff     bool `json:"is_oneoff,omitempty"`
@@ -201,11 +202,12 @@ type MeasurementRequest struct {
 }
 
 // ProbeSet is a set of probes obviously
-type ProbeSet []struct {
-	Requested int               `json:"requested"` // number of probes
-	Type      string            `json:"type"`      // area, country, prefix, asn, probes, msm
-	Value     string            `json:"value"`     // can be numeric or string
-	Tags      map[string]string `json:"tags,omitempty"`
+type ProbeSet struct {
+	Requested   int    `json:"requested"` // number of probes
+	Type        string `json:"type"`      // area, country, prefix, asn, probes, msm
+	Value       string `json:"value"`     // can be numeric or string
+	TagsInclude string `json:"tags_include,omitempty"`
+	TagsExclude string `json:"tags_exclude,omitempty"`
 }
 
 // Definition is used to create measurements
