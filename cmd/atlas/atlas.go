@@ -169,6 +169,11 @@ func finalcheck(c *cli.Context) error {
 		cnf.ProbeSet.Value = fCountry
 	}
 
+	// Check whether tags are specified
+	if fTags != "" {
+		cnf.ProbeSet.Tags = fTags
+	}
+
 	// Wondering whether to move to the Functional options pattern
 	// cf. https://dave.cheney.net/2016/11/13/do-not-fear-first-class-functions
 	client, err = atlas.NewClient(atlas.Config{
@@ -178,6 +183,7 @@ func finalcheck(c *cli.Context) error {
 		PoolSize:     cnf.ProbeSet.PoolSize,
 		AreaType:     cnf.ProbeSet.Type,
 		AreaValue:    cnf.ProbeSet.Value,
+		Tags:         cnf.ProbeSet.Tags,
 		ProxyAuth:    auth,
 		Verbose:      fVerbose,
 		Log:          mylog,
@@ -314,6 +320,11 @@ func main() {
 			Name:        "country,C",
 			Usage:       "Short cut to specify a country",
 			Destination: &fCountry,
+		},
+		cli.StringFlag{
+			Name:        "tags,T",
+			Usage:       "Include/exclude tags for probesets",
+			Destination: &fTags,
 		},
 	}
 
