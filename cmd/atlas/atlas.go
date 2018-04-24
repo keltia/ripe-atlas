@@ -311,7 +311,7 @@ func main() {
 			Destination: &fAreaValue,
 		},
 		cli.StringFlag{
-			Name:        "--country,C",
+			Name:        "country,C",
 			Usage:       "Short cut to specify a country",
 			Destination: &fCountry,
 		},
