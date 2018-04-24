@@ -33,6 +33,11 @@ func init() {
 						Destination: &fCountry,
 					},
 					cli.StringFlag{
+						Name:        "tags,T",
+						Usage:       "filter on tags",
+						Destination:  &fTags,
+					},
+					cli.StringFlag{
 						Name:        "asn",
 						Usage:       "filter on asn",
 						Destination: &fAsn,
@@ -101,6 +106,10 @@ func prepareProbes() map[string]string {
 
 	if wantAF != WantBoth {
 		opts["AF"] = wantAF
+	}
+
+	if fTags != "" {
+		opts["tags"] = fTags
 	}
 
 	debug("opts: %#v", opts)

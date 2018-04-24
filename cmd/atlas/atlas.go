@@ -34,6 +34,7 @@ var (
 	// Probe-specific ones
 	fAllProbes bool
 	fIsAnchor  bool
+	fTags      string
 
 	// Common measurement ones
 	fAllMeasurements bool
@@ -83,7 +84,7 @@ var (
 )
 
 const (
-	atlasVersion = "0.26"
+	atlasVersion = "0.27"
 	// MyName is the application name
 	MyName = "ripe-atlas"
 
