@@ -28,6 +28,7 @@ type Config struct {
 	WantAF       string
 	ProxyAuth    string
 	Verbose      bool
+	Tags         string
 	Log          *log.Logger
 }
 
