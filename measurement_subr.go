@@ -8,6 +8,7 @@ import (
 	"log"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 // MeasurementResp contains all the results of the measurements
@@ -19,17 +20,61 @@ type MeasurementResp struct {
 func (c *Client) NewMeasurement() (req *MeasurementRequest) {
 	var defs []Definition
 
+	ps := NewProbeSet(c.config.PoolSize, c.config.AreaType, c.config.AreaValue, c.config.Tags)
 	req = &MeasurementRequest{
 		Definitions: defs,
 		IsOneoff:    true,
-		Probes:      *NewProbeSet(c.config.PoolSize, c.config.AreaType, c.config.AreaValue),
+		Probes:      []ProbeSet{ps},
 	}
 	c.verbose("probes: %#v", req.Probes)
 	return
 }
 
+func isPositive(tag string) (string, bool) {
+	bare := tag
+
+	if tag == "" {
+		return "", true
+	}
+
+	if tag[0] == '+' || tag[0] == '-' || tag[0] == '!' {
+		bare = tag[1:]
+	}
+
+	if tag[0] == '-' || tag[0] == '!' {
+		return bare, false
+	}
+	return bare, true
+}
+
+// splitTags analyse tags values:
+//   +tag / tag  ==> tags_include
+//   -tag / !tag ==> tags_exclude
+func splitTags(tags string) (in, out string) {
+	var (
+		aIn  []string
+		aOut []string
+	)
+
+	all := strings.Split(tags, ",")
+	if len(all) == 0 {
+		return "", ""
+	}
+
+	for _, tag := range all {
+		if bare, yes := isPositive(tag); yes {
+			aIn = append(aIn, bare)
+		} else {
+			aOut = append(aOut, bare)
+		}
+	}
+	return strings.Join(aIn, ","), strings.Join(aOut, ",")
+}
+
 // NewProbeSet create a set of probes for later requests
-func NewProbeSet(howmany int, settype, value string) (ps *ProbeSet) {
+func NewProbeSet(howmany int, settype, value string, tags string) (ps ProbeSet) {
+	var aIn, aOut string
+
 	if howmany == 0 {
 		howmany = 10
 	}
@@ -42,13 +87,18 @@ func NewProbeSet(howmany int, settype, value string) (ps *ProbeSet) {
 		value = "WW"
 	}
 
-	ps = &ProbeSet{
-		{
-			Requested: howmany,
-			Type:      settype,
-			Value:     value,
-			Tags:      nil,
-		},
+	// If tags were specified, analyze them
+	if tags != "" {
+		aIn, aOut = splitTags(tags)
+	}
+
+	fmt.Printf("aIn=%s aOut=%s\n", aIn, aOut)
+	ps = ProbeSet{
+		Requested:   howmany,
+		Type:        settype,
+		Value:       value,
+		TagsInclude: aIn,
+		TagsExclude: aOut,
 	}
 	return
 }
