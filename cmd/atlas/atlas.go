@@ -34,6 +34,7 @@ var (
 	// Probe-specific ones
 	fAllProbes bool
 	fIsAnchor  bool
+	fTags      string
 
 	// Common measurement ones
 	fAllMeasurements bool
