@@ -92,7 +92,6 @@ func NewProbeSet(howmany int, settype, value string, tags string) (ps ProbeSet) 
 		aIn, aOut = splitTags(tags)
 	}
 
-	fmt.Printf("aIn=%s aOut=%s\n", aIn, aOut)
 	ps = ProbeSet{
 		Requested:   howmany,
 		Type:        settype,
