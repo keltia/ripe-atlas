@@ -99,3 +99,11 @@ func TestNewProbeSet(t *testing.T) {
 	assert.NotEmpty(t, ps)
 	assert.EqualValues(t, bmps, ps)
 }
+
+func TestNewProbeSet_2(t *testing.T) {
+	bmps := ProbeSet{Requested: 10, Type: "area", Value: "WW", TagsInclude: "system-ipv6-stable-1d", TagsExclude: ""}
+	ps := NewProbeSet(0, "", "", "system-ipv6-stable-1d")
+
+	assert.NotEmpty(t, ps)
+	assert.EqualValues(t, bmps, ps)
+}
