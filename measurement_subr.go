@@ -136,9 +136,10 @@ func (d *Definition) setParams(fields map[string]string) {
 // AddDefinition create a new MeasurementRequest and fills some fields
 func (m *MeasurementRequest) AddDefinition(fields map[string]string) *MeasurementRequest {
 	def := new(Definition)
-	def.setParams(fields)
-	m.Definitions = append(m.Definitions, *def)
-
+	err := FillDefinition(def, fields)
+	if err == nil {
+		m.Definitions = append(m.Definitions, *def)
+	}
 	return m
 }
 

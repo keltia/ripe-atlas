@@ -5,6 +5,44 @@ import (
 	"testing"
 )
 
+var (
+	TesCfg = Config{
+		APIKey:       "",
+		DefaultProbe: 666,
+		IsOneOff:     true,
+		PoolSize:     10,
+		AreaType:     "country",
+		AreaValue:    "fr",
+		Tags:         "",
+		Verbose:      false,
+		Log:          nil,
+	}
+)
+
+func Before(t *testing.T) *Client {
+
+	testc, err := NewClient(TesCfg)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, testc)
+	assert.IsType(t, (*Client)(nil), testc)
+
+	return testc
+}
+
+func TestClient_NewMeasurement(t *testing.T) {
+	c := Before(t)
+
+	m := c.NewMeasurement()
+
+	assert.NotNil(t, c)
+	assert.NotNil(t, m)
+	assert.IsType(t, (*MeasurementRequest)(nil), m)
+	assert.IsType(t, ([]Definition)(nil), m.Definitions)
+	assert.IsType(t, ([]ProbeSet)(nil), m.Probes)
+	assert.True(t, m.IsOneoff)
+}
+
 func TestIsPositive(t *testing.T) {
 	a := ""
 	b, y := isPositive(a)
@@ -57,6 +95,14 @@ func TestSplitTags(t *testing.T) {
 func TestNewProbeSet(t *testing.T) {
 	bmps := ProbeSet{Requested: 10, Type: "country", Value: "fr", TagsInclude: "system-ipv6-stable-1d", TagsExclude: ""}
 	ps := NewProbeSet(10, "country", "fr", "system-ipv6-stable-1d")
+
+	assert.NotEmpty(t, ps)
+	assert.EqualValues(t, bmps, ps)
+}
+
+func TestNewProbeSet_2(t *testing.T) {
+	bmps := ProbeSet{Requested: 10, Type: "area", Value: "WW", TagsInclude: "system-ipv6-stable-1d", TagsExclude: ""}
+	ps := NewProbeSet(0, "", "", "system-ipv6-stable-1d")
 
 	assert.NotEmpty(t, ps)
 	assert.EqualValues(t, bmps, ps)
