@@ -19,6 +19,7 @@ type Client struct {
 
 // Config is the main object when creating an API Client
 type Config struct {
+	endpoint     string
 	APIKey       string
 	DefaultProbe int
 	AreaType     string
