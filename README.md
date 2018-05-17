@@ -132,22 +132,24 @@ Not all parameters specified for the different commands are implemented, as you 
 
 ### Proxy authentication
 
-If you want to use `atlas` or the API behind an authenticating HTTP/HTTPS proxy, you need to create another configuration file holding the proxy credentials.  The file is called `.dbrc` under UNIX and is located in your `$HOME` directory.  On Windows, it is in the same directory as `config.toml` inside `%LOCALAPPDATA%\RIPE-ATLAS`.
+If you want to use `atlas` or the API behind an authenticating HTTP/HTTPS proxy, you need to create another configuration file holding the proxy credentials.  The file is called `.netrc` under UNIX and is located in your `$HOME` directory.  On Windows, it is in the same directory as `config.toml` inside `%LOCALAPPDATA%\RIPE-ATLAS`.
 
-The format is inherited from a Perl package I've used before.  You have a series of line for each service and contains both username and password:
+The format is described in the `ftp(1)` manpage:
 
-    <service>   <username>  <password>      <tag>
+    machine <service> username <username> password <password>
 
-in our case, the `service` is `proxy`, you fill username and password and `tag` will be ignored.
+in our case, the `service` is `proxy` (or `default`), you just need to fill in username and password.
 
-    proxy   john.doe    secret      ignored
+    machine proxy username john.doe password secret
 
-For the API, you will to generate the  `username:password` string, encode it in base64 and give it to `atlas.NewClient()` with the `ProxyAuth` parameter (see `config.go` for `setupProxyAuth()`).
+The API now look by itself for the `.netrc` file, using my own [github.com/keltia/proxy](https://github.com/keltia/proxy) package. 
     
     atlas.go:
     
+    import "github.com/keltia/proxy"
+    
     // Check whether we have proxy authentication (from a separate config file)
-    auth, err := setupProxyAuth()
+    authstr, err := proxy.SetupProxyAuth()
 
     client, err = atlas.NewClient(atlas.Config{
         APIKey:       mycnf.APIKey,
@@ -157,7 +159,9 @@ For the API, you will to generate the  `username:password` string, encode it in 
         Verbose:      fVerbose,
     })
 
-As an alternative, you can do the encoding yourself and put that in `config.toml` as `proxy_auth`.    
+As an alternative, you can do the encoding yourself and put that in `config.toml` as `proxy_auth`. 
+
+Last, you can also use the full form for the `https_proxy` environment variable with `user:password@proxy` but it is not recommended to put your password in the clear like this.
 
 ### Usage
 
