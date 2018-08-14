@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/keltia/proxy"
 	"github.com/keltia/ripe-atlas"
 	"github.com/urfave/cli"
 	"log"
@@ -84,7 +85,7 @@ var (
 )
 
 const (
-	atlasVersion = "0.30"
+	atlasVersion = "0.31"
 	// MyName is the application name
 	MyName = "ripe-atlas"
 
@@ -153,7 +154,7 @@ func finalcheck(c *cli.Context) error {
 	}
 
 	// Check whether we have proxy authentication (from a separate config file)
-	auth, err := setupProxyAuth()
+	auth, err := proxy.SetupProxyAuth()
 	if err != nil {
 		verbose("Invalid or no proxy auth credentials")
 	}
