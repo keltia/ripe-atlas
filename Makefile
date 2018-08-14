@@ -4,7 +4,8 @@
 #
 
 .PATH= cmd/atlas:.
-GOBIN=   ${GOPATH}/bin
+GO=		go
+GOBIN=  ${GOPATH}/bin
 
 SRCS= common.go credits.go keys.go measurements.go probes.go types.go \
     measurement_subr.go errors.go client.go version.go \
@@ -28,22 +29,22 @@ all: ${BIN}
 windows:  ${EXE}
 
 ${BIN}: ${SRCS} ${USRC}
-	go build ${OPTS} ./cmd/...
+	${GO} build ${OPTS} ./cmd/...
 
 ${EXE}: ${SRCS} ${WSRC}
-	GOOS=windows go build ${OPTS} ./cmd/...
+	GOOS=windows ${GO} build ${OPTS} ./cmd/...
 
 test:
-	go test -v ./...
+	${GO} test -v ./...
 
 bench:
-	go test -bench=. -benchmem ./...
+	${GO} test -bench=. -benchmem ./...
 
 lint:
 	gometalinter ./...
 
 install: ${BIN}
-	go install ${OPT} -v ./cmd/...
+	${GO} install ${OPT} -v ./cmd/...
 
 pkg: ${BIN} ${EXE}
 	-/bin/mkdir pkg
@@ -51,7 +52,7 @@ pkg: ${BIN} ${EXE}
 	zip -r pkg/${BIN}.zip ${EXE} ${XTRAS}
 
 clean:
-	go clean -v ./...
+	${GO} clean -v ./...
 	rm -f ${BIN} ${EXE} pkg/*
 
 push:
