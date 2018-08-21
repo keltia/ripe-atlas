@@ -227,7 +227,7 @@ type Definition struct {
 	Spread         int      `json:"spread,omitempty"`
 	Packets        int      `json:"packets,omitempty"`
 	PacketInterval int      `json:"packet_interval,omitempty"`
-	Tags           []string `json:"tags"`
+	Tags           []string `json:"tags,omitempty"`
 
 	// Common parameters
 	ExtraWait      int  `json:"extra_wait,omitempty"`
