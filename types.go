@@ -221,13 +221,13 @@ type Definition struct {
 	// Required for all but "dns"
 	Target string `json:"target,omitempty"`
 
-	GroupID        int    `json:"group_id,omitempty"`
-	Group          string `json:"group,omitempty"`
-	InWifiGroup    bool   `json:"in_wifi_group,omitempty"`
-	Spread         int    `json:"spread,omitempty"`
-	Packets        int    `json:"packets,omitempty"`
-	PacketInterval int    `json:"packet_interval,omitempty"`
-	Tags           string `json:"tags"`
+	GroupID        int      `json:"group_id,omitempty"`
+	Group          string   `json:"group,omitempty"`
+	InWifiGroup    bool     `json:"in_wifi_group,omitempty"`
+	Spread         int      `json:"spread,omitempty"`
+	Packets        int      `json:"packets,omitempty"`
+	PacketInterval int      `json:"packet_interval,omitempty"`
+	Tags           []string `json:"tags"`
 
 	// Common parameters
 	ExtraWait      int  `json:"extra_wait,omitempty"`
