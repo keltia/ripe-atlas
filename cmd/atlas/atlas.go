@@ -47,6 +47,7 @@ var (
 	fMeasureType     string
 	fWant4           bool
 	fWant6           bool
+	fMTags           string
 
 	// Create measurements
 	fBillTo    string
