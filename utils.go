@@ -2,8 +2,10 @@ package atlas
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 // FillDefinition set a few parameters in a definition list
@@ -20,6 +22,7 @@ func FillDefinition(d *Definition, fields map[string]string) error {
 	for k, v := range fields {
 		// Check the field is present
 		if f, ok := typeOfDef.FieldByName(k); ok {
+			log.Printf("k=%s type=%s-%s", k, f.Type.Name(), f.Type.Kind().String())
 			// Use the right type
 			switch f.Type.Name() {
 			case "float":
@@ -33,6 +36,12 @@ func FillDefinition(d *Definition, fields map[string]string) error {
 			case "bool":
 				vb, _ := strconv.ParseBool(v)
 				sdef.FieldByName(k).SetBool(vb)
+			case "":
+				if f.Type.Kind().String() == "slice" {
+					// Special case for "tags" which is an array, not a scalar
+					a := strings.Split(v, ",")
+					sdef.FieldByName(k).Set(reflect.ValueOf(a))
+				}
 			default:
 				return fmt.Errorf("Unsupported type: %s", f.Type.Name())
 			}
