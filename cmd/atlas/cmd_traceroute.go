@@ -35,6 +35,11 @@ func init() {
 				Usage:       "Select UDP or TCP",
 				Destination: &fProtocol,
 			},
+			cli.StringFlag{
+				Name:        "T, tags",
+				Usage:       "add tags to measurement",
+				Destination: &fMTags,
+			},
 		},
 		Action: cmdTraceroute,
 	})
@@ -58,6 +63,11 @@ func prepareTraceroute(target, protocol string, maxhops, size int) (req *atlas.M
 	AF := prepareFamily(target)
 	if AF == "" {
 		AF = wantAF
+	}
+
+	// Add a tag?
+	if fMTags != "" {
+		opts["Tags"] = fMTags
 	}
 
 	req = client.NewMeasurement()

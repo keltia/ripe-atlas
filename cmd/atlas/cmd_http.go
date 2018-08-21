@@ -32,6 +32,11 @@ func init() {
 				Usage:       "Set a specific HTTP version.",
 				Destination: &fHTTPVersion,
 			},
+			cli.StringFlag{
+				Name:        "T, tags",
+				Usage:       "add tags to measurement",
+				Destination: &fMTags,
+			},
 		},
 		Action: cmdHTTP,
 	})
@@ -64,6 +69,11 @@ func prepareHTTP(target, path string, port int) (req *atlas.MeasurementRequest) 
 
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
+
+	// Add a tag?
+	if fMTags != "" {
+		opts["Tags"] = fMTags
+	}
 
 	if fVerbose {
 		displayOptions(opts)
