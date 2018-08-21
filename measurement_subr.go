@@ -109,16 +109,6 @@ func (m *MeasurementRequest) AddDefinition(fields map[string]string) *Measuremen
 	return m
 }
 
-// InsertTags add tags to a measurement definition
-func (d *Definition) InsertTags(stags string) {
-	var tags []string
-
-	if stags != "" {
-		tags = strings.Split(stags, ",")
-		d.Tags = tags
-	}
-}
-
 // createMeasurement creates a measurement for all types
 func (c *Client) createMeasurement(t string, d *MeasurementRequest) (m *MeasurementResp, err error) {
 	opts := make(map[string]string)
