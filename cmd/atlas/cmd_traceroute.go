@@ -35,6 +35,11 @@ func init() {
 				Usage:       "Select UDP or TCP",
 				Destination: &fProtocol,
 			},
+			cli.StringFlag{
+				Name:        "T, tags",
+				Usage:       "add tags to measurement",
+				Destination: &fMTags,
+			},
 		},
 		Action: cmdTraceroute,
 	})

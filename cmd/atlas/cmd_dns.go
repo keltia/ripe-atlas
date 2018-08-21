@@ -36,6 +36,11 @@ func init() {
 			"drill",
 		},
 		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name: "T, tags",
+				Usage: "add tags to measurement",
+				Destination: &fMTags,
+			},
 			cli.BoolFlag{
 				Name:        "E, edns0",
 				Usage:       "use EDNS0",

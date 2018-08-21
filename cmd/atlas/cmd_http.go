@@ -32,6 +32,11 @@ func init() {
 				Usage:       "Set a specific HTTP version.",
 				Destination: &fHTTPVersion,
 			},
+			cli.StringFlag{
+				Name:        "T, tags",
+				Usage:       "add tags to measurement",
+				Destination: &fMTags,
+			},
 		},
 		Action: cmdHTTP,
 	})

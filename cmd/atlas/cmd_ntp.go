@@ -15,6 +15,13 @@ func init() {
 		Usage:       "get time from ntp server",
 		Description: "send NTP queries to an host/IP",
 		Action:      cmdNTP,
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "T, tags",
+				Usage:       "add tags to measurement",
+				Destination: &fMTags,
+			},
+		},
 	})
 }
 
