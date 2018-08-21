@@ -5,9 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
-	"reflect"
-	"strconv"
 	"strings"
 )
 
@@ -102,37 +99,6 @@ func NewProbeSet(howmany int, settype, value string, tags string) (ps ProbeSet) 
 	return
 }
 
-// SetParams set a few parameters in a definition list
-/*
-The goal here is to give a dictionary of string and let it figure out each field's type
-depending on the recipient's type in the struct.
-*/
-func (d *Definition) setParams(fields map[string]string) {
-	sdef := reflect.ValueOf(d).Elem()
-	typeOfDef := sdef.Type()
-	for k, v := range fields {
-		// Check the field is present
-		if f, ok := typeOfDef.FieldByName(k); ok {
-			// Use the right type
-			switch f.Type.Name() {
-			case "float":
-				vf, _ := strconv.ParseFloat(v, 32)
-				sdef.FieldByName(k).SetFloat(vf)
-			case "int":
-				vi, _ := strconv.ParseInt(v, 10, 32)
-				sdef.FieldByName(k).SetInt(vi)
-			case "string":
-				sdef.FieldByName(k).SetString(v)
-			case "bool":
-				vb, _ := strconv.ParseBool(v)
-				sdef.FieldByName(k).SetBool(vb)
-			default:
-				log.Printf("Unsupported type: %s", f.Type.Name())
-			}
-		}
-	}
-}
-
 // AddDefinition create a new MeasurementRequest and fills some fields
 func (m *MeasurementRequest) AddDefinition(fields map[string]string) *MeasurementRequest {
 	def := new(Definition)
@@ -141,6 +107,16 @@ func (m *MeasurementRequest) AddDefinition(fields map[string]string) *Measuremen
 		m.Definitions = append(m.Definitions, *def)
 	}
 	return m
+}
+
+// InsertTags add tags to a measurement definition
+func (d *Definition) InsertTags(stags string) {
+	var tags []string
+
+	if stags != "" {
+		tags = strings.Split(stags, ",")
+		d.Tags = tags
+	}
 }
 
 // createMeasurement creates a measurement for all types
