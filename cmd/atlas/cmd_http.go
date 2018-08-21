@@ -70,6 +70,11 @@ func prepareHTTP(target, path string, port int) (req *atlas.MeasurementRequest) 
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
 
+	// Add a tag?
+	if fMTags != "" {
+		opts["Tags"] = fMTags
+	}
+
 	if fVerbose {
 		displayOptions(opts)
 	}

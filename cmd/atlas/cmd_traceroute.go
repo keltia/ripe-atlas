@@ -65,6 +65,11 @@ func prepareTraceroute(target, protocol string, maxhops, size int) (req *atlas.M
 		AF = wantAF
 	}
 
+	// Add a tag?
+	if fMTags != "" {
+		opts["Tags"] = fMTags
+	}
+
 	req = client.NewMeasurement()
 	if AF == WantBoth {
 

@@ -55,6 +55,11 @@ func prepareNTP(target string) (req *atlas.MeasurementRequest) {
 		req.AddDefinition(opts)
 	}
 
+	// Add a tag?
+	if fMTags != "" {
+		opts["Tags"] = fMTags
+	}
+
 	if fVerbose {
 		displayOptions(opts)
 	}

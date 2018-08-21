@@ -37,6 +37,11 @@ func preparePing(target string) (req *atlas.MeasurementRequest) {
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
 
+	// Add a tag?
+	if fMTags != "" {
+		opts["Tags"] = fMTags
+	}
+
 	// Try to configure -4/-6 depending on the argument to DTRT
 	AF := prepareFamily(target)
 	if AF == "" {

@@ -49,6 +49,11 @@ func prepareTLSCert(target string, port int) (req *atlas.MeasurementRequest) {
 		AF = wantAF
 	}
 
+	// Add a tag?
+	if fMTags != "" {
+		opts["Tags"] = fMTags
+	}
+
 	req = client.NewMeasurement()
 	if AF == WantBoth {
 
