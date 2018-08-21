@@ -2,7 +2,6 @@ package atlas
 
 import (
 	"fmt"
-	"log"
 	"reflect"
 	"strconv"
 	"strings"
@@ -22,7 +21,6 @@ func FillDefinition(d *Definition, fields map[string]string) error {
 	for k, v := range fields {
 		// Check the field is present
 		if f, ok := typeOfDef.FieldByName(k); ok {
-			log.Printf("k=%s type=%s-%s", k, f.Type.Name(), f.Type.Kind().String())
 			// Use the right type
 			switch f.Type.Name() {
 			case "float":
