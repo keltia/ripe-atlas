@@ -12,6 +12,10 @@ var TestForm = map[string]string{
 	"Spread":      "1",
 }
 
+var TestForm1 = map[string]string{
+	"Tags": "foo,bar",
+}
+
 func TestFillDefinition(t *testing.T) {
 	err := FillDefinition(nil, TestForm)
 
@@ -26,4 +30,13 @@ func TestFillDefinition2(t *testing.T) {
 	assert.Equal(t, "foo", d.Type)
 	assert.Equal(t, 1, d.AF)
 	assert.True(t, d.InWifiGroup)
+}
+
+func TestFillDefinition3(t *testing.T) {
+	d := &Definition{}
+	err := FillDefinition(d, TestForm1)
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, d.Tags)
+	assert.EqualValues(t, []string{"foo", "bar"}, d.Tags)
 }

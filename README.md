@@ -173,9 +173,9 @@ USAGE:
    atlas [global options] command [command options] [arguments...]
 
 VERSION:
-   0.23
+   0.31
 
-AUTHOR(S):
+AUTHOR:
    Ollivier Robert <roberto@keltia.net>
 
 COMMANDS:
@@ -207,14 +207,39 @@ GLOBAL OPTIONS:
    -1, --is-oneoff               one-time measurement
    -6, --ipv6                    Only IPv6
    -4, --ipv4                    Only IPv4
-   --pool-size value             Number of probes to request (default: 0)
+   --pool-size value, -N value   Number of probes to request (default: 0)
    --area-type value             Set type for probes (area, country, etc.)
    --area-value value            Value for the probe set (WW, West, etc.)
+   --country value, -C value     Short cut to specify a country
+   --tags value, -T value        Include/exclude tags for probesets
    --help, -h                    show help
    --version, -V
 ```
   
 In addition to the main `probes` and `measurements` commands, it features fast-access to common tasks like `ping`and `traceroute`.
+
+Now, every command has a `-T` or `-tags` parameter to add user-defined tags when the measurement is created.  **This is different from -T at the higher level**.  The latter is for selecting probes.
+
+```
+$ atlas ping -h
+NAME:
+   atlas ping - ping selected address
+
+USAGE:
+   atlas ping [command options] [arguments...]
+
+DESCRIPTION:
+   send echo/reply to an IP
+
+OPTIONS:
+   -T value, --tags value  add tags to measurement
+```
+
+You can use it like that:
+
+```
+$ atlas -N 10 -4 ping -T test-tag,foobar www.example.com
+```
 
 When looking at measurement results, it is very easy to use something like [jq](https://stedolan.github.io/jq) to properly display JSON data:
 

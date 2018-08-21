@@ -15,6 +15,13 @@ func init() {
 		Usage:       "ping selected address",
 		Description: "send echo/reply to an IP",
 		Action:      cmdPing,
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "T, tags",
+				Usage:       "add tags to measurement",
+				Destination: &fMTags,
+			},
+		},
 	})
 }
 
@@ -29,6 +36,11 @@ func preparePing(target string) (req *atlas.MeasurementRequest) {
 
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
+
+	// Add a tag?
+	if fMTags != "" {
+		opts["Tags"] = fMTags
+	}
 
 	// Try to configure -4/-6 depending on the argument to DTRT
 	AF := prepareFamily(target)

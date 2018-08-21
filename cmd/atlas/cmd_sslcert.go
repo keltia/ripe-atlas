@@ -20,6 +20,13 @@ func init() {
 		Usage:       "get TLS certificate from host/IP",
 		Description: "connect and fetch TLS certificate from host/IP",
 		Action:      cmdTLSCert,
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "T, tags",
+				Usage:       "add tags to measurement",
+				Destination: &fMTags,
+			},
+		},
 	})
 }
 
@@ -40,6 +47,11 @@ func prepareTLSCert(target string, port int) (req *atlas.MeasurementRequest) {
 	AF := prepareFamily(target)
 	if AF == "" {
 		AF = wantAF
+	}
+
+	// Add a tag?
+	if fMTags != "" {
+		opts["Tags"] = fMTags
 	}
 
 	req = client.NewMeasurement()

@@ -11,6 +11,6 @@ branches:
   - develop
   - master
 install:
-- go get github.com/urfave/cli
-- go get github.com/naoina/toml
-- go get github.com/keltia/ripe-atlas
+- env GO111MODULE=on go get github.com/urfave/cli
+- env GO111MODULE=on go get github.com/naoina/toml
+- env GO111MODULE=on go get github.com/keltia/ripe-atlas

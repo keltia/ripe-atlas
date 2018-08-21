@@ -47,6 +47,7 @@ var (
 	fMeasureType     string
 	fWant4           bool
 	fWant6           bool
+	fMTags           string
 
 	// Create measurements
 	fBillTo    string
@@ -85,7 +86,7 @@ var (
 )
 
 const (
-	atlasVersion = "0.31"
+	atlasVersion = "0.40"
 	// MyName is the application name
 	MyName = "ripe-atlas"
 
