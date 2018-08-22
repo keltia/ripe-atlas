@@ -2,8 +2,14 @@
 
 * RIPE Atlas v2 API access in Go. *
 
-[![Release](https://img.shields.io/github/release/keltia/ripe-atlas.svg?style=flat-square)](https://github.com/keltia/ripe-atlas/releases/latest)
-[![godoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/keltia/ripe-atlas) [![license](https://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/keltia/ripe-atlas/master/LICENSE) [![build](https://img.shields.io/travis/keltia/ripe-atlas.svg?style=flat)](https://travis-ci.org/keltia/ripe-atlas) [![Go Report Card](https://goreportcard.com/badge/github.com/keltia/ripe-atlas)](https://goreportcard.com/report/github.com/keltia/ripe-atlas)
+[![GitHub release](https://img.shields.io/github/release/keltia/ripe-atlas.svg)](https://github.com/keltia/ripe-atlas/releases)
+[![GitHub issues](https://img.shields.io/github/issues/keltia/ripe-atlas.svg)](https://github.com/keltia/ripe-atlas/issues)
+[![Go Version](https://img.shields.io/badge/go-1.10-blue.svg)](https://golang.org/dl/)
+[![Build Status](https://travis-ci.org/keltia/ripe-atlas.svg?branch=master)](https://travis-ci.org/keltia/ripe-atlas)
+[![GoDoc](http://godoc.org/github.com/keltia/ripe-atlas?status.svg)](http://godoc.org/github.com/keltia/ripe-atlas)
+[![SemVer](http://img.shields.io/SemVer/2.0.0.png)](https://semver.org/spec/v2.0.0.html)
+[![License](https://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/keltia/ripe-atlas/master/LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/keltia/ripe-atlas)](https://goreportcard.com/report/github.com/keltia/ripe-atlas)
 
 `ripe-atlas` is a [Go](https://golang.org/) library to access the RIPE Atlas [REST API](https://atlas.ripe.net/docs/api/v2/manual/).
 
