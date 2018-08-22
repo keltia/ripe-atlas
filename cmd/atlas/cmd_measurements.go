@@ -55,6 +55,11 @@ func init() {
 						Value:       "",
 						Destination: &fMeasureType,
 					},
+					cli.StringFlag{
+						Name:        "T, tags",
+						Usage:       "filter on measurement tags",
+						Destination: &fMTags,
+					},
 				},
 				Action: measurementsList,
 			},
@@ -116,6 +121,11 @@ func measurementsList(c *cli.Context) error {
 
 	// Check global parameters
 	opts = checkGlobalFlags(opts)
+
+	// filter on tag?
+	if fMTags != "" {
+		opts["tags"] = fMTags
+	}
 
 	if fVerbose {
 		displayOptions(opts)
