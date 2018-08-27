@@ -1,6 +1,7 @@
 language: go
 go:
 - "1.10.x"
+- "1.11.x"
 - master
 matrix:
   allow_failures:
@@ -10,7 +11,9 @@ branches:
   only:
   - develop
   - master
+- env:
+  - GO111MODULE=on
 install:
-- env GO111MODULE=on go get github.com/urfave/cli
-- env GO111MODULE=on go get github.com/naoina/toml
-- env GO111MODULE=on go get github.com/keltia/ripe-atlas
+- go get github.com/urfave/cli
+- go get github.com/naoina/toml
+- go get github.com/keltia/ripe-atlas
