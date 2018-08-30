@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -89,4 +90,18 @@ func TestAddQueryParameters_1(t *testing.T) {
 func TestAddQueryParameters_2(t *testing.T) {
 	p := AddQueryParameters("foo", map[string]string{"bar": "baz"})
 	assert.Equal(t, "foo?bar=baz", p)
+}
+
+func TestClient_AddAPIKey(t *testing.T) {
+	c, err := NewClient(Config{APIKey:"foo"})
+	require.NoError(t, err)
+	assert.NotNil(t, c)
+	assert.NotEmpty(t, c)
+
+	opts := map[string]string{}
+
+	new := c.addAPIKey(opts)
+	assert.NotEmpty(t, c.config.APIKey)
+	assert.Equal(t, 1, len(new))
+	assert.EqualValues(t, map[string]string{"key": "foo"}, new)
 }
