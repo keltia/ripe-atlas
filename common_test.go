@@ -104,7 +104,7 @@ func TestClient_AddAPIKey(t *testing.T) {
 	assert.EqualValues(t, map[string]string{"key": "foo"}, new)
 }
 
-func TestPrepareRequest(t *testing.T) {
+func TestClient_PrepareRequest(t *testing.T) {
 	c, err := NewClient(Config{endpoint: testURL})
 	require.NoError(t, err)
 
@@ -119,8 +119,8 @@ func TestPrepareRequest(t *testing.T) {
 	assert.EqualValues(t, res, req.URL)
 }
 
-func TestPrepareRequest_2(t *testing.T) {
-	c, err := NewClient()
+func TestClient_PrepareRequest_2(t *testing.T) {
+	c, err := NewClient(TesCfg)
 	require.NoError(t, err)
 
 	opts := map[string]string{}
@@ -132,4 +132,16 @@ func TestPrepareRequest_2(t *testing.T) {
 	res, _ := url.Parse(apiEndpoint + "/foo")
 	assert.Equal(t, "GET", req.Method)
 	assert.EqualValues(t, res, req.URL)
+}
+
+func TestClient_MergeGlobalOptions(t *testing.T) {
+	c, err := NewClient(TesCfg)
+	require.NoError(t, err)
+
+	opts := map[string]string{"foo": "bar"}
+	c.opts = map[string]string{"baz": "xyz"}
+	res := map[string]string{"foo": "bar", "baz": "xyz"}
+
+	c.mergeGlobalOptions(opts)
+	assert.EqualValues(t, res, opts)
 }
