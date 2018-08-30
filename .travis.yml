@@ -14,6 +14,7 @@ branches:
 - env:
   - GO111MODULE=on
 install:
+- go get github.com/keltia/proxy
 - go get github.com/urfave/cli
 - go get github.com/naoina/toml
 - go get github.com/keltia/ripe-atlas
