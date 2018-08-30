@@ -18,11 +18,6 @@ const (
 	apiEndpoint = "https://atlas.ripe.net/api/v2"
 )
 
-// GetVersion returns the API wrapper version
-func GetVersion() string {
-	return ourVersion
-}
-
 // getPageNum returns the value of the page= parameter
 func getPageNum(url string) (page string) {
 	re := regexp.MustCompile(`page=(\d+)`)

@@ -11,12 +11,7 @@ import (
 	"testing"
 )
 
-const testURL  = "http://localhost:10000"
-
-func TestGetVersion(t *testing.T) {
-	ver := GetVersion()
-	assert.EqualValues(t, ourVersion, ver, "should be equal")
-}
+const testURL = "http://localhost:10000"
 
 func TestGetPageNum(t *testing.T) {
 	url := "https://foo.example.com/"
@@ -96,7 +91,7 @@ func TestAddQueryParameters_2(t *testing.T) {
 }
 
 func TestClient_AddAPIKey(t *testing.T) {
-	c, err := NewClient(Config{APIKey:"foo"})
+	c, err := NewClient(Config{APIKey: "foo"})
 	require.NoError(t, err)
 	assert.NotNil(t, c)
 	assert.NotEmpty(t, c)
