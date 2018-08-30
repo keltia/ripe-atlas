@@ -7,8 +7,11 @@ import (
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"testing"
 )
+
+const testURL  = "http://localhost:10000"
 
 func TestGetVersion(t *testing.T) {
 	ver := GetVersion()
@@ -104,4 +107,34 @@ func TestClient_AddAPIKey(t *testing.T) {
 	assert.NotEmpty(t, c.config.APIKey)
 	assert.Equal(t, 1, len(new))
 	assert.EqualValues(t, map[string]string{"key": "foo"}, new)
+}
+
+func TestPrepareRequest(t *testing.T) {
+	c, err := NewClient(Config{endpoint: testURL})
+	require.NoError(t, err)
+
+	opts := map[string]string{}
+	req := c.prepareRequest("GET", "foo", opts)
+
+	assert.NotNil(t, req)
+	assert.IsType(t, (*http.Request)(nil), req)
+
+	res, _ := url.Parse(testURL + "/foo")
+	assert.Equal(t, "GET", req.Method)
+	assert.EqualValues(t, res, req.URL)
+}
+
+func TestPrepareRequest_2(t *testing.T) {
+	c, err := NewClient()
+	require.NoError(t, err)
+
+	opts := map[string]string{}
+	req := c.prepareRequest("GET", "foo", opts)
+
+	assert.NotNil(t, req)
+	assert.IsType(t, (*http.Request)(nil), req)
+
+	res, _ := url.Parse(apiEndpoint + "/foo")
+	assert.Equal(t, "GET", req.Method)
+	assert.EqualValues(t, res, req.URL)
 }
