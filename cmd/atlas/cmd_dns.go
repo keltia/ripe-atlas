@@ -37,8 +37,8 @@ func init() {
 		},
 		Flags: []cli.Flag{
 			cli.StringFlag{
-				Name: "T, tags",
-				Usage: "add tags to measurement",
+				Name:        "T, tags",
+				Usage:       "add tags to measurement",
 				Destination: &fMTags,
 			},
 			cli.BoolFlag{
