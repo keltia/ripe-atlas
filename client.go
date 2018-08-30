@@ -30,6 +30,10 @@ func NewClient(cfgs ...Config) (*Client, error) {
 		c.log = c.config.Log
 	}
 
+	// Ensure this is not empty
+	if c.config.endpoint == "" {
+		c.config.endpoint = apiEndpoint
+	}
 	c.verbose("c.config=%#v", c.config)
 
 	// Create and save the http.Client
