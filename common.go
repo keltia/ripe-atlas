@@ -18,11 +18,6 @@ const (
 	apiEndpoint = "https://atlas.ripe.net/api/v2"
 )
 
-// GetVersion returns the API wrapper version
-func GetVersion() string {
-	return ourVersion
-}
-
 // getPageNum returns the value of the page= parameter
 func getPageNum(url string) (page string) {
 	re := regexp.MustCompile(`page=(\d+)`)
@@ -34,6 +29,9 @@ func getPageNum(url string) (page string) {
 
 // AddQueryParameters adds query parameters to the URL.
 func AddQueryParameters(baseURL string, queryParams map[string]string) string {
+	if len(queryParams) == 0 {
+		return baseURL
+	}
 	baseURL += "?"
 	params := url.Values{}
 	for key, value := range queryParams {
@@ -62,9 +60,9 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 		method = "GET"
 	} else {
 		if c.config.endpoint != "" {
-			endPoint = fmt.Sprintf("%s/%s/", c.config.endpoint, what)
+			endPoint = fmt.Sprintf("%s/%s", c.config.endpoint, what)
 		} else {
-			endPoint = fmt.Sprintf("%s/%s/", apiEndpoint, what)
+			endPoint = fmt.Sprintf("%s/%s", apiEndpoint, what)
 		}
 	}
 
@@ -139,4 +137,10 @@ func (c *Client) handleAPIResponsese(r *http.Response) (err error) {
 		aerr.Error.Detail,
 		aerr.Error.Errors)
 	return
+}
+
+func (c *Client) mergeGlobalOptions(opts map[string]string) {
+	for k, v := range c.opts {
+		opts[k] = v
+	}
 }

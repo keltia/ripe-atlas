@@ -1,13 +1,14 @@
-package atlas
+package atlas // import "github.com/keltia/ripe-atlas"
 
 import (
 	"fmt"
-	"github.com/keltia/proxy"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"time"
+
+	"github.com/keltia/proxy"
 )
 
 // NewClient is the first function to call.
@@ -29,6 +30,10 @@ func NewClient(cfgs ...Config) (*Client, error) {
 		c.log = c.config.Log
 	}
 
+	// Ensure this is not empty
+	if c.config.endpoint == "" {
+		c.config.endpoint = apiEndpoint
+	}
 	c.verbose("c.config=%#v", c.config)
 
 	// Create and save the http.Client
@@ -71,8 +76,8 @@ func (c *Client) SetOption(name, value string) *Client {
 	return c
 }
 
-func (c *Client) mergeGlobalOptions(opts map[string]string) {
-	for k, v := range c.opts {
-		opts[k] = v
-	}
+// GetVersion returns the API wrapper version
+func GetVersion() string {
+	return ourVersion
 }
+

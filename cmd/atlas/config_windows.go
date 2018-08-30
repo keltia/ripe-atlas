@@ -17,8 +17,6 @@ var (
 	basedir = filepath.Join(os.Getenv("%LOCALAPPDATA%"),
 		"RIPE-ATLAS",
 	)
-
-	dbrcFile = filepath.Join(basedir, "dbrc")
 )
 
 // Check the parameter for either tag or filename

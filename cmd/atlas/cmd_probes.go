@@ -35,7 +35,7 @@ func init() {
 					cli.StringFlag{
 						Name:        "tags,T",
 						Usage:       "filter on tags",
-						Destination:  &fTags,
+						Destination: &fTags,
 					},
 					cli.StringFlag{
 						Name:        "asn",
