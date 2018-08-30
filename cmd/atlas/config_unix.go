@@ -16,9 +16,6 @@ import (
 var (
 	// Default location is now $HOME/.config/<tag>/ on UNIX
 	basedir = filepath.Join(os.Getenv("HOME"), ".config", MyName)
-
-	// That one is common to all connected utilities
-	dbrcFile = filepath.Join(os.Getenv("HOME"), ".dbrc")
 )
 
 // Check the parameter for either tag or filename
