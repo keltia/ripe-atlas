@@ -179,7 +179,7 @@ USAGE:
    atlas [global options] command [command options] [arguments...]
 
 VERSION:
-   0.31
+   0.41
 
 AUTHOR:
    Ollivier Robert <roberto@keltia.net>
