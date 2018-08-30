@@ -81,8 +81,3 @@ func GetVersion() string {
 	return ourVersion
 }
 
-func (c *Client) mergeGlobalOptions(opts map[string]string) {
-	for k, v := range c.opts {
-		opts[k] = v
-	}
-}

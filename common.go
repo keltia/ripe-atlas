@@ -138,3 +138,9 @@ func (c *Client) handleAPIResponsese(r *http.Response) (err error) {
 		aerr.Error.Errors)
 	return
 }
+
+func (c *Client) mergeGlobalOptions(opts map[string]string) {
+	for k, v := range c.opts {
+		opts[k] = v
+	}
+}
