@@ -2,12 +2,13 @@ package atlas // import "github.com/keltia/ripe-atlas"
 
 import (
 	"fmt"
-	"github.com/keltia/proxy"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"time"
+
+	"github.com/keltia/proxy"
 )
 
 // NewClient is the first function to call.
