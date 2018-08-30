@@ -11,7 +11,7 @@ branches:
   only:
   - develop
   - master
-- env:
+env:
   - GO111MODULE=on
 install:
 - go get github.com/keltia/proxy
