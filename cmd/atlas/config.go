@@ -12,10 +12,6 @@ import (
 	"os"
 )
 
-const (
-	proxyTag = "proxy"
-)
-
 // Config holds our parameters
 type Config struct {
 	APIKey       string
