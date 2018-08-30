@@ -75,3 +75,18 @@ func TestClienthandleAPIResponsese(t *testing.T) {
 	err = client.handleAPIResponsese(&r)
 	assert.Error(t, err, "should be in error")
 }
+
+func TestAddQueryParameters(t *testing.T) {
+	p := AddQueryParameters("", map[string]string{})
+	assert.Equal(t, "", p)
+}
+
+func TestAddQueryParameters_1(t *testing.T) {
+	p := AddQueryParameters("", map[string]string{"": ""})
+	assert.Equal(t, "?=", p)
+}
+
+func TestAddQueryParameters_2(t *testing.T) {
+	p := AddQueryParameters("foo", map[string]string{"bar": "baz"})
+	assert.Equal(t, "foo?bar=baz", p)
+}

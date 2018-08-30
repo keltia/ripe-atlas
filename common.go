@@ -34,6 +34,9 @@ func getPageNum(url string) (page string) {
 
 // AddQueryParameters adds query parameters to the URL.
 func AddQueryParameters(baseURL string, queryParams map[string]string) string {
+	if len(queryParams) == 0 {
+		return baseURL
+	}
 	baseURL += "?"
 	params := url.Values{}
 	for key, value := range queryParams {
