@@ -1,4 +1,4 @@
-package atlas
+package atlas // import "github.com/keltia/ripe-atlas"
 
 import (
 	"fmt"
