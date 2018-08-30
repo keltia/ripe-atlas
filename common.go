@@ -65,9 +65,9 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 		method = "GET"
 	} else {
 		if c.config.endpoint != "" {
-			endPoint = fmt.Sprintf("%s/%s/", c.config.endpoint, what)
+			endPoint = fmt.Sprintf("%s/%s", c.config.endpoint, what)
 		} else {
-			endPoint = fmt.Sprintf("%s/%s/", apiEndpoint, what)
+			endPoint = fmt.Sprintf("%s/%s", apiEndpoint, what)
 		}
 	}
 
