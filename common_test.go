@@ -98,10 +98,10 @@ func TestClient_AddAPIKey(t *testing.T) {
 
 	opts := map[string]string{}
 
-	new := c.addAPIKey(opts)
+	newk := c.addAPIKey(opts)
 	assert.NotEmpty(t, c.config.APIKey)
-	assert.Equal(t, 1, len(new))
-	assert.EqualValues(t, map[string]string{"key": "foo"}, new)
+	assert.Equal(t, 1, len(newk))
+	assert.EqualValues(t, map[string]string{"key": "foo"}, newk)
 }
 
 func TestClient_PrepareRequest(t *testing.T) {
