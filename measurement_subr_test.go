@@ -1,8 +1,11 @@
 package atlas
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/goware/httpmock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -17,6 +20,8 @@ var (
 		Verbose:      false,
 		Log:          nil,
 	}
+
+	mockServices *httpmock.MockHTTPService
 )
 
 func Before(t *testing.T) *Client {
