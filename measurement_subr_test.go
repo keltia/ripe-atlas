@@ -43,6 +43,26 @@ func TestClient_NewMeasurement(t *testing.T) {
 	assert.True(t, m.IsOneoff)
 }
 
+func TestMeasurementRequest_AddDefinition(t *testing.T) {
+	c := Before(t)
+	require.NotNil(t, c)
+	require.NotEmpty(t, c)
+
+	mr := c.NewMeasurement()
+	require.NotNil(t, mr)
+	assert.IsType(t, (*MeasurementRequest)(nil), mr)
+
+	mrlen := len(mr.Definitions)
+
+	opts := map[string]string{"AF": "6"}
+
+	mrr := mr.AddDefinition(opts)
+	require.NotNil(t, mrr)
+	assert.IsType(t, (*MeasurementRequest)(nil), mrr)
+
+	assert.Equal(t, mrlen+1, len(mrr.Definitions))
+}
+
 func TestIsPositive(t *testing.T) {
 	a := ""
 	b, y := isPositive(a)
