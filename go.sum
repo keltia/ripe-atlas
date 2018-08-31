@@ -3,8 +3,6 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/goware/httpmock v0.0.0-20150807175315-4fdb484c3e70 h1:/iALgmkBuy3dTWZdBxrFMj6k94gAFEl/cBLx6SYn/RM=
 github.com/goware/httpmock v0.0.0-20150807175315-4fdb484c3e70/go.mod h1:ZeD3VtwahTdbTaw5NTy+8XvP5IRTY5YriwueB8YS4JU=
-github.com/jarcoal/httpmock v0.0.0-20180424175123-9c70cfe4a1da h1:FjHUJJ7oBW4G/9j1KzlHaXL09LyMVM9rupS39lncbXk=
-github.com/jarcoal/httpmock v0.0.0-20180424175123-9c70cfe4a1da/go.mod h1:ks+b9deReOc7jgqp+e7LuFiCBH6Rm5hL32cLcEAArb4=
 github.com/keltia/proxy v0.9.3 h1:Cpv6VA50SXSY+JxQ6q+BHpPMNAfWGZU4Qb5kdwUR1TY=
 github.com/keltia/proxy v0.9.3/go.mod h1:fLU4DmBPG0oh0md9fWggE2oG2m7Lchv3eim+GiO3pZY=
 github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348 h1:MtvEpTB6LX3vkb4ax0b5D2DHbNAUsen0Gx5wZoq3lV4=
