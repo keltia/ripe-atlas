@@ -134,6 +134,21 @@ func TestClient_PrepareRequest_2(t *testing.T) {
 	assert.EqualValues(t, res, req.URL)
 }
 
+func TestClient_PrepareRequest_3(t *testing.T) {
+	c, err := NewClient(TesCfg)
+	require.NoError(t, err)
+
+	opts := map[string]string{}
+	req := c.prepareRequest("FETCH", testURL +"/foo", opts)
+
+	assert.NotNil(t, req)
+	assert.IsType(t, (*http.Request)(nil), req)
+
+	res, _ := url.Parse(testURL + "/foo")
+	assert.Equal(t, "GET", req.Method)
+	assert.EqualValues(t, res, req.URL)
+}
+
 func TestClient_MergeGlobalOptions(t *testing.T) {
 	c, err := NewClient(TesCfg)
 	require.NoError(t, err)
