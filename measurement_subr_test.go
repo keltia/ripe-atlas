@@ -1,6 +1,11 @@
 package atlas
 
 import (
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"net/url"
 	"testing"
 
 	"github.com/goware/httpmock"
@@ -10,7 +15,7 @@ import (
 
 var (
 	TesCfg = Config{
-		APIKey:       "",
+		APIKey:       "foobar",
 		DefaultProbe: 666,
 		IsOneOff:     true,
 		PoolSize:     10,
@@ -19,9 +24,10 @@ var (
 		Tags:         "",
 		Verbose:      false,
 		Log:          nil,
+		endpoint:     testURL,
 	}
 
-	mockServices *httpmock.MockHTTPService
+	mockService *httpmock.MockHTTPServer
 )
 
 func Before(t *testing.T) *Client {
@@ -133,17 +139,57 @@ func TestNewProbeSet_2(t *testing.T) {
 	assert.EqualValues(t, bmps, ps)
 }
 
-func TestDNS(t *testing.T) {
+func BeforeAPI(t *testing.T) {
+	if mockService == nil {
+		// new mocking server
+		t.Log("starting mock...")
+		mockService = httpmock.NewMockHTTPServer("localhost:10000")
+	}
 
-	c, err := NewClient()
+	require.NotNil(t, mockService)
+
+}
+
+func TestDNS(t *testing.T) {
+	c := Before(t)
+	BeforeAPI(t)
+
+	c.config.Verbose = true
+
 	require.NotNil(t, c)
 	require.NotEmpty(t, c)
 
 	d := []Definition{{Type: "foo"}}
 	r := &MeasurementRequest{Definitions: d}
+	jr, _ := json.Marshal(r)
 	myrp := MeasurementResp{}
 
+	t.Logf("jr=%v", string(jr))
+
+	buf := bytes.NewReader([]byte(jr))
+
+	request1, _ := url.Parse(testURL + "/measurements/dns?key=foobar")
+	resp := httpmock.MockResponse{
+		Request: http.Request{
+			Method: "POST",
+			URL:    request1,
+			Body:   ioutil.NopCloser(buf),
+			ContentLength: int64(buf.Len()),
+			Header: http.Header{
+				"Content-Type": []string{"application/json"},
+				"Accept": []string{"application/json"},
+			},
+		},
+		Response: httpmock.Response{
+			StatusCode: 200,
+			Body:       string("baz"),
+		},
+	}
+	mockService.AddResponse(resp)
+	t.Logf("respmap=%v", mockService.ResponseMap)
+
 	rp, err := c.DNS(r)
+	t.Logf("rp=%#v", rp)
 	assert.Error(t, err, "should be in error")
 	assert.EqualValues(t, myrp, rp, "should be equal")
 	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
