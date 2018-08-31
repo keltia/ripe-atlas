@@ -127,3 +127,57 @@ func TestNewProbeSet_2(t *testing.T) {
 	assert.NotEmpty(t, ps)
 	assert.EqualValues(t, bmps, ps)
 }
+
+func TestDNS(t *testing.T) {
+
+	c, err := NewClient()
+	require.NotNil(t, c)
+	require.NotEmpty(t, c)
+
+	d := []Definition{{Type: "foo"}}
+	r := &MeasurementRequest{Definitions: d}
+	myrp := MeasurementResp{}
+
+	rp, err := c.DNS(r)
+	assert.Error(t, err, "should be in error")
+	assert.EqualValues(t, myrp, rp, "should be equal")
+	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
+}
+
+/*
+func TestNTP(t *testing.T) {
+	d := []Definition{{Type: "foo"}}
+	r := &MeasurementRequest{Definitions: d}
+
+	_, err := NTP(r)
+	assert.Error(t, err, "should be an error")
+	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
+}
+
+func TestPing(t *testing.T) {
+	d := []Definition{{Type: "foo"}}
+	r := &MeasurementRequest{Definitions: d}
+
+	_, err := Ping(r)
+	assert.Error(t, err, "should be an error")
+	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
+}
+
+func TestSSLCert(t *testing.T) {
+	d := []Definition{{Type: "foo"}}
+	r := &MeasurementRequest{Definitions: d}
+
+	_, err := SSLCert(r)
+	assert.Error(t, err, "should be an error")
+	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
+}
+
+func TestTraceroute(t *testing.T) {
+	d := []Definition{{Type: "foo"}}
+	r := &MeasurementRequest{Definitions: d}
+
+	_, err := Traceroute(r)
+	assert.Error(t, err, "should be an error")
+	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
+}
+*/
