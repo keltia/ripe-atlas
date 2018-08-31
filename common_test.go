@@ -14,30 +14,30 @@ import (
 const testURL = "http://localhost:10000"
 
 func TestGetPageNum(t *testing.T) {
-	url := "https://foo.example.com/"
+	nurl := "https://foo.example.com/"
 
-	n := getPageNum(url)
+	n := getPageNum(nurl)
 	if n != "" {
 		t.Errorf("n=%s should be ''", n)
 	}
-	url = "https://foo.example.com/?page=42"
-	n = getPageNum(url)
+	nurl = "https://foo.example.com/?page=42"
+	n = getPageNum(nurl)
 	if n != "42" {
 		t.Errorf("n=%s should be 42", n)
 	}
-	url = "https://foo.example.com/?country=fr&page=43"
-	n = getPageNum(url)
+	nurl = "https://foo.example.com/?country=fr&page=43"
+	n = getPageNum(nurl)
 	if n != "43" {
 		t.Errorf("n=%s should be 43", n)
 	}
-	url = "https://foo.example.com/?country=fr&page=666&bar=1"
-	n = getPageNum(url)
+	nurl = "https://foo.example.com/?country=fr&page=666&bar=1"
+	n = getPageNum(nurl)
 	if n != "666" {
 		t.Errorf("n=%s should be 666", n)
 	}
 
-	url = ""
-	n = getPageNum(url)
+	nurl = ""
+	n = getPageNum(nurl)
 	if n != "" {
 		t.Errorf("n=%s should be ''", n)
 	}
@@ -129,7 +129,7 @@ func TestClient_PrepareRequest_2(t *testing.T) {
 	assert.NotNil(t, req)
 	assert.IsType(t, (*http.Request)(nil), req)
 
-	res, _ := url.Parse(apiEndpoint + "/foo")
+	res, _ := url.Parse(testURL + "/foo")
 	assert.Equal(t, "GET", req.Method)
 	assert.EqualValues(t, res, req.URL)
 }
