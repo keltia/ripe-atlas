@@ -3,12 +3,11 @@ package atlas
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
-	"net/http"
+	"fmt"
 	"net/url"
 	"testing"
 
-	"github.com/goware/httpmock"
+	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -24,10 +23,7 @@ var (
 		Tags:         "",
 		Verbose:      false,
 		Log:          nil,
-		endpoint:     testURL,
 	}
-
-	mockService *httpmock.MockHTTPServer
 )
 
 func Before(t *testing.T) *Client {
@@ -139,25 +135,9 @@ func TestNewProbeSet_2(t *testing.T) {
 	assert.EqualValues(t, bmps, ps)
 }
 
-func BeforeAPI(t *testing.T) {
-	if mockService == nil {
-		// new mocking server
-		t.Log("starting mock...")
-		mockService = httpmock.NewMockHTTPServer("localhost:10000")
-	}
-
-	require.NotNil(t, mockService)
-
-}
-
 func TestDNS(t *testing.T) {
-	c := Before(t)
-	BeforeAPI(t)
-
-	c.config.Verbose = true
-
-	require.NotNil(t, c)
-	require.NotEmpty(t, c)
+	//BeforeAPI(t)
+	defer gock.Off()
 
 	d := []Definition{{Type: "foo"}}
 	r := &MeasurementRequest{Definitions: d}
@@ -166,27 +146,28 @@ func TestDNS(t *testing.T) {
 
 	t.Logf("jr=%v", string(jr))
 
-	buf := bytes.NewReader([]byte(jr))
+	myurl, _ := url.Parse(apiEndpoint)
 
-	request1, _ := url.Parse(testURL + "/measurements/dns?key=foobar")
-	resp := httpmock.MockResponse{
-		Request: http.Request{
-			Method: "POST",
-			URL:    request1,
-			Body:   ioutil.NopCloser(buf),
-			ContentLength: int64(buf.Len()),
-			Header: http.Header{
-				"Content-Type": []string{"application/json"},
-				"Accept": []string{"application/json"},
-			},
-		},
-		Response: httpmock.Response{
-			StatusCode: 200,
-			Body:       string("baz"),
-		},
-	}
-	mockService.AddResponse(resp)
-	t.Logf("respmap=%v", mockService.ResponseMap)
+	buf := bytes.NewReader(jr)
+	gock.New(apiEndpoint).
+		Post("measurements/dns").
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"content-type": "application/json",
+			"accept":       "application/json",
+			"host":         myurl.Host,
+			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Body(buf).
+		Reply(403).
+		BodyString(`{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`)
+
+	c := Before(t)
+
+	c.config.Verbose = true
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
 
 	rp, err := c.DNS(r)
 	t.Logf("rp=%#v", rp)
@@ -195,7 +176,59 @@ func TestDNS(t *testing.T) {
 	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
 }
 
+func TestClient_Call(t *testing.T) {
+	defer gock.Off()
+
+	d := []Definition{{Type: "foo"}}
+	r := &MeasurementRequest{Definitions: d}
+	jr, _ := json.Marshal(r)
+	//myrp := MeasurementResp{}
+
+	t.Logf("jr=%v", string(jr))
+
+	myurl, _ := url.Parse(apiEndpoint)
+
+	gock.EnableNetworking()
+	gock.New(apiEndpoint).
+		Post("measurements/dns").
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"content-type": "application/json",
+			"accept":       "application/json",
+			"host":         myurl.Host,
+			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		JSON(r).
+		Reply(403).
+		BodyString(`{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`)
+
+	c := Before(t)
+	c.config.Verbose = true
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+	defer gock.DisableNetworking()
+
+	opts := map[string]string{"key": "foobar"}
+	req := c.prepareRequest("POST", "/measurements/dns/", opts)
+	require.NotNil(t, req)
+
+	resp, err := c.call(req)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+}
+
 /*
+func (c *Client) call(req *http.Request) (*http.Response, error) {
+	c.verbose("Full URL:\n%v", req.URL)
+
+	myurl, _ := url.Parse(apiEndpoint)
+	req.Header.Set("Host", myurl.Host)
+	req.Header.Set("User-Agent", fmt.Sprintf("ripe-atlas/%s", ourVersion))
+
+	return c.client.Do(req)
+}
+
 func TestNTP(t *testing.T) {
 	d := []Definition{{Type: "foo"}}
 	r := &MeasurementRequest{Definitions: d}
