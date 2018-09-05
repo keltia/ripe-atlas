@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/keltia/proxy"
+	"github.com/pkg/errors"
 )
 
 // NewClient is the first function to call.
@@ -62,7 +63,7 @@ func (c *Client) call(req *http.Request) (*http.Response, error) {
 func (c *Client) addHTTPClient() (*Client, error) {
 	_, transport := proxy.SetupTransport(apiEndpoint)
 	if transport == nil {
-		c.log.Fatal("unable to create httpclient")
+		return c, errors.New("addhttpclient")
 	}
 	c.client = &http.Client{Transport: transport, Timeout: 20 * time.Second}
 	return c, nil
@@ -80,4 +81,3 @@ func (c *Client) SetOption(name, value string) *Client {
 func GetVersion() string {
 	return ourVersion
 }
-
