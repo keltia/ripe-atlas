@@ -21,7 +21,7 @@ var (
 		AreaType:     "country",
 		AreaValue:    "fr",
 		Tags:         "",
-		Verbose:      false,
+		Verbose:      true,
 		Log:          nil,
 	}
 )
@@ -164,8 +164,6 @@ func TestDNS(t *testing.T) {
 
 	c := Before(t)
 
-	c.config.Verbose = true
-
 	gock.InterceptClient(c.client)
 	defer gock.RestoreClient(c.client)
 
@@ -203,7 +201,6 @@ func TestClient_Call(t *testing.T) {
 		BodyString(`{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`)
 
 	c := Before(t)
-	c.config.Verbose = true
 
 	gock.InterceptClient(c.client)
 	defer gock.RestoreClient(c.client)
