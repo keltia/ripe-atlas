@@ -3,12 +3,13 @@ package atlas
 import (
 	"bytes"
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const testURL = "http://localhost:10000"
@@ -51,28 +52,28 @@ func TestClienthandleAPIResponsese(t *testing.T) {
 
 	client, err := NewClient()
 	err = client.handleAPIResponsese(nil)
-	assert.Error(t, err, "should be in error")
+	assert.Error(t, err)
 
 	r = http.Response{StatusCode: 0}
 	err = client.handleAPIResponsese(&r)
-	assert.NoError(t, err, "should be no error")
+	assert.NoError(t, err)
 
 	r = http.Response{StatusCode: 200}
 	err = client.handleAPIResponsese(&r)
-	assert.NoError(t, err, "should be no error")
+	assert.NoError(t, err)
 
-	var jsonErr = `error:{status: 501, code: 500, detail: "test"}`
+	var jsonErr = `{"error":{"status": 501, "errors":[{"detail": "test"}],"code": 500, "detail":"issue"}}`
 
 	fmt.Fprintf(&b, "%v", jsonErr)
 	r.StatusCode = 300
 	r.Body = ioutil.NopCloser(&b)
 	err = client.handleAPIResponsese(&r)
-	assert.NoError(t, err, "should be in error")
+	assert.NoError(t, err)
 
 	r.StatusCode = 500
 	r.Body = ioutil.NopCloser(&b)
 	err = client.handleAPIResponsese(&r)
-	assert.Error(t, err, "should be in error")
+	assert.Error(t, err)
 }
 
 func TestAddQueryParameters(t *testing.T) {
@@ -139,7 +140,7 @@ func TestClient_PrepareRequest_3(t *testing.T) {
 	require.NoError(t, err)
 
 	opts := map[string]string{}
-	req := c.prepareRequest("FETCH", testURL +"/foo", opts)
+	req := c.prepareRequest("FETCH", testURL+"/foo", opts)
 
 	assert.NotNil(t, req)
 	assert.IsType(t, (*http.Request)(nil), req)
