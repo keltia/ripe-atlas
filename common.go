@@ -12,6 +12,8 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+
+	"github.com/pkg/errors"
 )
 
 const (
@@ -90,17 +92,17 @@ func (c *Client) handleAPIResponsese(r *http.Response) (err error) {
 	}
 
 	// Everything is fine
-	if r.StatusCode == 0 {
+	if r.StatusCode == http.StatusOK || r.StatusCode == 0 {
 		return nil
 	}
 
-	// Everything is fine too
-	if r.StatusCode >= 200 && r.StatusCode <= 299 {
+	// Everything is fine too (200-2xx)
+	if r.StatusCode >= http.StatusOK && r.StatusCode < http.StatusMultipleChoices {
 		return nil
 	}
 
 	// Check this condition
-	if r.StatusCode >= 300 && r.StatusCode <= 399 {
+	if r.StatusCode >= http.StatusMultipleChoices && r.StatusCode < http.StatusBadRequest {
 		var aerr APIError
 
 		body, _ := ioutil.ReadAll(r.Body)
@@ -108,10 +110,10 @@ func (c *Client) handleAPIResponsese(r *http.Response) (err error) {
 
 		err = json.Unmarshal(body, &aerr)
 		if err != nil {
-			c.log.Printf("Error handling error: %s - %v", r.Body, err)
+			return errors.Wrapf(err, "unmarshal raw=%v err=%v", r.Body, err)
 		}
 
-		c.log.Printf("Info 3XX status: %d code: %d - r:%v\n",
+		c.verbose("Info 3XX status: %d code: %d - r:%v\n",
 			aerr.Error.Status,
 			aerr.Error.Code,
 			aerr.Error.Detail)
@@ -126,7 +128,7 @@ func (c *Client) handleAPIResponsese(r *http.Response) (err error) {
 
 	err = json.Unmarshal(body, &aerr)
 	if err != nil {
-		c.log.Printf("Error handling error: %s - %v", r.Body, err)
+		return errors.Wrapf(err, "unmarshal raw=%v err=%v", r.Body, err)
 	}
 
 	err = fmt.Errorf("status: %d code: %d - r:%s\nerrors: %v",
