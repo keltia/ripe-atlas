@@ -24,7 +24,7 @@ func (c *Client) GetProbe(id int) (p *Probe, err error) {
 	//log.Printf("resp: %#v - err: %#v", resp, err)
 	if err != nil {
 		c.verbose("API error: %v", err)
-		err = c.handleAPIResponsese(resp)
+		err = c.handleAPIResponse(resp)
 		if err != nil {
 			return
 		}
@@ -57,7 +57,7 @@ func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err 
 	resp, err := c.call(req)
 	if err != nil {
 		c.verbose("API error: %v", err)
-		err = c.handleAPIResponsese(resp)
+		err = c.handleAPIResponse(resp)
 		if err != nil {
 			return
 		}

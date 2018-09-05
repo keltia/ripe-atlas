@@ -85,8 +85,8 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 	return
 }
 
-// client.handleAPIResponsese check status code & errors from the API
-func (c *Client) handleAPIResponsese(r *http.Response) (err error) {
+// client.handleAPIResponse check status code & errors from the API
+func (c *Client) handleAPIResponse(r *http.Response) (err error) {
 	if r == nil {
 		return fmt.Errorf("error: r is nil")
 	}

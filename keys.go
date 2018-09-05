@@ -24,7 +24,7 @@ func (c *Client) fetchOneKeyPage(opts map[string]string) (raw *keyList, err erro
 
 	resp, err := c.call(req)
 	if err != nil {
-		err = c.handleAPIResponsese(resp)
+		err = c.handleAPIResponse(resp)
 		if err != nil {
 			return
 		}
@@ -49,7 +49,7 @@ func (c *Client) GetKey(uuid string) (k Key, err error) {
 	//log.Printf("req: %#v", req)
 	resp, err := c.call(req)
 	if err != nil {
-		err = c.handleAPIResponsese(resp)
+		err = c.handleAPIResponse(resp)
 		if err != nil {
 			return
 		}

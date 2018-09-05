@@ -22,7 +22,7 @@ func (c *Client) GetCredits() (credits *Credits, err error) {
 	//log.Printf("resp: %#v - err: %#v", resp, err)
 	if err != nil {
 		c.verbose("API error: %v", err)
-		err = c.handleAPIResponsese(resp)
+		err = c.handleAPIResponse(resp)
 		if err != nil {
 			c.log.Printf("error getting credits: %#v", err)
 			return

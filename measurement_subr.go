@@ -133,7 +133,7 @@ func (c *Client) createMeasurement(t string, d *MeasurementRequest) (m *Measurem
 		//return
 	}
 
-	err = c.handleAPIResponsese(resp)
+	err = c.handleAPIResponse(resp)
 	if err != nil {
 		return
 	}
