@@ -130,7 +130,7 @@ func TestClient_PrepareRequest_2(t *testing.T) {
 	assert.NotNil(t, req)
 	assert.IsType(t, (*http.Request)(nil), req)
 
-	res, _ := url.Parse(testURL + "/foo")
+	res, _ := url.Parse(apiEndpoint + "/foo")
 	assert.Equal(t, "GET", req.Method)
 	assert.EqualValues(t, res, req.URL)
 }
