@@ -85,58 +85,43 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 	return
 }
 
-// client.handleAPIResponse check status code & errors from the API
-func (c *Client) handleAPIResponse(r *http.Response) (err error) {
+// client.handleAPIResponse check status code & return undecoded APIError
+func (c *Client) handleAPIResponse(r *http.Response) ([]byte, error) {
 	if r == nil {
-		return fmt.Errorf("error: r is nil")
+		return []byte{}, fmt.Errorf("error: r is nil")
 	}
 
 	// Everything is fine
 	if r.StatusCode == http.StatusOK || r.StatusCode == 0 {
-		return nil
+		return []byte{}, nil
 	}
 
 	// Everything is fine too (200-2xx)
 	if r.StatusCode >= http.StatusOK && r.StatusCode < http.StatusMultipleChoices {
-		return nil
+		return []byte{}, nil
 	}
 
-	// Check this condition
+	// Check this condition (3xx are handled directly)
 	if r.StatusCode >= http.StatusMultipleChoices && r.StatusCode < http.StatusBadRequest {
-		var aerr APIError
-
-		body, _ := ioutil.ReadAll(r.Body)
-		defer r.Body.Close()
-
-		err = json.Unmarshal(body, &aerr)
-		if err != nil {
-			return errors.Wrapf(err, "unmarshal raw=%v err=%v", r.Body, err)
-		}
-
-		c.verbose("Info 3XX status: %d code: %d - r:%v\n",
-			aerr.Error.Status,
-			aerr.Error.Code,
-			aerr.Error.Detail)
-		return nil
+		return []byte{}, nil
 	}
 
-	// EVerything else is an error
-	var aerr APIError
-
-	body, _ := ioutil.ReadAll(r.Body)
+	// Everything else is an error
+	body, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 
-	err = json.Unmarshal(body, &aerr)
 	if err != nil {
-		return errors.Wrapf(err, "unmarshal raw=%v err=%v", r.Body, err)
+		return body, errors.Wrap(err, "read body")
 	}
 
-	err = fmt.Errorf("status: %d code: %d - r:%s\nerrors: %v",
-		aerr.Error.Status,
-		aerr.Error.Code,
-		aerr.Error.Detail,
-		aerr.Error.Errors)
-	return
+	var e APIError
+
+	err = json.Unmarshal(body, &e)
+	if err != nil {
+		return body, errors.Wrapf(err, "decoding error raw=%v", body)
+	}
+
+	return body, e
 }
 
 func (c *Client) mergeGlobalOptions(opts map[string]string) {
