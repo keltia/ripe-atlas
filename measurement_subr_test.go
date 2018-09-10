@@ -136,8 +136,50 @@ func TestNewProbeSet_2(t *testing.T) {
 	assert.EqualValues(t, bmps, ps)
 }
 
+func TestClient_Call(t *testing.T) {
+	defer gock.Off()
+
+	d := []Definition{{Type: "foo"}}
+	r := &MeasurementRequest{Definitions: d}
+	jr, _ := json.Marshal(r)
+
+	myurl, _ := url.Parse(apiEndpoint)
+
+	gock.New(apiEndpoint).
+		Post("measurements/dns").
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"content-type": "application/json",
+			"accept":       "application/json",
+			"host":         myurl.Host,
+			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		MatchType("json").
+		JSON(r).
+		Reply(403).
+		BodyString(`{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`)
+
+	c := Before(t)
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	opts := map[string]string{"key": "foobar"}
+	req := c.prepareRequest("POST", "/measurements/dns", opts)
+	require.NotNil(t, req)
+
+	buf := bytes.NewReader(jr)
+	req.Body = ioutil.NopCloser(buf)
+	req.ContentLength = int64(buf.Len())
+
+	require.NotNil(t, req.Body)
+
+	resp, err := c.call(req)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+}
+
 func TestClient_DNS_InvalidKey(t *testing.T) {
-	//BeforeAPI(t)
 	defer gock.Off()
 
 	d := []Definition{{Type: "foo"}}
@@ -207,17 +249,20 @@ func TestClient_DNS(t *testing.T) {
 	assert.Empty(t, rp)
 }
 
-func TestClient_Call(t *testing.T) {
+func TestClient_NTP_InvalidKey(t *testing.T) {
 	defer gock.Off()
 
 	d := []Definition{{Type: "foo"}}
 	r := &MeasurementRequest{Definitions: d}
 	jr, _ := json.Marshal(r)
 
+	myrp := `{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`
+
 	myurl, _ := url.Parse(apiEndpoint)
 
+	buf := bytes.NewReader(jr)
 	gock.New(apiEndpoint).
-		Post("measurements/dns").
+		Post("measurements/ntp").
 		MatchParam("key", "foobar").
 		MatchHeaders(map[string]string{
 			"content-type": "application/json",
@@ -225,75 +270,331 @@ func TestClient_Call(t *testing.T) {
 			"host":         myurl.Host,
 			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
 		}).
-		MatchType("json").
-		JSON(r).
+		Body(buf).
 		Reply(403).
-		BodyString(`{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`)
+		BodyString(myrp)
 
 	c := Before(t)
 
 	gock.InterceptClient(c.client)
 	defer gock.RestoreClient(c.client)
 
-	opts := map[string]string{"key": "foobar"}
-	req := c.prepareRequest("POST", "/measurements/dns", opts)
-	require.NotNil(t, req)
-
-	buf := bytes.NewReader(jr)
-	req.Body = ioutil.NopCloser(buf)
-	req.ContentLength = int64(buf.Len())
-
-	require.NotNil(t, req.Body)
-
-	resp, err := c.call(req)
-	assert.NoError(t, err)
-	assert.NotNil(t, resp)
+	rp, err := c.NTP(r)
+	assert.Error(t, err)
+	assert.Empty(t, rp)
+	assert.EqualValues(t, "createMeasurement: The provided API key does not exist", err.Error())
 }
 
-/*
-func (c *Client) call(req *http.Request) (*http.Response, error) {
-	c.verbose("Full URL:\n%v", req.URL)
+func TestClient_NTP(t *testing.T) {
+	defer gock.Off()
+
+	d := []Definition{{Type: "foo"}}
+	r := &MeasurementRequest{Definitions: d}
+	jr, _ := json.Marshal(r)
+	jrq, _ := json.Marshal(MeasurementResp{})
 
 	myurl, _ := url.Parse(apiEndpoint)
-	req.Header.Set("Host", myurl.Host)
-	req.Header.Set("User-Agent", fmt.Sprintf("ripe-atlas/%s", ourVersion))
 
-	return c.client.Do(req)
+	buf := bytes.NewReader(jr)
+	gock.New(apiEndpoint).
+		Post("measurements/ntp").
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"content-type": "application/json",
+			"accept":       "application/json",
+			"host":         myurl.Host,
+			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Body(buf).
+		Reply(200).
+		BodyString(string(jrq))
+
+	c := Before(t)
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	rp, err := c.NTP(r)
+	assert.NoError(t, err)
+	assert.Empty(t, rp)
 }
 
-func TestNTP(t *testing.T) {
+func TestClient_Ping_InvalidKey(t *testing.T) {
+	defer gock.Off()
+
 	d := []Definition{{Type: "foo"}}
 	r := &MeasurementRequest{Definitions: d}
+	jr, _ := json.Marshal(r)
 
-	_, err := NTP(r)
-	assert.Error(t, err, "should be an error")
-	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
+	myrp := `{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`
+
+	myurl, _ := url.Parse(apiEndpoint)
+
+	buf := bytes.NewReader(jr)
+	gock.New(apiEndpoint).
+		Post("measurements/ping").
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"content-type": "application/json",
+			"accept":       "application/json",
+			"host":         myurl.Host,
+			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Body(buf).
+		Reply(403).
+		BodyString(myrp)
+
+	c := Before(t)
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	rp, err := c.Ping(r)
+	assert.Error(t, err)
+	assert.Empty(t, rp)
+	assert.EqualValues(t, "createMeasurement: The provided API key does not exist", err.Error())
 }
 
-func TestPing(t *testing.T) {
+func TestClient_Ping(t *testing.T) {
+	defer gock.Off()
+
 	d := []Definition{{Type: "foo"}}
 	r := &MeasurementRequest{Definitions: d}
+	jr, _ := json.Marshal(r)
+	jrq, _ := json.Marshal(MeasurementResp{})
 
-	_, err := Ping(r)
-	assert.Error(t, err, "should be an error")
-	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
+	myurl, _ := url.Parse(apiEndpoint)
+
+	buf := bytes.NewReader(jr)
+	gock.New(apiEndpoint).
+		Post("measurements/ping").
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"content-type": "application/json",
+			"accept":       "application/json",
+			"host":         myurl.Host,
+			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Body(buf).
+		Reply(200).
+		BodyString(string(jrq))
+
+	c := Before(t)
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	rp, err := c.Ping(r)
+	assert.NoError(t, err)
+	assert.Empty(t, rp)
 }
 
-func TestSSLCert(t *testing.T) {
+func TestClient_Traceroute_InvalidKey(t *testing.T) {
+	defer gock.Off()
+
 	d := []Definition{{Type: "foo"}}
 	r := &MeasurementRequest{Definitions: d}
+	jr, _ := json.Marshal(r)
 
-	_, err := SSLCert(r)
-	assert.Error(t, err, "should be an error")
-	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
+	myrp := `{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`
+
+	myurl, _ := url.Parse(apiEndpoint)
+
+	buf := bytes.NewReader(jr)
+	gock.New(apiEndpoint).
+		Post("measurements/traceroute").
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"content-type": "application/json",
+			"accept":       "application/json",
+			"host":         myurl.Host,
+			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Body(buf).
+		Reply(403).
+		BodyString(myrp)
+
+	c := Before(t)
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	rp, err := c.Traceroute(r)
+	assert.Error(t, err)
+	assert.Empty(t, rp)
+	assert.EqualValues(t, "createMeasurement: The provided API key does not exist", err.Error())
 }
 
-func TestTraceroute(t *testing.T) {
+func TestClient_Traceroute(t *testing.T) {
+	defer gock.Off()
+
 	d := []Definition{{Type: "foo"}}
 	r := &MeasurementRequest{Definitions: d}
+	jr, _ := json.Marshal(r)
+	jrq, _ := json.Marshal(MeasurementResp{})
 
-	_, err := Traceroute(r)
-	assert.Error(t, err, "should be an error")
-	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
+	myurl, _ := url.Parse(apiEndpoint)
+
+	buf := bytes.NewReader(jr)
+	gock.New(apiEndpoint).
+		Post("measurements/traceroute").
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"content-type": "application/json",
+			"accept":       "application/json",
+			"host":         myurl.Host,
+			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Body(buf).
+		Reply(200).
+		BodyString(string(jrq))
+
+	c := Before(t)
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	rp, err := c.Traceroute(r)
+	assert.NoError(t, err)
+	assert.Empty(t, rp)
 }
-*/
+
+func TestClient_HTTP_InvalidKey(t *testing.T) {
+	defer gock.Off()
+
+	d := []Definition{{Type: "foo"}}
+	r := &MeasurementRequest{Definitions: d}
+	jr, _ := json.Marshal(r)
+
+	myrp := `{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`
+
+	myurl, _ := url.Parse(apiEndpoint)
+
+	buf := bytes.NewReader(jr)
+	gock.New(apiEndpoint).
+		Post("measurements/http").
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"content-type": "application/json",
+			"accept":       "application/json",
+			"host":         myurl.Host,
+			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Body(buf).
+		Reply(403).
+		BodyString(myrp)
+
+	c := Before(t)
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	rp, err := c.HTTP(r)
+	assert.Error(t, err)
+	assert.Empty(t, rp)
+	assert.EqualValues(t, "createMeasurement: The provided API key does not exist", err.Error())
+}
+
+func TestClient_HTTP(t *testing.T) {
+	defer gock.Off()
+
+	d := []Definition{{Type: "foo"}}
+	r := &MeasurementRequest{Definitions: d}
+	jr, _ := json.Marshal(r)
+	jrq, _ := json.Marshal(MeasurementResp{})
+
+	myurl, _ := url.Parse(apiEndpoint)
+
+	buf := bytes.NewReader(jr)
+	gock.New(apiEndpoint).
+		Post("measurements/http").
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"content-type": "application/json",
+			"accept":       "application/json",
+			"host":         myurl.Host,
+			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Body(buf).
+		Reply(200).
+		BodyString(string(jrq))
+
+	c := Before(t)
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	rp, err := c.HTTP(r)
+	assert.NoError(t, err)
+	assert.Empty(t, rp)
+}
+
+func TestClient_SSLCert_InvalidKey(t *testing.T) {
+	defer gock.Off()
+
+	d := []Definition{{Type: "foo"}}
+	r := &MeasurementRequest{Definitions: d}
+	jr, _ := json.Marshal(r)
+
+	myrp := `{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`
+
+	myurl, _ := url.Parse(apiEndpoint)
+
+	buf := bytes.NewReader(jr)
+	gock.New(apiEndpoint).
+		Post("measurements/sslcert").
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"content-type": "application/json",
+			"accept":       "application/json",
+			"host":         myurl.Host,
+			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Body(buf).
+		Reply(403).
+		BodyString(myrp)
+
+	c := Before(t)
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	rp, err := c.SSLCert(r)
+	assert.Error(t, err)
+	assert.Empty(t, rp)
+	assert.EqualValues(t, "createMeasurement: The provided API key does not exist", err.Error())
+}
+
+func TestClient_SSLCert(t *testing.T) {
+	defer gock.Off()
+
+	d := []Definition{{Type: "foo"}}
+	r := &MeasurementRequest{Definitions: d}
+	jr, _ := json.Marshal(r)
+	jrq, _ := json.Marshal(MeasurementResp{})
+
+	myurl, _ := url.Parse(apiEndpoint)
+
+	buf := bytes.NewReader(jr)
+	gock.New(apiEndpoint).
+		Post("measurements/sslcert").
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"content-type": "application/json",
+			"accept":       "application/json",
+			"host":         myurl.Host,
+			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Body(buf).
+		Reply(200).
+		BodyString(string(jrq))
+
+	c := Before(t)
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	rp, err := c.SSLCert(r)
+	assert.NoError(t, err)
+	assert.Empty(t, rp)
+}
