@@ -2,6 +2,8 @@ package atlas
 
 import (
 	"io/ioutil"
+
+	"github.com/pkg/errors"
 )
 
 // FetchResult downloads result for a given measurement
@@ -17,9 +19,9 @@ func (c *Client) FetchResult(url string) (string, error) {
 
 	//log.Printf("req: %#v", req)
 	resp, err := c.call(req)
-	err = c.handleAPIResponse(resp)
+	_, err = c.handleAPIResponse(resp)
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "FetchResult")
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)

@@ -8,6 +8,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+
+	"github.com/pkg/errors"
 )
 
 // GetProbe returns data for a single probe
@@ -24,9 +26,9 @@ func (c *Client) GetProbe(id int) (p *Probe, err error) {
 	//log.Printf("resp: %#v - err: %#v", resp, err)
 	if err != nil {
 		c.verbose("API error: %v", err)
-		err = c.handleAPIResponse(resp)
+		_, err = c.handleAPIResponse(resp)
 		if err != nil {
-			return
+			return &Probe{}, errors.Wrap(err, "GetProbe")
 		}
 	}
 
@@ -57,9 +59,9 @@ func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err 
 	resp, err := c.call(req)
 	if err != nil {
 		c.verbose("API error: %v", err)
-		err = c.handleAPIResponse(resp)
+		_, err = c.handleAPIResponse(resp)
 		if err != nil {
-			return
+			return &probeList{}, errors.Wrap(err, "fetchOneProbePage")
 		}
 	}
 
@@ -70,7 +72,7 @@ func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err 
 	err = json.Unmarshal(body, raw)
 	if err != nil {
 		c.log.Printf("err reading json: raw=%#v err=%v", raw, err)
-		return
+		return raw, errors.Wrapf(err, "fetchOneProbePage")
 	}
 	c.verbose("Count=%d raw=%v", raw.Count, resp)
 	c.verbose("P")
