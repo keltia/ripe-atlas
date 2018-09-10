@@ -22,7 +22,6 @@ var (
 		AreaType:     "country",
 		AreaValue:    "fr",
 		Tags:         "",
-		Verbose:      true,
 		Log:          nil,
 	}
 )
@@ -147,8 +146,6 @@ func TestClient_DNS_InvalidKey(t *testing.T) {
 
 	myrp := `{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`
 
-	t.Logf("jr=%v", string(jr))
-
 	myurl, _ := url.Parse(apiEndpoint)
 
 	buf := bytes.NewReader(jr)
@@ -171,7 +168,6 @@ func TestClient_DNS_InvalidKey(t *testing.T) {
 	defer gock.RestoreClient(c.client)
 
 	rp, err := c.DNS(r)
-	t.Logf("rp=%#v", rp)
 	assert.Error(t, err)
 	assert.Empty(t, rp)
 	assert.EqualValues(t, "createMeasurement: The provided API key does not exist", err.Error())
@@ -207,7 +203,6 @@ func TestClient_DNS(t *testing.T) {
 	defer gock.RestoreClient(c.client)
 
 	rp, err := c.DNS(r)
-	t.Logf("rp=%#v", rp)
 	assert.NoError(t, err)
 	assert.Empty(t, rp)
 }
@@ -218,9 +213,6 @@ func TestClient_Call(t *testing.T) {
 	d := []Definition{{Type: "foo"}}
 	r := &MeasurementRequest{Definitions: d}
 	jr, _ := json.Marshal(r)
-	//myrp := MeasurementResp{}
-
-	t.Logf("jr=%v", string(jr))
 
 	myurl, _ := url.Parse(apiEndpoint)
 
