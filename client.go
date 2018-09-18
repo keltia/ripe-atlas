@@ -36,6 +36,11 @@ func NewClient(cfgs ...Config) (*Client, error) {
 		c.level = 1
 	}
 
+	if c.config.Level != 0 {
+		c.level = c.config.Level
+	}
+
+	// Final check
 	if c.config.Level > 2 {
 		c.level = 2
 	}
