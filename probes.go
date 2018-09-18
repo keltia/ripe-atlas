@@ -63,14 +63,7 @@ func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err 
 
 	resp, err := c.call(req)
 	if err != nil {
-		if err != nil {
-			return &probeList{}, errors.Wrap(err, "fetchOneProbePage/call")
-		}
-		c.verbose("API error: %v", err)
-		_, err = c.handleAPIResponse(resp)
-		if err != nil {
-			return &probeList{}, errors.Wrap(err, "fetchOneProbePage")
-		}
+		return &probeList{}, errors.Wrap(err, "fetchOneProbePage/call")
 	}
 
 	// We may have all http errors here but the request did succeed
