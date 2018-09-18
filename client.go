@@ -31,6 +31,15 @@ func NewClient(cfgs ...Config) (*Client, error) {
 		c.log = c.config.Log
 	}
 
+	// Set log levels
+	if c.config.Verbose == true {
+		c.level = 1
+	}
+
+	if c.config.Level > 2 {
+		c.level = 2
+	}
+
 	// Ensure this is not empty
 	if c.config.endpoint == "" {
 		c.config.endpoint = apiEndpoint
