@@ -126,7 +126,18 @@ func (c *Client) handleAPIResponse(r *http.Response) ([]byte, error) {
 }
 
 func (c *Client) mergeGlobalOptions(opts map[string]string) {
-	for k, v := range c.opts {
-		opts[k] = v
+	opts = mergeOptions(opts, c.opts)
+}
+
+func mergeOptions(from, with map[string]string) map[string]string {
+	m := from
+	for i, opt := range with {
+		// "" means delete
+		if opt != "" {
+			m[i] = opt
+		} else {
+			delete(m, i)
+		}
 	}
+	return m
 }
