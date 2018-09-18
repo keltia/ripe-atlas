@@ -174,7 +174,7 @@ func TestClient_DNS_InvalidKey(t *testing.T) {
 func TestClient_DNS(t *testing.T) {
 	defer gock.Off()
 
-	d := []Definition{{Type: "ntp"}}
+	d := []Definition{{Type: "dns"}}
 	r := &MeasurementRequest{Definitions: d}
 	jr, _ := json.Marshal(r)
 	jrq, _ := json.Marshal(MeasurementResp{})
@@ -183,7 +183,7 @@ func TestClient_DNS(t *testing.T) {
 
 	buf := bytes.NewReader(jr)
 	gock.New(apiEndpoint).
-		Post("measurements/ntp").
+		Post("measurements/dns").
 		MatchParam("key", "foobar").
 		MatchHeaders(map[string]string{
 			"content-type": "application/json",
