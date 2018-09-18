@@ -1,8 +1,14 @@
 package atlas
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/url"
 	"testing"
 
+	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -73,4 +79,50 @@ func TestClient_SetOption2(t *testing.T) {
 
 	_, ok := c.opts["foo"]
 	assert.False(t, ok)
+}
+
+func TestClient_Call(t *testing.T) {
+	defer gock.Off()
+
+	d := []Definition{{Type: "foo"}}
+	r := &MeasurementRequest{Definitions: d}
+	jr, _ := json.Marshal(r)
+	//myrp := MeasurementResp{}
+
+	t.Logf("jr=%v", string(jr))
+
+	myurl, _ := url.Parse(apiEndpoint)
+
+	gock.New(apiEndpoint).
+		Post("measurements/dns").
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"content-type": "application/json",
+			"accept":       "application/json",
+			"host":         myurl.Host,
+			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		JSON(r).
+		Reply(403).
+		BodyString(`{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`)
+
+	c := Before(t)
+	require.NotNil(t, c)
+	require.NotNil(t, c.client)
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	opts := map[string]string{"key": "foobar"}
+	req := c.prepareRequest("POST", "/measurements/dns/", opts)
+	require.NotNil(t, req)
+
+	buf := bytes.NewReader(jr)
+	req.Body = ioutil.NopCloser(buf)
+	req.ContentLength = int64(buf.Len())
+
+	resp, err := c.call(req)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	assert.Equal(t, 403, resp.StatusCode)
 }
