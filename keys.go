@@ -47,6 +47,8 @@ func (c *Client) fetchOneKeyPage(opts map[string]string) (raw *keyList, err erro
 // GetKey returns a given API key
 func (c *Client) GetKey(uuid string) (k Key, err error) {
 	opts := make(map[string]string)
+	opts = c.addAPIKey(opts)
+	opts = mergeOptions(opts, c.opts)
 
 	req := c.prepareRequest("GET", fmt.Sprintf("keys/%s", uuid), opts)
 
