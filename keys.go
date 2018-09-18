@@ -7,7 +7,6 @@ package atlas
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 
 	"github.com/pkg/errors"
 )
@@ -22,19 +21,22 @@ type keyList struct {
 // fetch the given resource
 func (c *Client) fetchOneKeyPage(opts map[string]string) (raw *keyList, err error) {
 
+	opts = c.addAPIKey(opts)
+	opts = mergeOptions(opts, c.opts)
+
 	req := c.prepareRequest("GET", "keys", opts)
 
 	resp, err := c.call(req)
 	if err != nil {
-		_, err = c.handleAPIResponse(resp)
-		if err != nil {
-			return nil, errors.Wrap(err, "fetchOneKeyPage")
-		}
+		return nil, errors.Wrap(err, "fetchOneKeyPage/call")
+	}
+
+	body, err := c.handleAPIResponse(resp)
+	if err != nil {
+		return &keyList{}, errors.Wrap(err, "fetchOneKeyPage")
 	}
 
 	raw = &keyList{}
-	body, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
 
 	err = json.Unmarshal(body, raw)
 	//log.Printf("Count=%d raw=%v", raw.Count, resp)
@@ -51,23 +53,26 @@ func (c *Client) GetKey(uuid string) (k Key, err error) {
 	//log.Printf("req: %#v", req)
 	resp, err := c.call(req)
 	if err != nil {
-		_, err = c.handleAPIResponse(resp)
-		if err != nil {
-			return Key{}, errors.Wrap(err, "GetUid")
-		}
+		return Key{}, errors.Wrap(err, "GetKey/call")
+	}
+
+	body, err := c.handleAPIResponse(resp)
+	if err != nil {
+		return Key{}, errors.Wrap(err, "GetKey")
 	}
 
 	k = Key{}
-	body, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
 
 	err = json.Unmarshal(body, k)
-	//log.Printf("json: %#v\n", p)
+	c.debug("json: %#v\n", k)
 	return
 }
 
 // GetKeys returns all your API keys
 func (c *Client) GetKeys(opts map[string]string) (kl []Key, err error) {
+
+	opts = c.addAPIKey(opts)
+	opts = mergeOptions(opts, c.opts)
 
 	// First call
 	rawlist, err := c.fetchOneKeyPage(opts)
