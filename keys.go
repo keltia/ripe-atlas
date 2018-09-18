@@ -71,6 +71,9 @@ func (c *Client) GetKeys(opts map[string]string) (kl []Key, err error) {
 
 	// First call
 	rawlist, err := c.fetchOneKeyPage(opts)
+	if err != nil {
+		return []Key{}, errors.Wrap(err, "GetKeys")
+	}
 
 	// Empty answer
 	if rawlist.Count == 0 {
