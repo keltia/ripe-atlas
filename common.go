@@ -67,7 +67,7 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 	}
 
 	c.mergeGlobalOptions(opts)
-	c.verbose("Options:\n%v", opts)
+	c.debug("Options:\n%v", opts)
 	baseURL := AddQueryParameters(endPoint, opts)
 
 	req, err := http.NewRequest(method, baseURL, nil)
@@ -76,6 +76,7 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 		return &http.Request{}
 	}
 
+	c.debug("req.url=%s", baseURL)
 	// We need these when we POST
 	if method == "POST" {
 		req.Header.Set("Content-Type", "application/json")
