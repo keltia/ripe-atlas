@@ -16,8 +16,9 @@ func (c *Client) GetProbe(id int) (p *Probe, err error) {
 
 	opts := make(map[string]string)
 	opts = c.addAPIKey(opts)
+	opts = mergeOptions(opts, c.opts)
 
-	c.mergeGlobalOptions(opts)
+	c.debug("opts=%v", opts)
 
 	req := c.prepareRequest("GET", fmt.Sprintf("probes/%d", id), opts)
 	c.debug("req=%#v", req)
@@ -53,8 +54,11 @@ type probeList struct {
 // fetch the given resource
 func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err error) {
 
-	c.mergeGlobalOptions(opts)
+	opts = mergeOptions(opts, c.opts)
 	opts = c.addAPIKey(opts)
+
+	c.debug("opts=%v", opts)
+
 	req := c.prepareRequest("GET", "probes", opts)
 
 	resp, err := c.call(req)
