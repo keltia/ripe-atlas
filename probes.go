@@ -93,6 +93,9 @@ func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err 
 func (c *Client) GetProbes(opts map[string]string) (p []Probe, err error) {
 	// First call
 	rawlist, err := c.fetchOneProbePage(opts)
+	if err != nil {
+		return []Probe{}, errors.Wrap(err, "GetProbes")
+	}
 
 	// Empty answer
 	if rawlist.Count == 0 {
