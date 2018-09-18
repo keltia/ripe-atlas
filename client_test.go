@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/url"
+	"os"
 	"testing"
 
 	"github.com/h2non/gock"
@@ -21,6 +23,52 @@ func TestNewClient(t *testing.T) {
 	require.IsType(t, (*Client)(nil), c)
 	assert.NotEmpty(t, c)
 	assert.EqualValues(t, apiEndpoint, c.config.endpoint)
+}
+
+func TestNewClient2(t *testing.T) {
+	fh := log.New(os.Stderr, "newclient2", log.LstdFlags|log.LUTC)
+
+	c, err := NewClient(Config{Log: fh})
+	require.NoError(t, err)
+	require.NotNil(t, c)
+
+	require.IsType(t, (*Client)(nil), c)
+	assert.NotEmpty(t, c)
+	assert.EqualValues(t, apiEndpoint, c.config.endpoint)
+	assert.EqualValues(t, fh, c.log)
+}
+
+func TestNewClient3(t *testing.T) {
+	c, err := NewClient(Config{Verbose: true})
+	require.NoError(t, err)
+	require.NotNil(t, c)
+
+	require.IsType(t, (*Client)(nil), c)
+	assert.NotEmpty(t, c)
+	assert.EqualValues(t, apiEndpoint, c.config.endpoint)
+	assert.EqualValues(t, 1, c.level)
+}
+
+func TestNewClient4(t *testing.T) {
+	c, err := NewClient(Config{Level: 2})
+	require.NoError(t, err)
+	require.NotNil(t, c)
+
+	require.IsType(t, (*Client)(nil), c)
+	assert.NotEmpty(t, c)
+	assert.EqualValues(t, apiEndpoint, c.config.endpoint)
+	assert.EqualValues(t, 2, c.level)
+}
+
+func TestNewClient5(t *testing.T) {
+	c, err := NewClient(Config{Level: 255})
+	require.NoError(t, err)
+	require.NotNil(t, c)
+
+	require.IsType(t, (*Client)(nil), c)
+	assert.NotEmpty(t, c)
+	assert.EqualValues(t, apiEndpoint, c.config.endpoint)
+	assert.EqualValues(t, 2, c.level)
 }
 
 func TestGetVersion(t *testing.T) {
