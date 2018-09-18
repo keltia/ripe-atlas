@@ -88,31 +88,37 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 
 // client.handleAPIResponse check status code & return undecoded APIError
 func (c *Client) handleAPIResponse(r *http.Response) ([]byte, error) {
+	var (
+		err  error
+		body []byte
+	)
+
 	if r == nil {
-		return []byte{}, fmt.Errorf("error: r is nil")
+		return []byte{}, fmt.Errorf("handleAPIResponse/r is nil")
+	}
+
+	// If there is a body, get it
+	if r.Body != nil {
+		body, err = ioutil.ReadAll(r.Body)
+		if err != nil {
+			return []byte{}, errors.Wrap(err, "read body")
+		}
+		defer r.Body.Close()
 	}
 
 	// Everything is fine
 	if r.StatusCode == http.StatusOK || r.StatusCode == 0 {
-		return []byte{}, nil
+		return body, nil
 	}
 
 	// Everything is fine too (200-2xx)
 	if r.StatusCode >= http.StatusOK && r.StatusCode < http.StatusMultipleChoices {
-		return []byte{}, nil
+		return body, nil
 	}
 
 	// Check this condition (3xx are handled directly)
 	if r.StatusCode >= http.StatusMultipleChoices && r.StatusCode < http.StatusBadRequest {
-		return []byte{}, nil
-	}
-
-	// Everything else is an error
-	body, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-
-	if err != nil {
-		return body, errors.Wrap(err, "read body")
+		return body, nil
 	}
 
 	var e APIError
