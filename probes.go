@@ -7,7 +7,6 @@ package atlas
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 
 	"github.com/pkg/errors"
 )
@@ -60,6 +59,9 @@ func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err 
 
 	resp, err := c.call(req)
 	if err != nil {
+		if err != nil {
+			return &probeList{}, errors.Wrap(err, "fetchOneProbePage/call")
+		}
 		c.verbose("API error: %v", err)
 		_, err = c.handleAPIResponse(resp)
 		if err != nil {
@@ -67,9 +69,15 @@ func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err 
 		}
 	}
 
+	// We may have all http errors here but the request did succeed
+	c.debug("http.code=%d", resp.StatusCode)
+
+	body, err := c.handleAPIResponse(resp)
+	if err != nil {
+		return &probeList{}, errors.Wrap(err, "GetProbes")
+	}
+
 	raw = &probeList{}
-	body, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
 
 	err = json.Unmarshal(body, raw)
 	if err != nil {
@@ -77,7 +85,7 @@ func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err 
 		return raw, errors.Wrapf(err, "fetchOneProbePage")
 	}
 	c.verbose("Count=%d raw=%v", raw.Count, resp)
-	c.verbose("P")
+	c.debug("P")
 	return
 }
 
