@@ -161,3 +161,54 @@ func TestClient_MergeGlobalOptions(t *testing.T) {
 	c.mergeGlobalOptions(opts)
 	assert.EqualValues(t, res, opts)
 }
+
+func TestClient_MergeGlobalOptions_1(t *testing.T) {
+	c, err := NewClient(TesCfg)
+	require.NoError(t, err)
+
+	opts := map[string]string{"foo": "bar", "baz": "delete"}
+	c.opts = map[string]string{"baz": ""}
+	res := map[string]string{"foo": "bar"}
+
+	c.mergeGlobalOptions(opts)
+	assert.EqualValues(t, res, opts)
+}
+
+func TestMergeOptions(t *testing.T) {
+	o1 := make(map[string]string)
+	o2 := make(map[string]string)
+
+	o3 := mergeOptions(o1, o2)
+	require.Empty(t, o3)
+	assert.EqualValues(t, o3, o1)
+	assert.EqualValues(t, o3, o2)
+}
+
+func TestMergeOptions2(t *testing.T) {
+	o1 := map[string]string{"foo": "bar"}
+	o2 := make(map[string]string)
+
+	o3 := mergeOptions(o1, o2)
+	require.NotEmpty(t, o3)
+	assert.EqualValues(t, o1, o3)
+}
+
+func TestMergeOptions3(t *testing.T) {
+	o1 := map[string]string{"foo": "bar"}
+	o2 := map[string]string{"baz": "xyzt"}
+	ot := map[string]string{"baz": "xyzt", "foo": "bar"}
+
+	o3 := mergeOptions(o1, o2)
+	require.NotEmpty(t, o3)
+	assert.EqualValues(t, ot, o3)
+}
+
+func TestMergeOptionsDelete(t *testing.T) {
+	o1 := map[string]string{"baz": "xyzt", "foo": "bar"}
+	o2 := map[string]string{"baz": ""}
+	ot := map[string]string{"foo": "bar"}
+
+	o3 := mergeOptions(o1, o2)
+	require.NotEmpty(t, o3)
+	assert.EqualValues(t, ot, o3)
+}
