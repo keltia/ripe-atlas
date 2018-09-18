@@ -21,10 +21,9 @@ func (c *Client) FetchResult(url string) (string, error) {
 	c.debug("url=%s", req.URL.String())
 
 	resp, err := c.call(req)
-	err = c.handleAPIResponse(resp)
-	c.debug("resp=%#v", resp)
+	_, err = c.handleAPIResponse(resp)
 	if err != nil {
-		return "", errors.Wrap(err, "fetchresult/call")
+		return "", errors.Wrap(err, "FetchResult")
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)

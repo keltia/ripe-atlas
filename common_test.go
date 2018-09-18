@@ -44,22 +44,22 @@ func TestGetPageNum(t *testing.T) {
 	}
 }
 
-func TestClienthandleAPIResponsese(t *testing.T) {
+func TestClienthandleAPIResponse(t *testing.T) {
 	var (
 		r http.Response
 		b bytes.Buffer
 	)
 
 	client, err := NewClient()
-	err = client.handleAPIResponse(nil)
+	_, err = client.handleAPIResponse(nil)
 	assert.Error(t, err)
 
 	r = http.Response{StatusCode: 0}
-	err = client.handleAPIResponse(&r)
+	_, err = client.handleAPIResponse(&r)
 	assert.NoError(t, err)
 
 	r = http.Response{StatusCode: 200}
-	err = client.handleAPIResponse(&r)
+	_, err = client.handleAPIResponse(&r)
 	assert.NoError(t, err)
 
 	var jsonErr = `{"error":{"status": 501, "errors":[{"detail": "test"}],"code": 500, "detail":"issue"}}`
@@ -67,12 +67,12 @@ func TestClienthandleAPIResponsese(t *testing.T) {
 	fmt.Fprintf(&b, "%v", jsonErr)
 	r.StatusCode = 300
 	r.Body = ioutil.NopCloser(&b)
-	err = client.handleAPIResponse(&r)
+	_, err = client.handleAPIResponse(&r)
 	assert.NoError(t, err)
 
 	r.StatusCode = 500
 	r.Body = ioutil.NopCloser(&b)
-	err = client.handleAPIResponse(&r)
+	_, err = client.handleAPIResponse(&r)
 	assert.Error(t, err)
 }
 

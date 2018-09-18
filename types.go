@@ -37,7 +37,7 @@ type Config struct {
 
 // APIError is for errors returned by the RIPE API.
 type APIError struct {
-	Error struct {
+	Err struct {
 		Status int    `json:"status"`
 		Code   int    `json:"code"`
 		Detail string `json:"detail"`

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+
+	"github.com/pkg/errors"
 )
 
 var (
@@ -61,9 +63,9 @@ func (c *Client) fetchOneMeasurementPage(opts map[string]string) (raw *measureme
 	//log.Printf("req=%s qp=%#v", MeasurementEP, opts)
 	resp, err := c.call(req)
 	if err != nil {
-		err = c.handleAPIResponse(resp)
+		_, err = c.handleAPIResponse(resp)
 		if err != nil {
-			return
+			return &measurementList{}, errors.Wrap(err, "fetchOneMeasurementPage")
 		}
 	}
 	raw = &measurementList{}
@@ -89,9 +91,9 @@ func (c *Client) GetMeasurement(id int) (m *Measurement, err error) {
 	//log.Printf("req: %#v", req)
 	resp, err := c.call(req)
 	if err != nil {
-		err = c.handleAPIResponse(resp)
+		_, err = c.handleAPIResponse(resp)
 		if err != nil {
-			return
+			return &Measurement{}, errors.Wrap(err, "GetMeasurement")
 		}
 	}
 
@@ -113,7 +115,7 @@ func (c *Client) DeleteMeasurement(id int) (err error) {
 
 	//log.Printf("req: %#v", req)
 	resp, err := c.call(req)
-	err = c.handleAPIResponse(resp)
+	_, err = c.handleAPIResponse(resp)
 	return
 }
 
