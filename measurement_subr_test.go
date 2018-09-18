@@ -135,8 +135,7 @@ func TestNewProbeSet_2(t *testing.T) {
 	assert.EqualValues(t, bmps, ps)
 }
 
-func TestDNS(t *testing.T) {
-	//BeforeAPI(t)
+func TestClient_DNS(t *testing.T) {
 	defer gock.Off()
 
 	d := []Definition{{Type: "foo"}}
@@ -169,6 +168,46 @@ func TestDNS(t *testing.T) {
 	myerr := "status: 403 code: 104 - r:The provided API key does not exist\nerrors: []"
 
 	rp, err := c.DNS(r)
+
+	t.Logf("rp=%#v", rp)
+	assert.Error(t, err)
+	assert.Nil(t, rp)
+	assert.Equal(t, myerr, err.Error())
+}
+
+func TestClient_NTP(t *testing.T) {
+	defer gock.Off()
+
+	d := []Definition{{Type: "ntp"}}
+	r := &MeasurementRequest{Definitions: d}
+	jr, _ := json.Marshal(r)
+
+	t.Logf("jr=%v", string(jr))
+
+	myurl, _ := url.Parse(apiEndpoint)
+
+	buf := bytes.NewReader(jr)
+	gock.New(apiEndpoint).
+		Post("measurements/ntp").
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"content-type": "application/json",
+			"accept":       "application/json",
+			"host":         myurl.Host,
+			"user-agent":   fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Body(buf).
+		Reply(403).
+		BodyString(`{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`)
+
+	c := Before(t)
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	myerr := "status: 403 code: 104 - r:The provided API key does not exist\nerrors: []"
+
+	rp, err := c.NTP(r)
 
 	t.Logf("rp=%#v", rp)
 	assert.Error(t, err)
