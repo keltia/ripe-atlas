@@ -65,7 +65,7 @@ func (c *Client) GetKey(uuid string) (k Key, err error) {
 
 	k = Key{}
 
-	err = json.Unmarshal(body, k)
+	err = json.Unmarshal(body, &k)
 	c.debug("json: %#v\n", k)
 	return
 }
