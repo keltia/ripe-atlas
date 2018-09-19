@@ -1,0 +1,72 @@
+{
+  "prefix_v4": "11.22.33.44/24",
+  "status": {
+    "since": "2018-09-18T05:08:04Z",
+    "id": 1,
+    "name": "Connected"
+  },
+  "prefix_v6": null,
+  "description": "test-probe",
+  "last_connected": 1537299666,
+  "tags": [
+    {
+      "name": "NAT",
+      "slug": "nat"
+    },
+    {
+      "name": "VDSL",
+      "slug": "vdsl"
+    },
+    {
+      "name": "system: V3",
+      "slug": "system-v3"
+    },
+    {
+      "name": "system: Resolves A Correctly",
+      "slug": "system-resolves-a-correctly"
+    },
+    {
+      "name": "system: Resolves AAAA Correctly",
+      "slug": "system-resolves-aaaa-correctly"
+    },
+    {
+      "name": "system: IPv4 Works",
+      "slug": "system-ipv4-works"
+    },
+    {
+      "name": "system: IPv4 Capable",
+      "slug": "system-ipv4-capable"
+    },
+    {
+      "name": "system: IPv4 RFC1918",
+      "slug": "system-ipv4-rfc1918"
+    },
+    {
+      "name": "system: IPv4 Stable 30d",
+      "slug": "system-ipv4-stable-30d"
+    },
+    {
+      "name": "system: IPv4 Stable 1d",
+      "slug": "system-ipv4-stable-1d"
+    }
+  ],
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      13.42,
+      666
+    ]
+  },
+  "type": "Probe",
+  "address_v6": null,
+  "address_v4": "11.22.33.44",
+  "total_uptime": 140608041,
+  "country_code": "FR",
+  "is_public": true,
+  "id": 0,
+  "asn_v4": 666,
+  "asn_v6": null,
+  "status_since": 1537247284,
+  "first_connected": 1390247436,
+  "is_anchor": false
+}
