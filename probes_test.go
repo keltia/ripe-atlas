@@ -5,10 +5,9 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestClient_GetProbe_Badkey(t *testing.T) {

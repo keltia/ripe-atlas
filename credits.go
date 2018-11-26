@@ -35,7 +35,8 @@ func (c *Client) GetCredits() (credits *Credits, err error) {
 
 	credits = &Credits{}
 
+	credits = &Credits{}
 	err = json.Unmarshal(body, credits)
-	c.debug("json: %#v\n", credits)
+	c.debug("credits=%#v\n", credits)
 	return
 }

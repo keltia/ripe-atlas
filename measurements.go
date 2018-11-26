@@ -88,21 +88,21 @@ func (c *Client) GetMeasurement(id int) (m *Measurement, err error) {
 	c.mergeGlobalOptions(opts)
 	req := c.prepareRequest("GET", fmt.Sprintf("measurements/%d", id), opts)
 
-	//log.Printf("req: %#v", req)
+	c.debug("req=%#v", req)
 	resp, err := c.call(req)
 	if err != nil {
-		_, err = c.handleAPIResponse(resp)
-		if err != nil {
-			return &Measurement{}, errors.Wrap(err, "GetMeasurement")
-		}
+		c.verbose("call: %v", err)
+		return &Measurement{}, errors.Wrap(err, "call")
+	}
+
+	body, err := c.handleAPIResponse(resp)
+	if err != nil {
+		return &Measurement{}, errors.Wrap(err, "GetProbe")
 	}
 
 	m = &Measurement{}
-	body, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
-
 	err = json.Unmarshal(body, m)
-	//log.Printf("json: %#v\n", m)
+	c.debug("m=%#v\n", m)
 	return
 }
 
@@ -113,8 +113,13 @@ func (c *Client) DeleteMeasurement(id int) (err error) {
 
 	req := c.prepareRequest("DELETE", fmt.Sprintf("measurements/%d", id), opts)
 
-	//log.Printf("req: %#v", req)
+	c.debug("req=%#v", req)
 	resp, err := c.call(req)
+	if err != nil {
+		c.verbose("call: %v", err)
+		return errors.Wrap(err, "call")
+	}
+
 	_, err = c.handleAPIResponse(resp)
 	return
 }

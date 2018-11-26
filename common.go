@@ -86,6 +86,14 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 	return
 }
 
+// decodeAPIError does the deserialisation
+func decodeAPIError(body []byte) (*APIError, error) {
+	var e APIError
+
+	err := json.Unmarshal(body, &e)
+	return &e, err
+}
+
 // client.handleAPIResponse check status code & return undecoded APIError
 func (c *Client) handleAPIResponse(r *http.Response) ([]byte, error) {
 	var (
@@ -121,14 +129,14 @@ func (c *Client) handleAPIResponse(r *http.Response) ([]byte, error) {
 		return body, nil
 	}
 
-	var e APIError
+	c.debug("err=%s", string(body))
 
-	err = json.Unmarshal(body, &e)
+	apie, err := decodeAPIError(body)
 	if err != nil {
-		return body, errors.Wrapf(err, "decoding error raw=%v", body)
+		return body, errors.Wrap(err, "decodeAPIError")
 	}
 
-	return body, e
+	return body, fmt.Errorf(apie.Error())
 }
 
 func (c *Client) mergeGlobalOptions(opts map[string]string) {

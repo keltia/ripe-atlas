@@ -46,34 +46,42 @@ func TestGetPageNum(t *testing.T) {
 
 func TestClienthandleAPIResponse(t *testing.T) {
 	var (
-		r http.Response
-		b bytes.Buffer
+		r       http.Response
+		b       bytes.Buffer
+		jsonErr string
 	)
 
 	client, err := NewClient()
 	_, err = client.handleAPIResponse(nil)
 	assert.Error(t, err)
 
-	r = http.Response{StatusCode: 0}
-	_, err = client.handleAPIResponse(&r)
-	assert.NoError(t, err)
+	fmt.Fprintf(&b, "%v", jsonErr)
 
-	r = http.Response{StatusCode: 200}
-	_, err = client.handleAPIResponse(&r)
+	r = http.Response{StatusCode: 0, Body: ioutil.NopCloser(&b)}
+	body, err := client.handleAPIResponse(&r)
 	assert.NoError(t, err)
+	assert.Empty(t, body)
 
-	var jsonErr = `{"error":{"status": 501, "errors":[{"detail": "test"}],"code": 500, "detail":"issue"}}`
+	r = http.Response{StatusCode: 200, Body: ioutil.NopCloser(&b)}
+	body, err = client.handleAPIResponse(&r)
+	assert.NoError(t, err)
+	assert.Empty(t, body)
+
+	jsonErr = `{"error":{"status": 501, "errors":[{"detail": "test"}],"code": 500, "detail":"issue"}}`
 
 	fmt.Fprintf(&b, "%v", jsonErr)
-	r.StatusCode = 300
-	r.Body = ioutil.NopCloser(&b)
-	_, err = client.handleAPIResponse(&r)
-	assert.NoError(t, err)
+	r = http.Response{StatusCode: 300, Body: ioutil.NopCloser(&b)}
 
-	r.StatusCode = 500
-	r.Body = ioutil.NopCloser(&b)
-	_, err = client.handleAPIResponse(&r)
+	body, err = client.handleAPIResponse(&r)
+	assert.NoError(t, err)
+	assert.Equal(t, jsonErr, string(body))
+
+	fmt.Fprintf(&b, "%v", jsonErr)
+	r = http.Response{StatusCode: 500, Body: ioutil.NopCloser(&b)}
+
+	body, err = client.handleAPIResponse(&r)
 	assert.Error(t, err)
+	assert.Equal(t, jsonErr, string(body))
 }
 
 func TestAddQueryParameters(t *testing.T) {

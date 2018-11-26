@@ -2,7 +2,9 @@ package atlas
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"net/url"
 	"testing"
 
 	"github.com/h2non/gock"
@@ -10,14 +12,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClient_GetCredits_Badkey(t *testing.T) {
+func TestClient_GetCredits_InvalidKey(t *testing.T) {
 	defer gock.Off()
 
-	//myurl, _ := url.Parse(apiEndpoint)
+	myurl, _ := url.Parse(apiEndpoint)
 
 	gock.New(apiEndpoint).
-		Get("/credits").
+		Get("credits").
 		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"host":       myurl.Host,
+			"user-agent": fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
 		Reply(403).
 		BodyString(`{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`)
 
@@ -39,7 +45,7 @@ func TestClient_GetCredits(t *testing.T) {
 	assert.NoError(t, err)
 
 	gock.New(apiEndpoint).
-		Get("/credits").
+		Get("credits").
 		MatchParam("key", "foobar").
 		Reply(200).
 		BodyString(string(ft))

@@ -25,6 +25,7 @@ func TestClient_GetKey_BadKey(t *testing.T) {
 		BodyString(`{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`)
 
 	c := Before(t)
+	c.level = 2
 
 	gock.InterceptClient(c.client)
 	defer gock.RestoreClient(c.client)

@@ -22,15 +22,13 @@ func (c *Client) GetProbe(id int) (p *Probe, err error) {
 
 	req := c.prepareRequest("GET", fmt.Sprintf("probes/%d", id), opts)
 	c.debug("req=%#v", req)
-
 	resp, err := c.call(req)
-	c.debug("resp: %#v - err: %#v", resp, err)
-	if err != nil {
-		return &Probe{}, errors.Wrap(err, "GetProbe/call")
-	}
+	c.debug("resp=%#v", resp)
 
-	// We may have all http errors here but the request did succeed
-	c.debug("http.code=%d", resp.StatusCode)
+	if err != nil {
+		c.verbose("call: %v", err)
+		return &Probe{}, errors.Wrap(err, "GetProbe")
+	}
 
 	body, err := c.handleAPIResponse(resp)
 	if err != nil {
@@ -39,7 +37,7 @@ func (c *Client) GetProbe(id int) (p *Probe, err error) {
 
 	p = &Probe{}
 	err = json.Unmarshal(body, p)
-	c.debug("json: %#v\n", p)
+	c.debug("p=%#v", p)
 	return
 }
 

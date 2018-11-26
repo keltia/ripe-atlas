@@ -39,8 +39,6 @@ func (c *Client) fetchOneKeyPage(opts map[string]string) (raw *keyList, err erro
 	raw = &keyList{}
 
 	err = json.Unmarshal(body, raw)
-	//log.Printf("Count=%d raw=%v", raw.Count, resp)
-	//log.Printf(">> rawlist=%+v resp=%+v Next=|%s|", rawlist, resp, rawlist.Next)
 	return
 }
 
