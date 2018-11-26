@@ -139,15 +139,13 @@ func (c *Client) createMeasurement(t string, d *MeasurementRequest) (m *Measurem
 
 	body, err = c.handleAPIResponse(resp)
 	if err != nil {
+		c.debug("body=%s", string(body))
 		return m, errors.Wrap(err, "createMeasurement")
 	}
 
-	rbody, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
-
-	err = json.Unmarshal(rbody, m)
+	err = json.Unmarshal(body, m)
 	// Only display if debug/verbose
-	c.verbose("m: %v\nresp: %#v\nd: %v\n", m, string(rbody), d)
+	c.verbose("m: %v\nresp: %#v\nd: %v\n", m, string(body), d)
 	if err != nil {
 		err = fmt.Errorf("err: %v - m:%v", err, m)
 		return
