@@ -100,22 +100,7 @@ func (c *Client) handleAPIResponse(r *http.Response) ([]byte, error) {
 		return []byte{}, fmt.Errorf("error: r is nil")
 	}
 
-	// Everything is fine
-	if r.StatusCode == http.StatusOK || r.StatusCode == 0 {
-		return []byte{}, nil
-	}
-
-	// Everything is fine too (200-2xx)
-	if r.StatusCode >= http.StatusOK && r.StatusCode < http.StatusMultipleChoices {
-		return []byte{}, nil
-	}
-
-	// Check this condition (3xx are handled directly)
-	if r.StatusCode >= http.StatusMultipleChoices && r.StatusCode < http.StatusBadRequest {
-		return []byte{}, nil
-	}
-
-	// Everything else is an error
+	// Whatever it is, always fetch body, it will get unserialised by the caller
 	body, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 
@@ -123,14 +108,32 @@ func (c *Client) handleAPIResponse(r *http.Response) ([]byte, error) {
 		return body, errors.Wrap(err, "read body")
 	}
 
-	var e APIError
-
-	err = json.Unmarshal(body, &e)
-	if err != nil {
-		return body, errors.Wrapf(err, "decoding error raw=%v", body)
+	// Everything is fine
+	if r.StatusCode == http.StatusOK || r.StatusCode == 0 {
+		return body, nil
 	}
 
-	return body, e
+	// Everything is fine too (200-2xx)
+	if r.StatusCode >= http.StatusOK && r.StatusCode < http.StatusMultipleChoices {
+		return body, nil
+	}
+
+	// Check this condition (3xx are handled directly)
+	if r.StatusCode >= http.StatusMultipleChoices && r.StatusCode < http.StatusBadRequest {
+		return body, nil
+	}
+
+	c.debug("really bad stuff")
+	// Everything else is an error
+
+	c.debug("err=%s", string(body))
+
+	apie, err := decodeAPIError(body)
+	if err != nil {
+		return body, errors.Wrap(err, "decodeAPIError")
+	}
+
+	return body, fmt.Errorf(apie.Error())
 }
 
 func (c *Client) mergeGlobalOptions(opts map[string]string) {
