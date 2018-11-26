@@ -21,23 +21,23 @@ func (c *Client) GetProbe(id int) (p *Probe, err error) {
 	c.mergeGlobalOptions(opts)
 
 	req := c.prepareRequest("GET", fmt.Sprintf("probes/%d", id), opts)
-
+	c.debug("req=%#v", req)
 	resp, err := c.call(req)
-	//log.Printf("resp: %#v - err: %#v", resp, err)
+	c.debug("resp=%#v", resp)
+
 	if err != nil {
-		c.verbose("API error: %v", err)
-		_, err = c.handleAPIResponse(resp)
-		if err != nil {
-			return &Probe{}, errors.Wrap(err, "GetProbe")
-		}
+		c.verbose("call: %v", err)
+		return &Probe{}, errors.Wrap(err, "GetProbe")
+	}
+
+	body, err := c.handleAPIResponse(resp)
+	if err != nil {
+		return &Probe{}, errors.Wrap(err, "GetProbe")
 	}
 
 	p = &Probe{}
-	body, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
-
 	err = json.Unmarshal(body, p)
-	//log.Printf("json: %#v\n", p)
+	c.debug("p=%#v", p)
 	return
 }
 
