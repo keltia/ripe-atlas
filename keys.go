@@ -7,7 +7,6 @@ package atlas
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 
 	"github.com/pkg/errors"
 )
@@ -26,19 +25,16 @@ func (c *Client) fetchOneKeyPage(opts map[string]string) (raw *keyList, err erro
 
 	resp, err := c.call(req)
 	if err != nil {
-		_, err = c.handleAPIResponse(resp)
-		if err != nil {
-			return nil, errors.Wrap(err, "fetchOneKeyPage")
-		}
+		c.verbose("call: %v", err)
+		return &keyList{}, errors.Wrap(err, "call")
 	}
 
-	raw = &keyList{}
-	body, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
+	body, err := c.handleAPIResponse(resp)
+	if err != nil {
+		return &keyList{}, errors.Wrap(err, "fetchOneKeyPage")
+	}
 
 	err = json.Unmarshal(body, raw)
-	//log.Printf("Count=%d raw=%v", raw.Count, resp)
-	//log.Printf(">> rawlist=%+v resp=%+v Next=|%s|", rawlist, resp, rawlist.Next)
 	return
 }
 
@@ -51,18 +47,17 @@ func (c *Client) GetKey(uuid string) (k Key, err error) {
 	//log.Printf("req: %#v", req)
 	resp, err := c.call(req)
 	if err != nil {
-		_, err = c.handleAPIResponse(resp)
-		if err != nil {
-			return Key{}, errors.Wrap(err, "GetUid")
-		}
+		c.verbose("call: %v", err)
+		return Key{}, errors.Wrap(err, "call")
 	}
 
-	k = Key{}
-	body, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
+	body, err := c.handleAPIResponse(resp)
+	if err != nil {
+		return Key{}, errors.Wrap(err, "GetKey")
+	}
 
 	err = json.Unmarshal(body, k)
-	//log.Printf("json: %#v\n", p)
+	c.debug("k=%#v\n", k)
 	return
 }
 

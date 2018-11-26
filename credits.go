@@ -6,7 +6,8 @@ package atlas
 
 import (
 	"encoding/json"
-	"io/ioutil"
+
+	"github.com/pkg/errors"
 )
 
 // GetCredits returns high-level data for credits
@@ -19,21 +20,18 @@ func (c *Client) GetCredits() (credits *Credits, err error) {
 	req := c.prepareRequest("GET", "credits", opts)
 
 	resp, err := c.call(req)
-	//log.Printf("resp: %#v - err: %#v", resp, err)
 	if err != nil {
-		c.verbose("API error: %v", err)
-		_, err = c.handleAPIResponse(resp)
-		if err != nil {
-			c.log.Printf("error getting credits: %#v", err)
-			return
-		}
+		c.verbose("call: %v", err)
+		return &Credits{}, errors.Wrap(err, "call")
+	}
+
+	body, err := c.handleAPIResponse(resp)
+	if err != nil {
+		return &Credits{}, errors.Wrap(err, "GetCredits")
 	}
 
 	credits = &Credits{}
-	body, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
-
 	err = json.Unmarshal(body, credits)
-	//log.Printf("json: %#v\n", credits)
+	c.debug("credits=%#v\n", credits)
 	return
 }
