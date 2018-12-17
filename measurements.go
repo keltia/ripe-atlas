@@ -86,7 +86,7 @@ func (c *Client) GetMeasurement(id int) (m *Measurement, err error) {
 	opts = c.addAPIKey(opts)
 
 	c.mergeGlobalOptions(opts)
-	req := c.prepareRequest("GET", fmt.Sprintf("measurements/%d", id), opts)
+	req := c.prepareRequest("GET", fmt.Sprintf("measurements/%d/", id), opts)
 
 	c.debug("req=%#v", req)
 	resp, err := c.call(req)
@@ -97,7 +97,7 @@ func (c *Client) GetMeasurement(id int) (m *Measurement, err error) {
 
 	body, err := c.handleAPIResponse(resp)
 	if err != nil {
-		return &Measurement{}, errors.Wrap(err, "GetProbe")
+		return &Measurement{}, errors.Wrap(err, "GetMeasurement")
 	}
 
 	m = &Measurement{}
@@ -111,7 +111,7 @@ func (c *Client) DeleteMeasurement(id int) (err error) {
 	opts := make(map[string]string)
 	opts = c.addAPIKey(opts)
 
-	req := c.prepareRequest("DELETE", fmt.Sprintf("measurements/%d", id), opts)
+	req := c.prepareRequest("DELETE", fmt.Sprintf("measurements/%d/", id), opts)
 
 	c.debug("req=%#v", req)
 	resp, err := c.call(req)
