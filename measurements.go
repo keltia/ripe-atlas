@@ -120,8 +120,12 @@ func (c *Client) DeleteMeasurement(id int) (err error) {
 		return errors.Wrap(err, "call")
 	}
 
+	c.debug("resp=%#v", resp)
 	_, err = c.handleAPIResponse(resp)
-	return
+	if err != nil {
+		return errors.Wrap(err, "DeleteMeasurement")
+	}
+	return nil
 }
 
 // GetMeasurements gets info for a set
