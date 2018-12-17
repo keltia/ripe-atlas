@@ -54,10 +54,6 @@ func TestCheckAllTypesAs(t *testing.T) {
 	assert.EqualValues(t, true, valid, "should be true")
 }
 
-func TestClient_GetMeasurement(t *testing.T) {
-
-}
-
 func TestClient_DeleteMeasurement_Nokey(t *testing.T) {
 	defer gock.Off()
 
@@ -165,8 +161,8 @@ func TestClient_GetMeasurement_Ok(t *testing.T) {
 	gock.InterceptClient(c.client)
 	defer gock.RestoreClient(c.client)
 
-	rp, err := c.GetMeasurement(pkNumber)
+	m, err := c.GetMeasurement(pkNumber)
+	t.Logf("err=%v", err)
 	assert.NoError(t, err)
-	assert.NotEmpty(t, rp)
-	assert.Equal(t, pkNumber, rp.ID)
+	assert.EqualValues(t, &myrp, m)
 }

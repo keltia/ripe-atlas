@@ -100,6 +100,8 @@ func (c *Client) GetMeasurement(id int) (m *Measurement, err error) {
 		return &Measurement{}, errors.Wrap(err, "GetMeasurement")
 	}
 
+	c.debug("body=%s", string(body))
+
 	m = &Measurement{}
 	err = json.Unmarshal(body, m)
 	c.debug("m=%#v\n", m)
