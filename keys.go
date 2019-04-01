@@ -7,7 +7,8 @@ package atlas
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+
+	"github.com/pkg/errors"
 )
 
 type keyList struct {
@@ -20,55 +21,64 @@ type keyList struct {
 // fetch the given resource
 func (c *Client) fetchOneKeyPage(opts map[string]string) (raw *keyList, err error) {
 
+	opts = c.addAPIKey(opts)
+	opts = mergeOptions(opts, c.opts)
+
 	req := c.prepareRequest("GET", "keys", opts)
 
 	resp, err := c.call(req)
 	if err != nil {
-		err = c.handleAPIResponsese(resp)
-		if err != nil {
-			return
-		}
+		return nil, errors.Wrap(err, "fetchOneKeyPage/call")
+	}
+
+	body, err := c.handleAPIResponse(resp)
+	if err != nil {
+		return &keyList{}, errors.Wrap(err, "fetchOneKeyPage")
 	}
 
 	raw = &keyList{}
-	body, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
 
 	err = json.Unmarshal(body, raw)
-	//log.Printf("Count=%d raw=%v", raw.Count, resp)
-	//log.Printf(">> rawlist=%+v resp=%+v Next=|%s|", rawlist, resp, rawlist.Next)
 	return
 }
 
 // GetKey returns a given API key
 func (c *Client) GetKey(uuid string) (k Key, err error) {
 	opts := make(map[string]string)
+	opts = c.addAPIKey(opts)
+	opts = mergeOptions(opts, c.opts)
 
 	req := c.prepareRequest("GET", fmt.Sprintf("keys/%s", uuid), opts)
 
 	//log.Printf("req: %#v", req)
 	resp, err := c.call(req)
 	if err != nil {
-		err = c.handleAPIResponsese(resp)
-		if err != nil {
-			return
-		}
+		return Key{}, errors.Wrap(err, "GetKey/call")
+	}
+
+	body, err := c.handleAPIResponse(resp)
+	if err != nil {
+		return Key{}, errors.Wrap(err, "GetKey")
 	}
 
 	k = Key{}
-	body, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
 
-	err = json.Unmarshal(body, k)
-	//log.Printf("json: %#v\n", p)
+	err = json.Unmarshal(body, &k)
+	c.debug("json: %#v\n", k)
 	return
 }
 
 // GetKeys returns all your API keys
 func (c *Client) GetKeys(opts map[string]string) (kl []Key, err error) {
 
+	opts = c.addAPIKey(opts)
+	opts = mergeOptions(opts, c.opts)
+
 	// First call
 	rawlist, err := c.fetchOneKeyPage(opts)
+	if err != nil {
+		return []Key{}, errors.Wrap(err, "GetKeys")
+	}
 
 	// Empty answer
 	if rawlist.Count == 0 {

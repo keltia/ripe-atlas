@@ -14,6 +14,7 @@ type Client struct {
 	config Config
 	client *http.Client
 	log    *log.Logger
+	level  int
 	opts   map[string]string // Default, optional options
 }
 
@@ -31,11 +32,12 @@ type Config struct {
 	Verbose      bool
 	Tags         string
 	Log          *log.Logger
+	Level        int
 }
 
 // APIError is for errors returned by the RIPE API.
 type APIError struct {
-	Error struct {
+	Err struct {
 		Status int    `json:"status"`
 		Code   int    `json:"code"`
 		Detail string `json:"detail"`

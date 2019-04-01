@@ -6,7 +6,8 @@ package atlas
 
 import (
 	"encoding/json"
-	"io/ioutil"
+
+	"github.com/pkg/errors"
 )
 
 // GetCredits returns high-level data for credits
@@ -14,26 +15,28 @@ func (c *Client) GetCredits() (credits *Credits, err error) {
 
 	opts := make(map[string]string)
 	opts = c.addAPIKey(opts)
-	c.mergeGlobalOptions(opts)
+	opts = mergeOptions(opts, c.opts)
 
 	req := c.prepareRequest("GET", "credits", opts)
 
 	resp, err := c.call(req)
-	//log.Printf("resp: %#v - err: %#v", resp, err)
+	c.debug("resp: %#v - err: %#v", resp, err)
 	if err != nil {
-		c.verbose("API error: %v", err)
-		err = c.handleAPIResponsese(resp)
-		if err != nil {
-			c.log.Printf("error getting credits: %#v", err)
-			return
-		}
+		return &Credits{}, errors.Wrap(err, "GetCredits/call")
+	}
+
+	// We may have all http errors here but the request did succeed
+	c.debug("http.code=%d", resp.StatusCode)
+
+	body, err := c.handleAPIResponse(resp)
+	if err != nil {
+		return &Credits{}, errors.Wrapf(err, "GetCredits")
 	}
 
 	credits = &Credits{}
-	body, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
 
+	credits = &Credits{}
 	err = json.Unmarshal(body, credits)
-	//log.Printf("json: %#v\n", credits)
+	c.debug("credits=%#v\n", credits)
 	return
 }

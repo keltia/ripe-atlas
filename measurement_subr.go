@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 // MeasurementResp contains all the results of the measurements
@@ -117,7 +119,7 @@ func (c *Client) createMeasurement(t string, d *MeasurementRequest) (m *Measurem
 
 	body, err := json.Marshal(d)
 	if err != nil {
-		return
+		return nil, errors.Wrapf(err, "encoding raw=%v", d)
 	}
 
 	buf := bytes.NewReader(body)
@@ -133,18 +135,17 @@ func (c *Client) createMeasurement(t string, d *MeasurementRequest) (m *Measurem
 		//return
 	}
 
-	err = c.handleAPIResponsese(resp)
+	m = &MeasurementResp{}
+
+	body, err = c.handleAPIResponse(resp)
 	if err != nil {
-		return
+		c.debug("body=%s", string(body))
+		return m, errors.Wrap(err, "createMeasurement")
 	}
 
-	m = &MeasurementResp{}
-	rbody, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
-
-	err = json.Unmarshal(rbody, m)
+	err = json.Unmarshal(body, m)
 	// Only display if debug/verbose
-	c.verbose("m: %v\nresp: %#v\nd: %v\n", m, string(rbody), d)
+	c.verbose("m: %v\nresp: %#v\nd: %v\n", m, string(body), d)
 	if err != nil {
 		err = fmt.Errorf("err: %v - m:%v", err, m)
 		return

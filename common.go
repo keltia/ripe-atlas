@@ -12,6 +12,8 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+
+	"github.com/pkg/errors"
 )
 
 const (
@@ -61,13 +63,11 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 	} else {
 		if c.config.endpoint != "" {
 			endPoint = fmt.Sprintf("%s/%s", c.config.endpoint, what)
-		} else {
-			endPoint = fmt.Sprintf("%s/%s", apiEndpoint, what)
 		}
 	}
 
 	c.mergeGlobalOptions(opts)
-	c.verbose("Options:\n%v", opts)
+	c.debug("Options:\n%v", opts)
 	baseURL := AddQueryParameters(endPoint, opts)
 
 	req, err := http.NewRequest(method, baseURL, nil)
@@ -76,6 +76,7 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 		return &http.Request{}
 	}
 
+	c.debug("req.url=%s", baseURL)
 	// We need these when we POST
 	if method == "POST" {
 		req.Header.Set("Content-Type", "application/json")
@@ -85,62 +86,72 @@ func (c *Client) prepareRequest(method, what string, opts map[string]string) (re
 	return
 }
 
-// client.handleAPIResponsese check status code & errors from the API
-func (c *Client) handleAPIResponsese(r *http.Response) (err error) {
+// decodeAPIError does the deserialisation
+func decodeAPIError(body []byte) (*APIError, error) {
+	var e APIError
+
+	err := json.Unmarshal(body, &e)
+	return &e, err
+}
+
+// client.handleAPIResponse check status code & return undecoded APIError
+func (c *Client) handleAPIResponse(r *http.Response) ([]byte, error) {
+	var (
+		err  error
+		body []byte
+	)
+
 	if r == nil {
-		return fmt.Errorf("error: r is nil")
+		return []byte{}, fmt.Errorf("handleAPIResponse/r is nil")
+	}
+
+	// If there is a body, get it
+	if r.Body != nil {
+		body, err = ioutil.ReadAll(r.Body)
+		if err != nil {
+			return []byte{}, errors.Wrap(err, "read body")
+		}
+		defer r.Body.Close()
 	}
 
 	// Everything is fine
-	if r.StatusCode == 0 {
-		return nil
+	if r.StatusCode == http.StatusOK || r.StatusCode == 0 {
+		return body, nil
 	}
 
-	// Everything is fine too
-	if r.StatusCode >= 200 && r.StatusCode <= 299 {
-		return nil
+	// Everything is fine too (200-2xx)
+	if r.StatusCode >= http.StatusOK && r.StatusCode < http.StatusMultipleChoices {
+		return body, nil
 	}
 
-	// Check this condition
-	if r.StatusCode >= 300 && r.StatusCode <= 399 {
-		var aerr APIError
-
-		body, _ := ioutil.ReadAll(r.Body)
-		defer r.Body.Close()
-
-		err = json.Unmarshal(body, &aerr)
-		if err != nil {
-			c.log.Printf("Error handling error: %s - %v", r.Body, err)
-		}
-
-		c.log.Printf("Info 3XX status: %d code: %d - r:%v\n",
-			aerr.Error.Status,
-			aerr.Error.Code,
-			aerr.Error.Detail)
-		return nil
+	// Check this condition (3xx are handled directly)
+	if r.StatusCode >= http.StatusMultipleChoices && r.StatusCode < http.StatusBadRequest {
+		return body, nil
 	}
 
-	// EVerything else is an error
-	var aerr APIError
+	c.debug("err=%s", string(body))
 
-	body, _ := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-
-	err = json.Unmarshal(body, &aerr)
+	apie, err := decodeAPIError(body)
 	if err != nil {
-		c.log.Printf("Error handling error: %s - %v", r.Body, err)
+		return body, errors.Wrap(err, "decodeAPIError")
 	}
 
-	err = fmt.Errorf("status: %d code: %d - r:%s\nerrors: %v",
-		aerr.Error.Status,
-		aerr.Error.Code,
-		aerr.Error.Detail,
-		aerr.Error.Errors)
-	return
+	return body, fmt.Errorf(apie.Error())
 }
 
 func (c *Client) mergeGlobalOptions(opts map[string]string) {
-	for k, v := range c.opts {
-		opts[k] = v
+	opts = mergeOptions(opts, c.opts)
+}
+
+func mergeOptions(from, with map[string]string) map[string]string {
+	m := from
+	for i, opt := range with {
+		// "" means delete
+		if opt != "" {
+			m[i] = opt
+		} else {
+			delete(m, i)
+		}
 	}
+	return m
 }

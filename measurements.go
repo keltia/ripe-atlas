@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+
+	"github.com/pkg/errors"
 )
 
 var (
@@ -61,9 +63,9 @@ func (c *Client) fetchOneMeasurementPage(opts map[string]string) (raw *measureme
 	//log.Printf("req=%s qp=%#v", MeasurementEP, opts)
 	resp, err := c.call(req)
 	if err != nil {
-		err = c.handleAPIResponsese(resp)
+		_, err = c.handleAPIResponse(resp)
 		if err != nil {
-			return
+			return &measurementList{}, errors.Wrap(err, "fetchOneMeasurementPage")
 		}
 	}
 	raw = &measurementList{}
@@ -84,23 +86,25 @@ func (c *Client) GetMeasurement(id int) (m *Measurement, err error) {
 	opts = c.addAPIKey(opts)
 
 	c.mergeGlobalOptions(opts)
-	req := c.prepareRequest("GET", fmt.Sprintf("measurements/%d", id), opts)
+	req := c.prepareRequest("GET", fmt.Sprintf("measurements/%d/", id), opts)
 
-	//log.Printf("req: %#v", req)
+	c.debug("req=%#v", req)
 	resp, err := c.call(req)
 	if err != nil {
-		err = c.handleAPIResponsese(resp)
-		if err != nil {
-			return
-		}
+		c.verbose("call: %v", err)
+		return &Measurement{}, errors.Wrap(err, "call")
 	}
 
-	m = &Measurement{}
-	body, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
+	body, err := c.handleAPIResponse(resp)
+	if err != nil {
+		return &Measurement{}, errors.Wrap(err, "GetMeasurement")
+	}
 
+	c.debug("body=%s", string(body))
+
+	m = &Measurement{}
 	err = json.Unmarshal(body, m)
-	//log.Printf("json: %#v\n", m)
+	c.debug("m=%#v\n", m)
 	return
 }
 
@@ -109,12 +113,21 @@ func (c *Client) DeleteMeasurement(id int) (err error) {
 	opts := make(map[string]string)
 	opts = c.addAPIKey(opts)
 
-	req := c.prepareRequest("DELETE", fmt.Sprintf("measurements/%d", id), opts)
+	req := c.prepareRequest("DELETE", fmt.Sprintf("measurements/%d/", id), opts)
 
-	//log.Printf("req: %#v", req)
+	c.debug("req=%#v", req)
 	resp, err := c.call(req)
-	err = c.handleAPIResponsese(resp)
-	return
+	if err != nil {
+		c.verbose("call: %v", err)
+		return errors.Wrap(err, "call")
+	}
+
+	c.debug("resp=%#v", resp)
+	_, err = c.handleAPIResponse(resp)
+	if err != nil {
+		return errors.Wrap(err, "DeleteMeasurement")
+	}
+	return nil
 }
 
 // GetMeasurements gets info for a set

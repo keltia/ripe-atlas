@@ -1,0 +1,13 @@
+{
+  "estimated_daily_expenditure": 0,
+  "current_balance": 12345678,
+  "past_day_credits_spent": 0,
+  "estimated_daily_income": 65432,
+  "past_day_measurement_results": 0,
+  "calculation_time": "2018-09-18T20:42:08.547592",
+  "income_items": "https://atlas.ripe.net/api/v2/credits/income-items/",
+  "estimated_daily_balance": 65432,
+  "transactions": "https://atlas.ripe.net/api/v2/credits/transactions/",
+  "expense_items": "https://atlas.ripe.net/api/v2/credits/expense-items/",
+  "estimated_runout_seconds": null
+}

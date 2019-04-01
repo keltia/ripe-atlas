@@ -1,12 +1,13 @@
 package atlas
 
 import (
-	"bytes"
 	"encoding/json"
-	"github.com/jarcoal/httpmock"
-	"github.com/stretchr/testify/assert"
-	"net/http"
+	"fmt"
+	"net/url"
 	"testing"
+
+	"github.com/h2non/gock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCheckType(t *testing.T) {
@@ -53,105 +54,115 @@ func TestCheckAllTypesAs(t *testing.T) {
 	assert.EqualValues(t, true, valid, "should be true")
 }
 
-func TestDNS(t *testing.T) {
-	httpmock.Activate()
-	defer httpmock.DeactivateAndReset()
+func TestClient_DeleteMeasurement_Nokey(t *testing.T) {
+	defer gock.Off()
 
-	// mock to add a new measurement
-	httpmock.RegisterResponder("POST", apiEndpoint+"/measurements/dns/",
-		func(req *http.Request) (*http.Response, error) {
-			var reqData MeasurementRequest
-			var ap APIError
-			var body bytes.Buffer
-			var badType http.Response
-			var myerr error
+	pkNumber := 666
+	myurl, _ := url.Parse(apiEndpoint)
 
-			//respData := new(MeasurementResp)
+	myrp := `{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`
 
-			if err := json.NewDecoder(req.Body).Decode(&reqData); err != nil {
-				return httpmock.NewStringResponse(400, ""), nil
-			}
+	gock.New(apiEndpoint).
+		Delete(fmt.Sprintf("measurements/%d/", pkNumber)).
+		MatchHeaders(map[string]string{
+			"host":       myurl.Host,
+			"user-agent": fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Reply(403).
+		BodyString(myrp)
 
-			//client.log.Printf("test.req=%#v", reqData)
-			if reqData.Definitions[0].Type != "dns" {
+	c := Before(t)
 
-				ap.Error.Status = 500
-				ap.Error.Code = 501
-				ap.Error.Title = "Bad Type"
-				ap.Error.Detail = "Type is not dns"
-				badType.StatusCode = 500
-				myerr = ErrInvalidMeasurementType
-				if err := json.NewEncoder(&body).Encode(ap); err != nil {
-					resp, _ := httpmock.NewJsonResponse(500, "argh")
-					return resp, myerr
-				}
-			} else {
-				ap.Error.Status = 200
-				ap.Error.Code = 200
-				ap.Error.Title = "Good Type"
-				ap.Error.Detail = "Type is dns"
-				badType.StatusCode = 200
-				myerr = nil
-			}
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
 
-			if err := json.NewEncoder(&body).Encode(ap); err != nil {
-				resp, _ := httpmock.NewJsonResponse(500, "argh")
-				return resp, myerr
-			}
-
-			resp, err := httpmock.NewJsonResponse(200, body.String())
-			if err != nil {
-				return httpmock.NewStringResponse(500, ""), myerr
-			}
-			return resp, myerr
-		},
-	)
-
-	client, err := NewClient()
-	d := []Definition{{Type: "foo"}}
-	r := &MeasurementRequest{Definitions: d}
-	myrp := MeasurementResp{}
-
-	rp, err := client.DNS(r)
-	assert.Error(t, err, "should be in error")
-	assert.EqualValues(t, myrp, rp, "should be equal")
-	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
+	err := c.DeleteMeasurement(pkNumber)
+	assert.Error(t, err)
 }
 
-/*
-func TestNTP(t *testing.T) {
-	d := []Definition{{Type: "foo"}}
-	r := &MeasurementRequest{Definitions: d}
+func TestClient_DeleteMeasurement_Ok(t *testing.T) {
+	defer gock.Off()
 
-	_, err := NTP(r)
-	assert.Error(t, err, "should be an error")
-	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
+	pkNumber := 666
+	myurl, _ := url.Parse(apiEndpoint)
+
+	myrp := Measurement{ID: 666}
+	jrp, err := json.Marshal(myrp)
+
+	gock.New(apiEndpoint).
+		Delete(fmt.Sprintf("measurements/%d/", pkNumber)).
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"host":       myurl.Host,
+			"user-agent": fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Reply(200).
+		BodyString(string(jrp))
+
+	c := Before(t)
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	err = c.DeleteMeasurement(pkNumber)
+	assert.NoError(t, err)
 }
 
-func TestPing(t *testing.T) {
-	d := []Definition{{Type: "foo"}}
-	r := &MeasurementRequest{Definitions: d}
+func TestClient_GetMeasurement_Nokey(t *testing.T) {
+	defer gock.Off()
 
-	_, err := Ping(r)
-	assert.Error(t, err, "should be an error")
-	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
+	pkNumber := 666
+	myurl, _ := url.Parse(apiEndpoint)
+
+	myrp := `{"error":{"status":403,"code":104,"detail":"The provided API key does not exist","title":"Forbidden"}}`
+
+	gock.New(apiEndpoint).
+		Get(fmt.Sprintf("measurements/%d/", pkNumber)).
+		MatchHeaders(map[string]string{
+			"host":       myurl.Host,
+			"user-agent": fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Reply(403).
+		BodyString(myrp)
+
+	c := Before(t)
+	c.level = 2
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	rp, err := c.GetMeasurement(pkNumber)
+	assert.Error(t, err)
+	assert.Empty(t, rp)
 }
 
-func TestSSLCert(t *testing.T) {
-	d := []Definition{{Type: "foo"}}
-	r := &MeasurementRequest{Definitions: d}
+func TestClient_GetMeasurement_Ok(t *testing.T) {
+	defer gock.Off()
 
-	_, err := SSLCert(r)
-	assert.Error(t, err, "should be an error")
-	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
+	pkNumber := 666
+	myurl, _ := url.Parse(apiEndpoint)
+
+	myrp := Measurement{ID: 666}
+	jrp, err := json.Marshal(myrp)
+
+	gock.New(apiEndpoint).
+		Get(fmt.Sprintf("measurements/%d/", pkNumber)).
+		MatchParam("key", "foobar").
+		MatchHeaders(map[string]string{
+			"host":       myurl.Host,
+			"user-agent": fmt.Sprintf("ripe-atlas/%s", ourVersion),
+		}).
+		Reply(200).
+		BodyString(string(jrp))
+
+	c := Before(t)
+	c.level = 2
+
+	gock.InterceptClient(c.client)
+	defer gock.RestoreClient(c.client)
+
+	m, err := c.GetMeasurement(pkNumber)
+	t.Logf("err=%v", err)
+	assert.NoError(t, err)
+	assert.EqualValues(t, &myrp, m)
 }
-
-func TestTraceroute(t *testing.T) {
-	d := []Definition{{Type: "foo"}}
-	r := &MeasurementRequest{Definitions: d}
-
-	_, err := Traceroute(r)
-	assert.Error(t, err, "should be an error")
-	assert.EqualValues(t, ErrInvalidMeasurementType, err, "should be equal")
-}
-*/

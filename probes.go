@@ -7,7 +7,8 @@ package atlas
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+
+	"github.com/pkg/errors"
 )
 
 // GetProbe returns data for a single probe
@@ -15,27 +16,28 @@ func (c *Client) GetProbe(id int) (p *Probe, err error) {
 
 	opts := make(map[string]string)
 	opts = c.addAPIKey(opts)
+	opts = mergeOptions(opts, c.opts)
 
-	c.mergeGlobalOptions(opts)
+	c.debug("opts=%v", opts)
 
 	req := c.prepareRequest("GET", fmt.Sprintf("probes/%d", id), opts)
-
+	c.debug("req=%#v", req)
 	resp, err := c.call(req)
-	//log.Printf("resp: %#v - err: %#v", resp, err)
+	c.debug("resp=%#v", resp)
+
 	if err != nil {
-		c.verbose("API error: %v", err)
-		err = c.handleAPIResponsese(resp)
-		if err != nil {
-			return
-		}
+		c.verbose("call: %v", err)
+		return &Probe{}, errors.Wrap(err, "GetProbe")
+	}
+
+	body, err := c.handleAPIResponse(resp)
+	if err != nil {
+		return &Probe{}, errors.Wrap(err, "GetProbe")
 	}
 
 	p = &Probe{}
-	body, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
-
 	err = json.Unmarshal(body, p)
-	//log.Printf("json: %#v\n", p)
+	c.debug("p=%#v", p)
 	return
 }
 
@@ -50,30 +52,35 @@ type probeList struct {
 // fetch the given resource
 func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err error) {
 
-	c.mergeGlobalOptions(opts)
+	opts = mergeOptions(opts, c.opts)
 	opts = c.addAPIKey(opts)
+
+	c.debug("opts=%v", opts)
+
 	req := c.prepareRequest("GET", "probes", opts)
 
 	resp, err := c.call(req)
 	if err != nil {
-		c.verbose("API error: %v", err)
-		err = c.handleAPIResponsese(resp)
-		if err != nil {
-			return
-		}
+		return &probeList{}, errors.Wrap(err, "fetchOneProbePage/call")
+	}
+
+	// We may have all http errors here but the request did succeed
+	c.debug("http.code=%d", resp.StatusCode)
+
+	body, err := c.handleAPIResponse(resp)
+	if err != nil {
+		return &probeList{}, errors.Wrap(err, "GetProbes")
 	}
 
 	raw = &probeList{}
-	body, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
 
 	err = json.Unmarshal(body, raw)
 	if err != nil {
 		c.log.Printf("err reading json: raw=%#v err=%v", raw, err)
-		return
+		return raw, errors.Wrapf(err, "fetchOneProbePage")
 	}
 	c.verbose("Count=%d raw=%v", raw.Count, resp)
-	c.verbose("P")
+	c.debug("P")
 	return
 }
 
@@ -81,6 +88,9 @@ func (c *Client) fetchOneProbePage(opts map[string]string) (raw *probeList, err 
 func (c *Client) GetProbes(opts map[string]string) (p []Probe, err error) {
 	// First call
 	rawlist, err := c.fetchOneProbePage(opts)
+	if err != nil {
+		return []Probe{}, errors.Wrap(err, "GetProbes")
+	}
 
 	// Empty answer
 	if rawlist.Count == 0 {

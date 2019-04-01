@@ -27,8 +27,8 @@ func FillDefinition(d *Definition, fields map[string]string) error {
 				vf, _ := strconv.ParseFloat(v, 32)
 				sdef.FieldByName(k).SetFloat(vf)
 			case "int":
-				vi, _ := strconv.ParseInt(v, 10, 32)
-				sdef.FieldByName(k).SetInt(vi)
+				vi, _ := strconv.Atoi(v)
+				sdef.FieldByName(k).SetInt(int64(vi))
 			case "string":
 				sdef.FieldByName(k).SetString(v)
 			case "bool":
