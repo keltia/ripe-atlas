@@ -2,9 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/urfave/cli"
 	"log"
 	"strconv"
+
+	"github.com/urfave/cli"
+)
+
+var (
+	// For --bare/-B
+	fBare bool
 )
 
 // init injects our "ip" related commands/options.
@@ -15,7 +21,15 @@ func init() {
 		Usage:       "returns current ip",
 		Description: "shorthand for getting current ip",
 		Action:      cmdIP,
+		Flags: []cli.Flag{
+			cli.BoolFlag{
+				Name:        "B, bare",
+				Usage:       "Minimal output template",
+				Destination: &fBare,
+			},
+		},
 	})
+
 }
 
 // shortcuts
@@ -45,6 +59,11 @@ func cmdIP(c *cli.Context) error {
 		log.Fatalf("err: %v", err)
 	}
 
-	fmt.Printf("IPv4: %s IPv6: %s\n", p.AddressV4, p.AddressV6)
+	// really minimalistic output, only v4
+	if fBare {
+		fmt.Printf("%s %s\n", p.AddressV4, p.AddressV6)
+	} else {
+		fmt.Printf("IPv4: %s IPv6: %s\n", p.AddressV4, p.AddressV6)
+	}
 	return nil
 }
