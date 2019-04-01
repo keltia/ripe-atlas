@@ -6,12 +6,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/keltia/proxy"
-	"github.com/keltia/ripe-atlas"
-	"github.com/urfave/cli"
 	"log"
 	"os"
 	"sort"
+
+	"github.com/keltia/proxy"
+	"github.com/urfave/cli"
+
+	atlas "github.com/keltia/ripe-atlas"
 )
 
 var (
