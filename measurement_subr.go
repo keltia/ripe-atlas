@@ -131,12 +131,13 @@ func (c *Client) createMeasurement(t string, d *MeasurementRequest) (m *Measurem
 	resp, err := c.call(req)
 	c.verbose("resp: %v", resp)
 	if err != nil {
-		c.log.Printf("err: %v", err)
+		c.log.Printf("err(call): %v", err)
 		//return
 	}
 
 	m = &MeasurementResp{}
 
+	c.debug("handling errors")
 	body, err = c.handleAPIResponse(resp)
 	if err != nil {
 		c.debug("body=%s", string(body))
