@@ -116,16 +116,19 @@ func (c *Client) handleAPIResponse(r *http.Response) ([]byte, error) {
 
 	// Everything is fine
 	if r.StatusCode == http.StatusOK || r.StatusCode == 0 {
+		c.debug("OK")
 		return body, nil
 	}
 
 	// Everything is fine too (200-2xx)
 	if r.StatusCode >= http.StatusOK && r.StatusCode < http.StatusMultipleChoices {
+		c.debug("OKbis")
 		return body, nil
 	}
 
 	// Check this condition (3xx are handled directly)
 	if r.StatusCode >= http.StatusMultipleChoices && r.StatusCode < http.StatusBadRequest {
+		c.debug("mostlyOK")
 		return body, nil
 	}
 
@@ -136,6 +139,7 @@ func (c *Client) handleAPIResponse(r *http.Response) ([]byte, error) {
 		return body, errors.Wrap(err, "decodeAPIError")
 	}
 
+	c.debug("the end")
 	return body, fmt.Errorf(apie.Error())
 }
 

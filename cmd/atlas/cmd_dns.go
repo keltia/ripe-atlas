@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/keltia/ripe-atlas"
-	"github.com/urfave/cli"
 	"log"
 	"strings"
+
+	"github.com/keltia/ripe-atlas"
+	"github.com/urfave/cli"
 )
 
 const (
@@ -156,7 +157,7 @@ func cmdDNS(c *cli.Context) error {
 
 	m, err := client.DNS(req)
 	if err != nil {
-		log.Fatalf("err: %v", err)
+		log.Fatalf("err: %v - m: %v", err, m)
 	}
 
 	//str := res.Result.Display()
