@@ -117,7 +117,8 @@ type Probe struct {
 		Name string `json:"name"`
 		Slug string `json:"slug"`
 	} `json:"tags"`
-	Type string `json:"type"`
+	TotalUptime int    `json:"total_uptime"`
+	Type        string `json:"type"`
 }
 
 // Measurement is what we are working with
