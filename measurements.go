@@ -58,9 +58,13 @@ type measurementList struct {
 func (c *Client) fetchOneMeasurementPage(opts map[string]string) (raw *measurementList, err error) {
 	opts = c.addAPIKey(opts)
 	c.mergeGlobalOptions(opts)
-	req := c.prepareRequest("GET", "measurements", opts)
+	path := "measurements"
+	if opts["mine"] == "true" {
+		path = "measurements/my"
+	}
+	req := c.prepareRequest("GET", path, opts)
 
-	//log.Printf("req=%s qp=%#v", MeasurementEP, opts)
+	//log.Printf("req=%s qp=%#v", req, opts)
 	resp, err := c.call(req)
 	if err != nil {
 		_, err = c.handleAPIResponse(resp)
