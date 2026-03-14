@@ -151,6 +151,7 @@ type Measurement struct {
 	Protocol              string                 `json:"protocol"`
 	ResolveOnProbe        bool                   `json:"resolve_on_probe"`
 	ResolvedIPs           []string               `json:"resolved_ips"`
+	Tags                  []string               `json:"tags"`
 	ResponseTimeout       int                    `json:"response_timeout"`
 	Result                string                 `json:"result"`
 	Size                  int                    `json:"size"`
@@ -294,4 +295,83 @@ type Definition struct {
 	AnonymousIdentity string `json:"anonymous_identity,omitempty"`
 	Cert              string `json:"cert,omitempty"`
 	EAP               string `json:"eap,omitempty"`
+}
+
+// HopResult result of each hop
+type HopResult struct {
+	From string  `json:"from,omitempty"`
+	Rtt  float64 `json:"rtt,omitempty"`
+	Size int     `json:"size,omitempty"`
+	TTL  int     `json:"ttl,omitempty"`
+}
+
+// Result result of probe
+type Result struct {
+	Rtt     float64     `json:"rtt,omitempty"`
+	Hop     int         `json:"hop,omitempty"`
+	Ancount int         `json:"ANCOUNT,omitempty"`
+	Arcount int         `json:"ARCOUNT,omitempty"`
+	ID      int         `json:"ID"`
+	Nscount int         `json:"NSCOUNT,omitempty"`
+	Qdcount int         `json:"QDCOUNT,omitempty"`
+	Abuf    string      `json:"abuf,omitempty"`
+	Rt      float64     `json:"rt,omitempty"`
+	Size    int         `json:"size,omitempty"`
+	Result  []HopResult `json:"result,omitempty"`
+	Answers []Answers   `json:"answers,omitempty"`
+}
+
+type Answers struct {
+	Mname  string `json:"MNAME,omitempty"`
+	Name   string `json:"NAME,omitempty"`
+	Rname  string `json:"RNAME,omitempty"`
+	Serial int    `json:"SERIAL,omitempty"`
+	TTL    int    `json:"TTL,omitempty"`
+	Type   string `json:"TYPE,omitempty"`
+}
+
+type Resultset struct {
+	Af      int    `json:"af,omitempty"`
+	DstAddr string `json:"dst_addr,omitempty"`
+	Lts     int    `json:"lts,omitempty"`
+	Proto   string `json:"proto,omitempty"`
+	Result  Result `json:"result,omitempty"`
+	SrcAddr string `json:"src_addr,omitempty"`
+	Subid   int    `json:"subid,omitempty"`
+	Submax  int    `json:"submax,omitempty"`
+	Time    int    `json:"time,omitempty"`
+}
+
+// MeasurementResult result of Measurements
+type MeasurementResult struct {
+	Af              int         `json:"af,omitempty"`
+	Avg             float64     `json:"avg,omitempty"`
+	DstAddr         string      `json:"dst_addr,omitempty"`
+	DstName         string      `json:"dst_name,omitempty"`
+	Dup             int         `json:"dup,omitempty"`
+	Endtime         int         `json:"endtime,omitempty"`
+	From            string      `json:"from,omitempty"`
+	Fw              int         `json:"fw,omitempty"`
+	GroupID         int         `json:"group_id,omitempty"`
+	Lts             int         `json:"lts,omitempty"`
+	Max             float64     `json:"max,omitempty"`
+	Min             float64     `json:"min,omitempty"`
+	MsmID           int         `json:"msm_id,omitempty"`
+	MsmName         string      `json:"msm_name,omitempty"`
+	Mver            string      `json:"mver,omitempty"`
+	ParisID         int         `json:"paris_id,omitempty"`
+	PrbID           int         `json:"prb_id,omitempty"`
+	Proto           string      `json:"proto,omitempty"`
+	Rcvd            int         `json:"rcvd,omitempty"`
+	Result          []Result    `json:"result,omitempty"`
+	Sent            int         `json:"sent,omitempty"`
+	Size            int         `json:"size,omitempty"`
+	SrcAddr         string      `json:"src_addr,omitempty"`
+	Step            interface{} `json:"step,omitempty"`
+	StoredTimestamp int         `json:"stored_timestamp,omitempty"`
+	Timestamp       int         `json:"timestamp,omitempty"`
+	Ttl             int         `json:"ttl,omitempty"`
+	Ttr             float64     `json:"ttr,omitempty"`
+	Type            string      `json:"type,omitempty"`
+	Resultset       []Resultset `json:"resultset,omitempty"`
 }
